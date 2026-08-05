@@ -1,0 +1,83 @@
+@import 'tailwindcss';
+
+/**
+ * Design token estratti da AppAndroid/app/src/main/res/values/colors.xml.
+ * I nomi seguono le sezioni del file originale, così il confronto con l'app
+ * Android resta immediato quando si porta una schermata.
+ */
+@theme {
+  /* Brand */
+  --color-brand-orange: #fe7b00;
+  --color-brand-blue: #27a9c5;
+
+  /* Sfondo (l'app Android usa un tema scuro) */
+  --color-surface: #666666;
+  --color-surface-modal: #666666;
+  --color-surface-modal-border: #383838;
+
+  /* Azioni */
+  --color-action-danger: #cd403c;
+  --color-action-warning: #df9d00;
+  --color-action-confirm: #32a600;
+  --color-action-selected: #218197;
+  --color-action-edit: #313131;
+  --color-action-delete: #f60808;
+
+  /* Genere: usato per il colore del nome giocatore e per le icone */
+  --color-women: #e96ee4;
+  --color-women-dark: #e96ee4;
+  --color-women-icon: #dda0dd;
+  --color-men: #491fed;
+  --color-men-dark: #8e82ff;
+  --color-men-icon: #a896f0;
+
+  /* Giocatori */
+  --color-player-plate: #e5e5e5;
+  --color-player-plate-border: #878787;
+  --color-player-selected: #86a97f;
+  --color-player-selected-border: #8eba86;
+
+  /* Segnapunti: colori legati alla squadra, restano tali anche dopo lo swap */
+  --color-score-team-a: #3fc4d2;
+  --color-score-team-b: #f2994a;
+  --color-score-bg-top: #1b2c34;
+  --color-score-bg-bottom: #0e181d;
+  --color-score-panel: #ffffff14;
+  --color-score-panel-border: #ffffff22;
+  --color-score-divider: #ffffff26;
+
+  /* Liste torneo (tema scuro) */
+  --color-list-card: #ffffff1a;
+  --color-list-card-border: #ffffff26;
+  --color-list-card-highlight: #3fc4d224;
+  --color-list-card-highlight-border: #3fc4d2aa;
+  --color-list-text: #ffffff;
+  --color-list-text-secondary: #ffffffb3;
+  --color-list-text-muted: #ffffff80;
+  --color-list-highlight-text: #3fc4d2;
+  --color-bracket-header: #3fc4d2;
+  --color-bracket-header-text: #08343b;
+  --color-match-meta: #8fa6b0;
+
+  /* Stelle del voto */
+  --color-stars: #cda434;
+}
+
+/* L'app è mobile-first e a tema scuro fisso, come l'originale Android. */
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: linear-gradient(
+    180deg,
+    var(--color-score-bg-top) 0%,
+    var(--color-score-bg-bottom) 100%
+  );
+  background-attachment: fixed;
+  color: var(--color-list-text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
