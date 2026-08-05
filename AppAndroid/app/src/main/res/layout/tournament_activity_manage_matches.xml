@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_scoreboard">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="8dp">
+
+        <ImageButton
+            android:id="@+id/btnGoBack"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="@drawable/buttons_main"
+            android:contentDescription="@string/back"
+            android:src="@drawable/arrow_back"
+            android:scaleType="fitCenter"
+            android:padding="10dp"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/btnNewMatch"
+            android:layout_width="0dp"
+            android:layout_height="42dp"
+            android:layout_weight="1"
+            android:background="@drawable/buttons_main"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            android:text="@string/new_match" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="8dp"
+        android:paddingBottom="6dp">
+
+        <Button
+            android:id="@+id/btnCreateItalianBracket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/buttons_main"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:text="@string/generate_italian_bracket" />
+
+        <Button
+            android:id="@+id/btnCreateBaseBracket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/buttons_main"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:text="@string/generate_multiple_brackets" />
+
+        <Button
+            android:id="@+id/btnDeleteEveryMatch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/buttons_main"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:text="@string/delete_every_match" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/listViewMatches"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="8dp"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:clipToPadding="false"
+        android:scrollbars="none" />
+</LinearLayout>

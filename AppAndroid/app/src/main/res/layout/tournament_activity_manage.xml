@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_scoreboard">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="8dp">
+
+        <ImageButton
+            android:id="@+id/btnGoBack"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="@drawable/buttons_main"
+            android:contentDescription="@string/back"
+            android:src="@drawable/arrow_back"
+            android:scaleType="fitCenter"
+            android:padding="10dp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:text="@string/manage"
+            android:textAllCaps="true"
+            android:textAlignment="center"
+            android:textColor="@color/list_text_primary"
+            android:textSize="26sp" />
+
+        <Space
+            android:layout_width="42dp"
+            android:layout_height="1dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/btnManagePlayers"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/buttons_main"
+            android:padding="10dp"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="15dp"
+            android:gravity="center">
+
+            <ImageButton
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:background="@drawable/player"
+                android:clickable="false"
+                android:focusable="false" />
+
+            <Button
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:text="@string/players"
+                android:textAllCaps="true"
+                android:textSize="20sp"
+                android:textColor="@color/white"
+                android:background="@color/transparent"
+                android:clickable="false"
+                android:focusable="false" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btnManageTournament"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/buttons_main"
+            android:padding="10dp"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="30dp"
+            android:gravity="center">
+
+            <ImageButton
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:background="@drawable/trophy"
+                android:clickable="false"
+                android:focusable="false" />
+
+            <Button
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:text="@string/tournaments"
+                android:textAllCaps="true"
+                android:textSize="20sp"
+                android:textColor="@color/white"
+                android:background="@color/transparent"
+                android:clickable="false"
+                android:focusable="false" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

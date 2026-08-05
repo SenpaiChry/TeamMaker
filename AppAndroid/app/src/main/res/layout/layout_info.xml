@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:paddingVertical="8dp"
+    android:paddingHorizontal="12dp"
+    android:background="@drawable/bg_stat_row">
+
+    <TextView
+        android:id="@+id/txtName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="4"
+        android:gravity="center_vertical"
+        android:text="@string/description"
+        android:textColor="@color/list_text_primary"
+        android:textSize="14sp"
+        android:paddingVertical="2dp"
+        android:paddingEnd="8dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic" />
+
+    <LinearLayout
+        android:id="@+id/llImages"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:orientation="horizontal"
+        android:gravity="center_vertical|end">
+
+        <TextView
+            android:id="@+id/txtHeight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/height_vote"
+            android:textColor="@color/list_text_secondary"
+            android:textSize="14sp"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</LinearLayout>

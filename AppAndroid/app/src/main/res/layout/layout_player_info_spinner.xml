@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/llInfo"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    android:background="@drawable/bg_stat_row"
+    android:gravity="center_vertical"
+    android:paddingHorizontal="12dp">
+
+        <TextView
+            android:id="@+id/txtStatsDescription"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_primary"
+            android:text="@string/description"
+            android:textSize="16sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:layout_marginEnd="10dp" />
+
+        <Spinner
+            android:id="@+id/spinnerValue"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center" />
+
+        <LinearLayout
+            android:id="@+id/llImages"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical|end" />
+</LinearLayout>

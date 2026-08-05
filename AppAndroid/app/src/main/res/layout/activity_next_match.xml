@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_scoreboard"
+    android:paddingHorizontal="16dp"
+    android:paddingBottom="12dp"
+    android:gravity="center">
+
+    <!-- Top bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="8dp">
+
+        <ImageButton
+            android:id="@+id/btnGoBack"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="@drawable/buttons_main"
+            android:contentDescription="@string/back"
+            android:src="@drawable/arrow_back"
+            android:scaleType="fitCenter"
+            android:padding="10dp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:text="@string/next_match"
+            android:textColor="@color/list_text_primary"
+            android:textSize="20sp"
+            android:textAllCaps="true"
+            android:gravity="center" />
+
+        <ImageButton
+            android:id="@+id/btnRotate"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="@drawable/buttons_main"
+            android:src="@drawable/ic_rotate"
+            android:contentDescription="@string/rotate"
+            android:scaleType="fitCenter"
+            android:padding="9dp" />
+    </LinearLayout>
+
+    <!-- Tipo + giorno/ora -->
+    <TextView
+        android:id="@+id/txtType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textAllCaps="true"
+        android:textColor="@color/list_highlight_text"
+        android:textSize="16sp"
+        android:gravity="center" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/txtDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_secondary"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="·"
+            android:fontFamily="@font/helvetica_black"
+            android:textColor="@color/list_text_muted"
+            android:paddingHorizontal="8dp"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/txtTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_secondary"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Spazio flessibile sopra -->
+    <Space
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- TEAM 1: titolo + giocatori compatti -->
+    <TextView
+        android:id="@+id/txtTeam1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textAllCaps="true"
+        android:textColor="@color/scorecard_team_a"
+        android:textSize="22sp"
+        android:gravity="center"
+        android:layout_marginBottom="6dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@drawable/bg_list_card"
+        android:paddingVertical="14dp"
+        android:paddingHorizontal="16dp"
+        android:layout_marginHorizontal="20dp">
+
+        <TextView android:id="@+id/txtTeam1Player1" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="16sp" android:layout_marginBottom="2dp" />
+        <TextView android:id="@+id/txtTeam1Player2" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="16sp" android:layout_marginBottom="2dp" />
+        <TextView android:id="@+id/txtTeam1Player3" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="16sp" android:layout_marginBottom="2dp" />
+        <TextView android:id="@+id/txtTeam1Player4" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="16sp" android:layout_marginBottom="2dp" />
+        <TextView android:id="@+id/txtTeam1Player5" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="16sp" />
+    </LinearLayout>
+
+    <!-- Separatore VS -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="VS"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/list_text_muted"
+        android:textSize="18sp"
+        android:layout_marginVertical="14dp"
+        android:layout_gravity="center_horizontal" />
+
+    <!-- TEAM 2: titolo + giocatori compatti -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@drawable/bg_list_card"
+        android:paddingVertical="14dp"
+        android:paddingHorizontal="16dp"
+        android:layout_marginHorizontal="20dp">
+
+        <TextView android:id="@+id/txtTeam2Player1" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="16sp" android:layout_marginBottom="2dp" />
+        <TextView android:id="@+id/txtTeam2Player2" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="16sp" android:layout_marginBottom="2dp" />
+        <TextView android:id="@+id/txtTeam2Player3" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="16sp" android:layout_marginBottom="2dp" />
+        <TextView android:id="@+id/txtTeam2Player4" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="16sp" android:layout_marginBottom="2dp" />
+        <TextView android:id="@+id/txtTeam2Player5" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="16sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtTeam2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textAllCaps="true"
+        android:textColor="@color/scorecard_team_b"
+        android:textSize="22sp"
+        android:gravity="center"
+        android:layout_marginTop="6dp" />
+
+    <!-- Spazio flessibile sotto -->
+    <Space
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- Bottom: GIOCA + ruota -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="12dp">
+
+        <Button
+            android:id="@+id/btnPlay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_modal_ok"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/button_confirm"
+            android:text="@string/play"
+            android:textSize="20sp"
+            android:paddingVertical="12dp" />
+
+    </LinearLayout>
+</LinearLayout>

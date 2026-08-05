@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="18dp"
+    android:gravity="center"
+    android:background="@drawable/bg_modal_dark">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/txtName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textAllCaps="true"
+            android:textColor="@color/list_text_primary"
+            android:text="@string/name"
+            android:textAlignment="center"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:autoSizeTextType="uniform"
+            android:autoSizeMinTextSize="20sp"
+            android:autoSizeMaxTextSize="30sp" />
+
+        <TextView
+            android:id="@+id/txtSurname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textAllCaps="true"
+            android:textColor="@color/list_text_primary"
+            android:text="@string/surname"
+            android:textAlignment="center"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:autoSizeTextType="uniform"
+            android:autoSizeMinTextSize="20sp"
+            android:autoSizeMaxTextSize="30sp" />
+
+        <TextView
+            android:id="@+id/txtNickname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textAllCaps="true"
+            android:textColor="@color/list_text_secondary"
+            android:text="@string/nickname"
+            android:textAlignment="center"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:autoSizeTextType="uniform"
+            android:autoSizeMinTextSize="16sp"
+            android:autoSizeMaxTextSize="24sp" />
+
+        <TextView
+            android:id="@+id/txtVote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:gravity="center"
+            android:shadowColor="@color/men_shadow"
+            android:shadowRadius="10"
+            android:text="@string/zero"
+            android:textAlignment="center"
+            android:textColor="@color/men_color_name_dark"
+            android:textSize="26sp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:padding="5dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/stats"
+        android:textAlignment="center"
+        android:textColor="@color/list_text_primary"
+        android:textSize="22sp" />
+
+    <ListView
+        android:id="@+id/listInfo"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="4dp"
+        android:scrollbars="none"
+        android:clipToPadding="false"
+        android:paddingVertical="2dp" />
+
+    <Button
+        android:id="@+id/btnOk"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_modal_ok"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/button_confirm"
+        android:text="@string/ok"
+        android:textSize="18sp"
+        android:paddingVertical="12dp"
+        android:layout_marginTop="12dp" />
+</LinearLayout>

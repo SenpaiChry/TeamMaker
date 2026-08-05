@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/llPlayer"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="6dp"
+    android:paddingHorizontal="10dp"
+    android:background="@drawable/bg_player_card"
+    android:gravity="center_vertical">
+
+    <!-- Icona categoria -->
+    <RelativeLayout
+        android:id="@+id/iconContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginVertical="2.5dp">
+
+        <View
+            android:id="@+id/icon_background"
+            android:background="@drawable/men_icon_background"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:elevation="2dp" />
+
+        <ImageView
+            android:id="@+id/imgCategory"
+            android:src="@drawable/men_icon"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:elevation="10dp"
+            android:layout_centerInParent="true"
+            android:contentDescription="@string/category" />
+    </RelativeLayout>
+
+    <!-- Nome e cognome -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/txtName"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/name"
+            android:textColor="@color/men_color_name_dark"
+            android:textSize="16sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:paddingHorizontal="3dp" />
+
+        <TextView
+            android:id="@+id/txtSurname"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/surname"
+            android:textColor="@color/men_color_name_dark"
+            android:textSize="16sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:paddingHorizontal="3dp" />
+    </LinearLayout>
+
+    <!-- Valore -->
+    <TextView
+        android:id="@+id/txtValue"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="40dp"
+        android:text="@string/zero"
+        android:background="@drawable/bg_points_pill"
+        android:textColor="@color/men_color_name_dark"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:paddingHorizontal="7dp"
+        android:paddingVertical="5dp"
+        android:layout_marginHorizontal="4dp" />
+
+    <!-- Azioni -->
+    <ImageView
+        android:id="@+id/btnArchive"
+        app:tint="@color/list_text_primary"
+        android:contentDescription="@string/archive"
+        android:src="@drawable/player_not_visible"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:elevation="3dp"
+        android:background="@drawable/bg_icon_action"
+        android:padding="6dp"
+        android:layout_marginHorizontal="1dp" />
+
+    <ImageView
+        android:id="@+id/btnUnarchive"
+        app:tint="@color/list_text_primary"
+        android:contentDescription="@string/unarchive"
+        android:src="@drawable/player_visible"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:elevation="3dp"
+        android:background="@drawable/bg_icon_action"
+        android:padding="6dp"
+        android:layout_marginHorizontal="1dp" />
+
+    <ImageView
+        android:id="@+id/btnEdit"
+        app:tint="@color/list_text_primary"
+        android:contentDescription="@string/edit"
+        android:src="@drawable/player_edit"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:elevation="3dp"
+        android:background="@drawable/bg_icon_action"
+        android:padding="6dp"
+        android:layout_marginHorizontal="1dp" />
+
+    <ImageView
+        android:id="@+id/btnDelete"
+        app:tint="@color/list_text_primary"
+        android:contentDescription="@string/delete"
+        android:src="@drawable/player_delete"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:elevation="3dp"
+        android:background="@drawable/bg_icon_action"
+        android:padding="6dp"
+        android:layout_marginHorizontal="1dp" />
+
+    <ImageView
+        android:id="@+id/btnInfo"
+        app:tint="@color/list_text_primary"
+        android:contentDescription="@string/info"
+        android:src="@drawable/player_info"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:elevation="3dp"
+        android:background="@drawable/bg_icon_action"
+        android:padding="6dp"
+        android:layout_marginHorizontal="1dp" />
+</LinearLayout>

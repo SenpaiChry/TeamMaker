@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Giocatore archiviato: card spenta con bordo tratteggiato -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/player_archived_fill" />
+    <corners android:radius="16dp" />
+    <stroke
+        android:width="1.5dp"
+        android:color="@color/player_archived_border"
+        android:dashWidth="7dp"
+        android:dashGap="5dp" />
+</shape>

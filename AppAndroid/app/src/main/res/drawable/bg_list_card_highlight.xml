@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Usato per la squadra che corrisponde alla ricerca -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/list_card_highlight_fill" />
+    <corners android:radius="14dp" />
+    <stroke
+        android:width="2dp"
+        android:color="@color/list_card_highlight_border" />
+</shape>

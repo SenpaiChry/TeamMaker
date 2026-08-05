@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/llTeam"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:background="@drawable/bg_list_card">
+
+    <!-- Titolo + icone -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/txtValueTeam"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_secondary"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/txtTeamN"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_highlight_text"
+            android:textAllCaps="true"
+            android:text="@string/team_n"
+            android:textAlignment="center"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/btnEdit"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:contentDescription="@string/edit"
+                android:src="@drawable/player_edit"
+                android:background="@drawable/bg_icon_action"
+                android:padding="5dp"
+                app:tint="@color/list_text_primary"
+                android:layout_marginHorizontal="3dp" />
+
+            <ImageView
+                android:id="@+id/btnDelete"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:contentDescription="@string/delete"
+                android:src="@drawable/player_delete"
+                android:background="@drawable/bg_icon_action"
+                android:padding="5dp"
+                app:tint="@color/list_text_primary"
+                android:layout_marginHorizontal="3dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="8dp"
+        android:background="@color/list_divider" />
+
+    <!-- Giocatori 1 e 2 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <LinearLayout
+            android:id="@+id/llPlayer1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/txtPlayer1Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:textAlignment="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/txtPlayer1Surname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="italic"
+                android:textColor="@color/list_text_secondary"
+                android:textAlignment="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llPlayer2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/txtPlayer2Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:textAlignment="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/txtPlayer2Surname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="italic"
+                android:textColor="@color/list_text_secondary"
+                android:textAlignment="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Giocatori 3 e 4 -->
+    <LinearLayout
+        android:id="@+id/llPlayer34"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="6dp">
+
+        <LinearLayout
+            android:id="@+id/llPlayer3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/txtPlayer3Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:textAlignment="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/txtPlayer3Surname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="italic"
+                android:textColor="@color/list_text_secondary"
+                android:textAlignment="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llPlayer4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/txtPlayer4Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:textAlignment="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/txtPlayer4Surname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="italic"
+                android:textColor="@color/list_text_secondary"
+                android:textAlignment="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Giocatore 5 -->
+    <LinearLayout
+        android:id="@+id/llPlayer5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginTop="6dp">
+
+        <TextView
+            android:id="@+id/txtPlayer5Name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_primary"
+            android:textAlignment="center"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/txtPlayer5Surname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="italic"
+            android:textColor="@color/list_text_secondary"
+            android:textAlignment="center"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="16sp" />
+    </LinearLayout>
+</LinearLayout>

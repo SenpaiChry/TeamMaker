@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/txtBracketHeader"
+    android:text="@string/bracket_n"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="7dp"
+    android:textSize="20sp"
+    android:textColor="@color/black"
+    android:background="@drawable/player_style_selected"
+    android:fontFamily="@font/helvetica_black"
+    android:textStyle="bold|italic"
+    android:gravity="center"
+    />

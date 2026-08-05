@@ -1,0 +1,174 @@
+<resources>
+    <string name="app_name" translatable="false">Team Maker</string>
+    <string name="edit">EDIT</string>
+    <string name="delete">DELETE</string>
+    <string name="tournament">TOURNAMENT</string>
+    <string name="admin">ADMIN</string>
+    <string name="reroll">REROLL</string>
+    <string name="make_squads">MAKE TEAMS</string>
+    <string name="select_all" translatable="false">SELECT ALL</string>
+    <string name="deselect_all" translatable="false">DESELECT ALL</string>
+    <string name="algorithm">ALGORITHM</string>
+    <string name="player_per_squad">PLAYER PER TEAM</string>
+    <string name="login">LOGIN</string>
+    <string name="user">USER</string>
+    <string name="password">PASSWORD</string>
+    <string name="player_name">PLAYER NAME</string>
+    <string name="delete_player">DELETE PLAYER</string>
+    <string name="cancel">CANCEL</string>
+    <string name="description_vote" translatable="false">DESCRIPTION: VOTE</string>
+    <string name="new_player">NEW PLAYER</string>
+    <string name="stats">STATS</string>
+    <string name="wrong_password">WRONG PASSWORD</string>
+    <string name="ok">OK</string>
+    <string name="add">ADD</string>
+    <string name="vote">VOTE</string>
+    <string name="gender">GENDER</string>
+    <string name="description" translatable="false">DESCRIPTION</string>
+    <string name="confirm">CONFIRM</string>
+    <string name="set_max_difference">SET MAX DIFFERENCE</string>
+    <string name="less_it_is_and_more_time_will_it_take_min">LESS IT IS AND MORE TIME WILL IT TAKE (MIN </string>
+    <string name="less_it_is_and_more_time_will_it_take">LESS IT IS AND MORE TIME WILL IT TAKE</string>
+    <string name="team_n" translatable="false">TEAM N</string>
+    <string name="player_1" translatable="false">PLAYER 1</string>
+    <string name="player_2" translatable="false">PLAYER 2</string>
+    <string name="player_3" translatable="false">PLAYER 3</string>
+    <string name="player_4" translatable="false">PLAYER 4</string>
+    <string name="player_5" translatable="false">PLAYER 5</string>
+    <string name="create_tournament">CREATE TOURNAMENT</string>
+    <string name="manage_tournament">MANAGE TOURNAMENT</string>
+    <string name="modify_squads">MODIFY TEAMS</string>
+    <string name="deactivate_tournament">DEACTIVATE TOURNAMENT</string>
+    <string name="see_bracket">SEE BRACKET</string>
+    <string name="see_teams">SEE TEAMS</string>
+    <string name="manage_matches">MANAGE MATCHES</string>
+    <string name="are_you_sure">ARE YOU SURE?</string>
+    <string name="search_player">SEARCH PLAYER…</string>
+    <string name="match_n" translatable="false">MATCH N</string>
+    <string name="time">TIME</string>
+    <string name="team_1" translatable="false">TEAM 1</string>
+    <string name="team_2" translatable="false">TEAM 2</string>
+    <string name="points_1" translatable="false">POINTS 1</string>
+    <string name="points_2" translatable="false">POINTS 2</string>
+    <string name="dash" translatable="false">-</string>
+    <string name="save_teams">SAVE TEAMS</string>
+    <string name="new_match">NEW MATCH</string>
+    <string name="hh_mm" translatable="false">HH:MM</string>
+    <string name="download_file">DOWNLOAD FILE</string>
+    <string name="generate_multiple_brackets">GENERATE MULTIPLE BRACKETS</string>
+    <string name="generate_italian_bracket">GENERATE ITALIAN BRACKET</string>
+    <string name="delete_match">DELETE MATCH</string>
+    <string name="reboot_tournament">REBOOT TOURNAMENT</string>
+    <string name="players" translatable="false">PLAYERS</string>
+    <string name="tournament_n" translatable="false">TOURNAMENT N</string>
+    <string name="reboot">REBOOT</string>
+    <string name="scorecard">SCORECARD</string>
+    <string name="reset">RESET</string>
+    <string name="points" translatable="false">POINTS</string>
+    <string name="plus" translatable="false">+</string>
+    <string name="minus" translatable="false">-</string>
+    <string name="next_match">NEXT MATCH</string>
+    <string name="zero" translatable="false">0</string>
+    <string name="play">PLAY</string>
+    <string name="save">SAVE</string>
+    <string name="italian_bracket">ITALIAN BRACKET</string>
+    <string name="day_number">"DAY NUMBER "</string>
+    <string name="start_time_section">"START TIME SECTION "</string>
+    <string name="end_time_section">"END TIME SECTION "</string>
+    <string name="day">DAY</string>
+    <string name="number_of_brackets">NUMBER OF BRACKETS</string>
+    <string name="generate">GENERATE</string>
+    <string name="mm" translatable="false">MM</string>
+    <string name="n" translatable="false">n</string>
+    <string name="minutes_for_match">MINUTES FOR MATCH</string>
+    <string name="add_time_section">ADD TIME SECTION</string>
+    <string name="type" translatable="false">TYPE</string>
+    <string name="match">"MATCH"</string>
+    <string name="team" translatable="false">TEAM </string>
+    <string name="max_diff">"MAX DIFF.: "</string>
+    <string name="cycle_n">"CYCLE N.: "</string>
+    <string name="teams">TEAMS</string>
+    <string name="bracket">BRACKET</string>
+    <string name="bracketSpace">BRACKET </string>
+    <string name="table">TABLE</string>
+    <string name="new_team">NEW TEAM</string>
+    <string name="deactivate">DEACTIVATE</string>
+    <string name="create">CREATE</string>
+    <string name="info">INFO</string>
+    <string name="add_player">ADD PLAYER</string>
+    <string name="remove_player">REMOVE PLAYER</string>
+    <string name="back">BACK</string>
+    <string name="add_point" translatable="false">ADD_POINT</string>
+    <string name="remove_point" translatable="false">REMOVE_POINT</string>
+    <string name="add_set" translatable="false">ADD_SET</string>
+    <string name="remove_set" translatable="false">REMOVE_SET</string>
+    <string name="player_value" translatable="false">PLAYER VALUE</string>
+    <string name="name">NAME</string>
+    <string name="nickname">NICKNAME</string>
+    <string name="surname">SURNAME</string>
+    <string name="archive">ARCHIVE</string>
+    <string name="archive_player">ARCHIVE PLAYER</string>
+    <string name="unarchive_player">UNARCHIVE PLAYER</string>
+    <string name="unarchive">UNARCHIVE</string>
+    <string name="title" translatable="false">TITLE</string>
+    <string name="missing_data">MISSING DATA</string>
+    <string name="subtitle">SUBTITLE</string>
+    <string name="tournament_name">TOURNAMENT NAME</string>
+    <string name="insert_the_tournament_name">INSERT THE TOURNAMENT NAME</string>
+    <string name="missing_name">MISSING NAME</string>
+    <string name="creating">CREATING...</string>
+    <string name="height_vote" translatable="false">HEIGHT VOTE</string>
+    <string name="modify">MODIFY</string>
+    <string name="delete_tournament">DELETE TOURNAMENT</string>
+    <string name="activate_tournament">ACTIVATE TOURNAMENT</string>
+    <string name="next_match_marquee" translatable="false">NEXT MATCH MARQUEE</string>
+    <string name="manage">MANAGE</string>
+    <string name="edit_match">EDIT MATCH</string>
+    <string name="new_squad">NEW SQUAD</string>
+    <string name="select_at_least_one_player">SELECT AT LEAST ONE PLAYER</string>
+    <string name="edit_player">EDIT PLAYER</string>
+    <string name="no_players">NO PLAYERS</string>
+    <string name="too_many_brackets">TOO MANY BRACKETS</string>
+    <string name="generating">GENERATING...</string>
+    <string name="need_more_time">NEED MORE TIME</string>
+    <string name="delete_team">DELETE TEAM</string>
+    <string name="manage_teams">MANAGE TEAMS</string>
+    <string name="new_tournament">NEW TOURNAMENT</string>
+    <string name="manage_tournaments">MANAGE TOURNAMENTS</string>
+    <string name="manage_players">MANAGE PLAYERS</string>
+    <string name="same_player_selected_twice">SAME PLAYER SELECTED TWICE</string>
+    <string name="select_more_players">SELECT MORE PLAYERS</string>
+    <string name="generate_teams">GENERATE TEAMS</string>
+    <string name="manage_table">MANAGE TABLE</string>
+    <string name="delete_every_match">DELETE EVERY MATCH</string>
+    <string name="bracket_n">BRACKET N</string>
+    <string name="time_need">TIME NEED:</string>
+    <string name="phase">PHASE</string>
+    <string name="go_back">GO BACK</string>
+    <string name="error_while_saving_data">ERROR WHILE SAVING DATA</string>
+    <string name="saving">SAVING</string>
+    <string name="no_internet_connection">NO INTERNET CONNECTION</string>
+    <string name="data_saved_with_success">DATA SAVED WITH SUCCESS</string>
+    <string name="tournaments">TOURNAMENTS</string>
+    <string name="date">DATE</string>
+    <string name="finalString">Final</string>
+    <string name="finalina">Finalina</string>
+    <string name="semifinal">Semifinal</string>
+    <string name="quarter">Quarter</string>
+    <string name="downloading_data">DOWNLOADING DATA</string>
+    <string name="no_tournaments">NO TOURNAMENTS</string>
+    <string name="edit_squad">EDIT SQUAD</string>
+    <string name="matches">MATCHES</string>
+    <string name="saving_tournament">SAVING TOURNAMENT...</string>
+    <string name="max_difference">MAX DIFFERENCE</string>
+    <string name="cycle">CYCLE</string>
+    <string name="copy_teams">COPY TEAMS</string>
+    <string name="copy_matches">COPY MATCHES</string>
+    <string name="vs" translatable="false">VS</string>
+    <string name="rotate">ROTATE</string>
+    <string name="swap">SWAP</string>
+    <string name="dot">.</string>
+    <string name="category">category</string>
+    <string name="live">LIVE</string>
+    <string name="no_live_match">NO LIVE MATCH</string>
+</resources>

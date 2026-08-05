@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_scoreboard"
+    android:paddingHorizontal="12dp"
+    android:paddingBottom="12dp">
+
+    <!-- Top bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="8dp">
+
+        <ImageButton
+            android:id="@+id/btnGoBack"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="@drawable/buttons_main"
+            android:contentDescription="@string/back"
+            android:src="@drawable/arrow_back"
+            android:scaleType="fitCenter"
+            android:padding="10dp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!-- Badge LIVE -->
+        <TextView
+            android:id="@+id/txtLiveIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_live_badge"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:text="● LIVE"
+            android:textSize="15sp"
+            android:paddingHorizontal="18dp"
+            android:paddingVertical="6dp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!-- Spazio speculare al btnGoBack -->
+        <Space
+            android:layout_width="42dp"
+            android:layout_height="1dp" />
+    </LinearLayout>
+
+    <!-- ======================== TEAM 1 (sopra) ======================== -->
+    <TextView
+        android:id="@+id/txtTeam1Name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/scorecard_team_a"
+        android:textSize="22sp"
+        android:textAllCaps="true"
+        android:gravity="center"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="@string/team_1" />
+
+    <TextView
+        android:id="@+id/txtTeam1Players"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="italic"
+        android:textColor="@color/list_text_secondary"
+        android:textSize="13sp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Punteggio Team 1 -->
+    <FrameLayout
+        android:id="@+id/panelPoints1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/bg_score_panel"
+        android:padding="14dp"
+        android:layout_marginHorizontal="40dp">
+
+        <TextView
+            android:id="@+id/txtPoints1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold"
+            android:textColor="@color/scorecard_team_a"
+            android:gravity="center"
+            android:maxLines="1"
+            android:includeFontPadding="false"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="60sp"
+            app:autoSizeMaxTextSize="200sp"
+            android:text="0" />
+    </FrameLayout>
+
+    <!-- ======================== SET (centro) ======================== -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@drawable/bg_center_band"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="8dp"
+        android:layout_marginVertical="8dp">
+
+        <TextView
+            android:id="@+id/txtSets1"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="@drawable/sets_value"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold"
+            android:textColor="@color/scorecard_team_a"
+            android:text="0"
+            android:textSize="24sp"
+            android:gravity="center" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="34dp"
+            android:layout_marginHorizontal="16dp"
+            android:background="@color/scorecard_divider" />
+
+        <TextView
+            android:id="@+id/txtSets2"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="@drawable/sets_value"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold"
+            android:textColor="@color/scorecard_team_b"
+            android:text="0"
+            android:textSize="24sp"
+            android:gravity="center" />
+    </LinearLayout>
+
+    <!-- ======================== TEAM 2 (sotto) ======================== -->
+    <!-- Punteggio Team 2 -->
+    <FrameLayout
+        android:id="@+id/panelPoints2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/bg_score_panel"
+        android:padding="14dp"
+        android:layout_marginHorizontal="40dp">
+
+        <TextView
+            android:id="@+id/txtPoints2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold"
+            android:textColor="@color/scorecard_team_b"
+            android:gravity="center"
+            android:maxLines="1"
+            android:includeFontPadding="false"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="60sp"
+            app:autoSizeMaxTextSize="200sp"
+            android:text="0" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/txtTeam2Players"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="italic"
+        android:textColor="@color/list_text_secondary"
+        android:textSize="13sp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/txtTeam2Name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/scorecard_team_b"
+        android:textSize="22sp"
+        android:textAllCaps="true"
+        android:gravity="center"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="@string/team_2"
+        android:layout_marginBottom="4dp" />
+</LinearLayout>

@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="18dp"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="20dp"
+    android:background="@drawable/bg_modal_dark">
+
+    <!-- Tipo / Girone -->
+    <TextView
+        android:id="@+id/txtType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textAllCaps="true"
+        android:textColor="@color/list_text_primary"
+        android:text="@string/type"
+        android:gravity="center"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="18sp"
+        android:autoSizeMaxTextSize="28sp" />
+
+    <!-- Giorno · Ora -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="14dp">
+
+        <TextView
+            android:id="@+id/txtDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/day"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_secondary"
+            android:maxLines="1"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dot"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold"
+            android:textColor="@color/list_text_muted"
+            android:paddingHorizontal="8dp"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/txtTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/time"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_secondary"
+            android:maxLines="1"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <!-- Le due squadre -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+
+        <!-- TEAM 1 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginEnd="5dp"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="10dp"
+            android:gravity="center"
+            android:background="@drawable/bg_modal_team1">
+
+            <TextView
+                android:id="@+id/txtTeam1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textAllCaps="true"
+                android:textColor="@color/scorecard_team_a"
+                android:text="@string/team_1"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="13sp"
+                android:autoSizeMaxTextSize="18sp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/txtTeam1Player1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:text="@string/player_1"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeMaxTextSize="13sp"
+                android:layout_marginBottom="3dp" />
+
+            <TextView
+                android:id="@+id/txtTeam1Player2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:text="@string/player_2"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeMaxTextSize="13sp"
+                android:layout_marginBottom="3dp" />
+
+            <TextView
+                android:id="@+id/txtTeam1Player3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:text="@string/player_3"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeMaxTextSize="13sp"
+                android:layout_marginBottom="3dp" />
+
+            <TextView
+                android:id="@+id/txtTeam1Player4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:text="@string/player_4"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeMaxTextSize="13sp"
+                android:layout_marginBottom="3dp" />
+
+            <TextView
+                android:id="@+id/txtTeam1Player5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:text="@string/player_5"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeMaxTextSize="13sp" />
+        </LinearLayout>
+
+        <!-- TEAM 2 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="5dp"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="10dp"
+            android:gravity="center"
+            android:background="@drawable/bg_modal_team2">
+
+            <TextView
+                android:id="@+id/txtTeam2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textAllCaps="true"
+                android:textColor="@color/scorecard_team_b"
+                android:text="@string/team_2"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="13sp"
+                android:autoSizeMaxTextSize="18sp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/txtTeam2Player1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:text="@string/player_1"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeMaxTextSize="13sp"
+                android:layout_marginBottom="3dp" />
+
+            <TextView
+                android:id="@+id/txtTeam2Player2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:text="@string/player_2"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeMaxTextSize="13sp"
+                android:layout_marginBottom="3dp" />
+
+            <TextView
+                android:id="@+id/txtTeam2Player3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:text="@string/player_3"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeMaxTextSize="13sp"
+                android:layout_marginBottom="3dp" />
+
+            <TextView
+                android:id="@+id/txtTeam2Player4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:text="@string/player_4"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeMaxTextSize="13sp"
+                android:layout_marginBottom="3dp" />
+
+            <TextView
+                android:id="@+id/txtTeam2Player5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:text="@string/player_5"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeMaxTextSize="13sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Punteggio finale -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:id="@+id/txtFinalPoints1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="44dp"
+            android:text="@string/points_1"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/scorecard_team_a"
+            android:gravity="center"
+            android:textSize="30sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dash"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold"
+            android:textColor="@color/list_text_muted"
+            android:paddingHorizontal="12dp"
+            android:gravity="center"
+            android:textSize="26sp" />
+
+        <TextView
+            android:id="@+id/txtFinalPoints2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="44dp"
+            android:text="@string/points_2"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/scorecard_team_b"
+            android:gravity="center"
+            android:textSize="30sp" />
+    </LinearLayout>
+
+    <!-- txtPoints1/2 conservati per compatibilita' col Java, non mostrati -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        tools:ignore="UselessLeaf">
+
+        <TextView
+            android:id="@+id/txtPoints1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/points_1" />
+
+        <TextView
+            android:id="@+id/txtPoints2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/points_2" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnOk"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_modal_ok"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/button_confirm"
+        android:text="@string/ok"
+        android:textSize="18sp"
+        android:paddingVertical="12dp"
+        android:layout_marginTop="18dp" />
+</LinearLayout>

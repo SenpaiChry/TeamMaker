@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/txtBracketHeader"
+    android:text="@string/bracket_n"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="14dp"
+    android:paddingVertical="7dp"
+    android:layout_marginTop="4dp"
+    android:textSize="17sp"
+    android:textAllCaps="true"
+    android:textColor="@color/bracket_header_text"
+    android:background="@drawable/bg_bracket_header"
+    android:fontFamily="@font/helvetica_black"
+    android:textStyle="bold|italic"
+    android:gravity="center" />

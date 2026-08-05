@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_scoreboard"
+    android:paddingHorizontal="12dp"
+    android:paddingBottom="8dp">
+
+    <!-- Top bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="6dp">
+
+        <ImageButton
+            android:id="@+id/btnGoBack"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="@drawable/buttons_main"
+            android:contentDescription="@string/back"
+            android:src="@drawable/arrow_back"
+            android:scaleType="fitCenter"
+            android:padding="9dp" />
+
+        <TextView
+            android:id="@+id/txtType"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textAllCaps="true"
+            android:textColor="@color/list_highlight_text"
+            android:textSize="16sp"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/txtDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_secondary"
+            android:textSize="13sp"
+            android:layout_marginEnd="6dp" />
+
+        <TextView
+            android:id="@+id/txtTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_secondary"
+            android:textSize="13sp"
+            android:layout_marginEnd="8dp" />
+
+        <ImageButton
+            android:id="@+id/btnRotate"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="@drawable/buttons_main"
+            android:src="@drawable/ic_rotate"
+            android:contentDescription="@string/rotate"
+            android:scaleType="fitCenter"
+            android:padding="8dp" />
+    </LinearLayout>
+
+    <!-- Squadre affiancate compatte -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:baselineAligned="false">
+
+        <!-- TEAM 1 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginEnd="6dp"
+            android:padding="14dp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_list_card">
+
+            <TextView
+                android:id="@+id/txtTeam1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textAllCaps="true"
+                android:textColor="@color/scorecard_team_a"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView android:id="@+id/txtTeam1Player1" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="15sp" android:layout_marginBottom="2dp" />
+            <TextView android:id="@+id/txtTeam1Player2" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="15sp" android:layout_marginBottom="2dp" />
+            <TextView android:id="@+id/txtTeam1Player3" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="15sp" android:layout_marginBottom="2dp" />
+            <TextView android:id="@+id/txtTeam1Player4" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="15sp" android:layout_marginBottom="2dp" />
+            <TextView android:id="@+id/txtTeam1Player5" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="15sp" />
+        </LinearLayout>
+
+        <!-- VS -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="VS"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_muted"
+            android:textSize="18sp"
+            android:layout_gravity="center"
+            android:paddingHorizontal="10dp" />
+
+        <!-- TEAM 2 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="6dp"
+            android:padding="14dp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_list_card">
+
+            <TextView
+                android:id="@+id/txtTeam2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textAllCaps="true"
+                android:textColor="@color/scorecard_team_b"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView android:id="@+id/txtTeam2Player1" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="15sp" android:layout_marginBottom="2dp" />
+            <TextView android:id="@+id/txtTeam2Player2" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="15sp" android:layout_marginBottom="2dp" />
+            <TextView android:id="@+id/txtTeam2Player3" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="15sp" android:layout_marginBottom="2dp" />
+            <TextView android:id="@+id/txtTeam2Player4" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="15sp" android:layout_marginBottom="2dp" />
+            <TextView android:id="@+id/txtTeam2Player5" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/helvetica_black" android:textStyle="bold|italic" android:textColor="@color/list_text_primary" android:gravity="center" android:textSize="15sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnPlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_modal_ok"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/button_confirm"
+        android:text="@string/play"
+        android:textSize="18sp"
+        android:paddingVertical="10dp"
+        android:layout_marginTop="6dp" />
+</LinearLayout>

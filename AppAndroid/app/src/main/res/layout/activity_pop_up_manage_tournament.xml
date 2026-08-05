@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="false"
+    android:background="@drawable/bg_modal_dark">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="18dp"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:text="@string/manage_tournament"
+            android:textAlignment="center"
+            android:textColor="@color/list_text_primary"
+            android:textSize="24sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_marginBottom="14dp" />
+
+        <!-- Nome -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginVertical="4dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_secondary"
+                android:text="@string/name"
+                android:textSize="18sp"
+                android:textAlignment="center" />
+
+            <EditText
+                android:id="@+id/txtName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@drawable/bg_input_underline"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:textCursorDrawable="@null"
+                android:gravity="center"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="8dp"
+                android:textSize="17sp"
+                android:inputType="text"
+                android:maxLines="1"
+                android:importantForAutofill="no" />
+        </LinearLayout>
+
+        <!-- Data -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginVertical="4dp"
+            android:layout_marginBottom="14dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_secondary"
+                android:text="@string/date"
+                android:textSize="18sp"
+                android:textAlignment="center" />
+
+            <EditText
+                android:id="@+id/txtDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@drawable/bg_input_underline"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:textCursorDrawable="@null"
+                android:gravity="center"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="8dp"
+                android:textSize="17sp"
+                android:inputType="date"
+                android:focusable="false"
+                android:importantForAutofill="no" />
+        </LinearLayout>
+
+        <!-- Azioni -->
+        <Button
+            android:id="@+id/btnManageTeams"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/buttons_main"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/white"
+            android:text="@string/manage_teams"
+            android:textSize="17sp"
+            android:paddingVertical="10dp"
+            android:layout_marginBottom="6dp" />
+
+        <Button
+            android:id="@+id/btnManageMatches"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/buttons_main"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/white"
+            android:text="@string/manage_matches"
+            android:textSize="17sp"
+            android:paddingVertical="10dp"
+            android:layout_marginBottom="6dp" />
+
+        <Button
+            android:id="@+id/btnActivate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/buttons_main"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/white"
+            android:text="@string/activate_tournament"
+            android:textSize="17sp"
+            android:paddingVertical="10dp"
+            android:layout_marginBottom="6dp" />
+
+        <Button
+            android:id="@+id/btnDeactivate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/buttons_main"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/white"
+            android:text="@string/deactivate_tournament"
+            android:textSize="17sp"
+            android:paddingVertical="10dp"
+            android:layout_marginBottom="6dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="14dp">
+
+            <Button
+                android:id="@+id/btnCopyTeams"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/buttons_main"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/white"
+                android:text="@string/copy_teams"
+                android:textSize="16sp"
+                android:paddingVertical="10dp" />
+
+            <Button
+                android:id="@+id/btnCopyMatches"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/buttons_main"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/white"
+                android:text="@string/copy_matches"
+                android:textSize="16sp"
+                android:paddingVertical="10dp" />
+        </LinearLayout>
+
+        <!-- Annulla / Salva -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/btnCancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/bg_modal_cancel"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/button_danger"
+                android:text="@string/cancel"
+                android:textSize="18sp"
+                android:paddingVertical="10dp" />
+
+            <Button
+                android:id="@+id/btnConfirm"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="5dp"
+                android:background="@drawable/bg_modal_ok"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/button_confirm"
+                android:text="@string/save"
+                android:textSize="18sp"
+                android:paddingVertical="10dp" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00FFFFFF</color>
+    <color name="background">#666666</color>
+
+    <!--    MAIN    -->
+    <color name="main_orange">#FE7B00</color>
+    <color name="main_blue">#27A9C5</color>
+
+    <!--    SEARCH BOX    -->
+    <color name="search_hint">#A6A6A6</color>
+
+    <!--    BUTTONS    -->
+    <color name="button_danger">#CD403C</color>
+    <color name="button_warning">#DF9D00</color>
+    <color name="button_confirm">#32A600</color>
+    <color name="button_selected">#218197</color>
+    <color name="buttons_generate">#FFFFFF</color>
+    <color name="button_edit">#313131</color>
+    <color name="button_delete">#F60808</color>
+
+    <!--    PLAYERS    -->
+    <color name="player_plate">#E5E5E5</color>
+    <color name="player_plate_border">#878787</color>
+    <color name="player_selected_background">#CC8EBA86</color>
+    <color name="player_selected_background_no_opacity">#86A97F</color>
+    <color name="player_selected_border">#8EBA86</color>
+
+    <!--    WOMEN    -->
+    <color name="women_color_name">#E96EE4</color>
+    <color name="women_color_icon">#DDA0DD</color>
+    <color name="women_shadow">#BFFF3FF8</color>
+    <color name="women_icon_background">#E96EE4</color>
+
+    <!--    MEN    -->
+    <color name="men_color_name">#491FED</color>
+    <color name="men_color_icon">#BFA896F0</color>
+    <color name="men_shadow">#BF370AE8</color>
+    <color name="men_icon_background">#3609E7</color>
+
+    <!--    MODAL    -->
+    <color name="modal_background">#666666</color>
+    <color name="modal_border">#383838</color>
+
+    <!--    STARS    -->
+    <color name="stars">#cda434</color>
+
+    <!--    SCORECARD    -->
+    <color name="btn_border">#56353535</color>
+    <color name="btn_background">#23505050</color>
+    <color name="btn_background_pressed">#23959595</color>
+
+    <!--    SCORECARD - TEAM (colori che seguono la squadra, anche dopo lo swap)    -->
+    <color name="scorecard_team_a">#3FC4D2</color>
+    <color name="scorecard_team_b">#F2994A</color>
+
+    <!--    SCORECARD - SFONDO E PANNELLI    -->
+    <color name="scorecard_bg_top">#1B2C34</color>
+    <color name="scorecard_bg_bottom">#0E181D</color>
+    <color name="scorecard_panel_fill">#14FFFFFF</color>
+    <color name="scorecard_panel_border">#22FFFFFF</color>
+    <color name="scorecard_divider">#26FFFFFF</color>
+    <color name="scorecard_marquee_background">#3FC4D2</color>
+    <color name="scorecard_marquee_text">#08343B</color>
+    <color name="scorecard_player_name">#FFFFFFFF</color>
+
+    <!--    LISTE TORNEO (tema scuro)    -->
+    <color name="list_card_fill">#1AFFFFFF</color>
+    <color name="list_card_border">#26FFFFFF</color>
+    <color name="list_card_highlight_fill">#243FC4D2</color>
+    <color name="list_card_highlight_border">#AA3FC4D2</color>
+    <color name="list_text_primary">#FFFFFFFF</color>
+    <color name="list_text_secondary">#B3FFFFFF</color>
+    <color name="list_text_muted">#80FFFFFF</color>
+    <color name="list_highlight_text">#3FC4D2</color>
+    <color name="list_divider">#1FFFFFFF</color>
+    <color name="bracket_header_background">#3FC4D2</color>
+    <color name="bracket_header_text">#08343B</color>
+    <color name="search_box_fill">#1AFFFFFF</color>
+    <color name="search_box_border">#33FFFFFF</color>
+    <color name="points_pill_fill">#22FFFFFF</color>
+    <color name="match_meta_text">#8FA6B0</color>
+
+    <color name="men_color_name_dark">#8E82FF</color>
+    <color name="women_color_name_dark">#E96EE4</color>
+    <color name="player_archived_fill">#0DFFFFFF</color>
+    <color name="player_archived_border">#40FFFFFF</color>
+    <color name="icon_action_bg">#18FFFFFF</color>
+</resources>

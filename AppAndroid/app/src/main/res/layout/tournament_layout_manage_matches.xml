@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/llMatch"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:background="@drawable/bg_list_card">
+
+    <!-- Riga 1: tipo + giorno/ora + icone -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginEnd="8dp">
+
+            <TextView
+                android:id="@+id/txtType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/match_meta_text"
+                android:textAllCaps="true"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txtDay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/match_meta_text"
+                    android:maxLines="1"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/txtTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/match_meta_text"
+                    android:layout_marginStart="8dp"
+                    android:maxLines="1"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btnPlay"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:contentDescription="@string/play"
+            android:src="@drawable/play"
+            android:background="@drawable/bg_icon_action"
+            android:padding="5dp"
+            app:tint="@color/list_text_primary"
+            android:layout_marginHorizontal="3dp" />
+
+        <ImageView
+            android:id="@+id/btnEdit"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:contentDescription="@string/edit"
+            android:src="@drawable/player_edit"
+            android:background="@drawable/bg_icon_action"
+            android:padding="5dp"
+            app:tint="@color/list_text_primary"
+            android:layout_marginHorizontal="3dp" />
+
+        <ImageView
+            android:id="@+id/btnDelete"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:contentDescription="@string/delete"
+            android:src="@drawable/player_delete"
+            android:background="@drawable/bg_icon_action"
+            android:padding="5dp"
+            app:tint="@color/list_text_primary"
+            android:layout_marginHorizontal="3dp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="8dp"
+        android:background="@color/list_divider" />
+
+    <!-- Riga 2: squadre e punteggio -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="start|center_vertical">
+
+            <TextView
+                android:id="@+id/txtTeam1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:paddingHorizontal="4dp"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtPoints1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="30dp"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold"
+            android:textColor="@color/list_text_primary"
+            android:gravity="center"
+            android:textSize="19sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dash"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold"
+            android:textColor="@color/list_text_muted"
+            android:paddingHorizontal="3dp"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/txtPoints2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="30dp"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold"
+            android:textColor="@color/list_text_primary"
+            android:gravity="center"
+            android:textSize="19sp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end|center_vertical">
+
+            <TextView
+                android:id="@+id/txtTeam2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:paddingHorizontal="4dp"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

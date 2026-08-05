@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Colore riempimento e bordo vengono impostati a runtime in base alla squadra -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/scorecard_panel_fill" />
+    <corners android:radius="22dp" />
+    <stroke
+        android:width="2dp"
+        android:color="@color/scorecard_panel_border" />
+</shape>

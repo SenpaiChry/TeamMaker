@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:background="@drawable/bg_list_card">
+
+    <!-- Riga 1: tipo, giorno/ora, info -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginEnd="8dp">
+
+            <TextView
+                android:id="@+id/txtType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/type"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/match_meta_text"
+                android:textAllCaps="true"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:baselineAligned="true">
+
+                <TextView
+                    android:id="@+id/txtDay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/day"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/match_meta_text"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/txtTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/time"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/match_meta_text"
+                    android:layout_marginStart="8dp"
+                    android:maxLines="1"
+                    android:textSize="13sp" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:background="@drawable/buttons_main"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:paddingHorizontal="14dp"
+            android:minWidth="0dp"
+            android:text="@string/info" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="8dp"
+        android:background="@color/list_divider" />
+
+    <!-- Riga 2: squadre e punteggio -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Contenitore per far avvolgere la pillola al testo -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="start|center_vertical">
+
+            <TextView
+                android:id="@+id/txtTeam1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/team_1"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="3dp"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtPoints1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="30dp"
+            android:text="@string/points_1"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold"
+            android:textColor="@color/list_text_primary"
+            android:gravity="center"
+            android:textSize="19sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dash"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold"
+            android:textColor="@color/list_text_muted"
+            android:paddingHorizontal="3dp"
+            android:gravity="center"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/txtPoints2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="30dp"
+            android:text="@string/points_2"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold"
+            android:textColor="@color/list_text_primary"
+            android:gravity="center"
+            android:textSize="19sp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end|center_vertical">
+
+            <TextView
+                android:id="@+id/txtTeam2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/team_2"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="3dp"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

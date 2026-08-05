@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="35dp"
+    android:background="@drawable/bg_scoreboard">
+
+    <ImageView
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:src="@mipmap/logo_2025"
+        android:layout_marginBottom="40dp" />
+
+    <TextView
+        android:id="@+id/txtDB"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="STAGING"
+        android:background="@color/main_orange"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/main_blue"
+        android:textAlignment="center"
+        android:textSize="22sp"
+        android:visibility="gone"
+        android:layout_marginBottom="10dp" />
+
+    <!-- Tasto LIVE: appare solo quando c'e' una partita in corso -->
+    <Button
+        android:id="@+id/btnOpenLive"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_live_badge"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/white"
+        android:text="● LIVE"
+        android:textAllCaps="true"
+        android:textSize="18sp"
+        android:paddingVertical="10dp"
+        android:visibility="gone"
+        android:layout_marginBottom="20dp" />
+
+    <Button
+        android:id="@+id/btnOpenGenerate"
+        android:background="@drawable/buttons_main"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/white"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="@string/make_squads"
+        android:textAllCaps="true"
+        android:textSize="18sp"
+        android:layout_marginBottom="20dp" />
+
+    <Button
+        android:id="@+id/btnOpenTournament"
+        android:background="@drawable/buttons_main"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/white"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="@string/tournament"
+        android:textAllCaps="true"
+        android:textSize="18sp"
+        android:layout_marginBottom="20dp" />
+
+    <Button
+        android:id="@+id/btnOpenScorecard"
+        android:background="@drawable/buttons_main"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/white"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="@string/scorecard"
+        android:textAllCaps="true"
+        android:textSize="18sp"
+        android:layout_marginBottom="20dp" />
+
+    <Button
+        android:id="@+id/btnOpenLogin"
+        android:background="@drawable/buttons_main"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/white"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="@string/admin"
+        android:textAllCaps="true"
+        android:textSize="18sp" />
+</LinearLayout>

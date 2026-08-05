@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="150dp"
+    android:layout_height="wrap_content"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/txtName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="SPINNER"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:paddingVertical="2dp"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textAlignment="center" />
+</LinearLayout>
+

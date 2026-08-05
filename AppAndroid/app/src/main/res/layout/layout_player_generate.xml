@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/llPlayer"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_player_card"
+    android:paddingVertical="6dp"
+    android:paddingHorizontal="10dp"
+    android:gravity="center_vertical">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginVertical="2.5dp"
+        android:clickable="false"
+        android:focusable="false">
+
+        <View
+            android:id="@+id/icon_background"
+            android:background="@drawable/men_icon_background"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:elevation="1dp"
+            android:clickable="false"
+            android:focusable="false" />
+
+        <ImageView
+            android:id="@+id/imgCategory"
+            android:src="@drawable/men_icon"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:elevation="2dp"
+            android:layout_centerInParent="true"
+            android:clickable="false"
+            android:focusable="false" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:clickable="false"
+        android:focusable="false">
+
+        <TextView
+            android:id="@+id/txtName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/men_color_name_dark"
+            android:text="@string/name"
+            android:textSize="17sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingHorizontal="3dp"
+            android:clickable="false"
+            android:focusable="false" />
+
+        <TextView
+            android:id="@+id/txtSurname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/men_color_name_dark"
+            android:text="@string/surname"
+            android:textSize="17sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingHorizontal="3dp"
+            android:clickable="false"
+            android:focusable="false" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:clickable="false"
+        android:focusable="false">
+
+        <ImageView
+            android:id="@+id/btnAdd"
+            android:contentDescription="@string/add_player"
+            android:src="@drawable/choice_add"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:elevation="3dp"
+            app:tint="@color/list_text_primary"
+            android:clickable="false"
+            android:focusable="false" />
+
+        <ImageView
+            android:id="@+id/btnRemove"
+            android:visibility="gone"
+            android:contentDescription="@string/remove_player"
+            android:src="@drawable/choice_remove"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:elevation="3dp"
+            app:tint="@color/list_text_primary"
+            android:clickable="false"
+            android:focusable="false" />
+    </LinearLayout>
+</LinearLayout>

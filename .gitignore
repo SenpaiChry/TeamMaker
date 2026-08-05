@@ -1,0 +1,45 @@
+# ---------- Android / Gradle ----------
+*.iml
+.gradle/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+local.properties
+.idea/
+!.idea/codeStyles/
+
+# Archivi / collegamenti locali finiti nel progetto
+*.zip
+*.lnk
+
+# ---------- Web (React) ----------
+node_modules/
+dist/
+dist-ssr/
+.vite/
+coverage/
+*.local
+
+# Variabili d'ambiente: si committa solo .env.example
+.env
+.env.*
+!.env.example
+
+# ---------- Firebase ----------
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+database-debug.log*
+
+# ---------- Claude Code ----------
+.claude/settings.local.json
+
+# ---------- Sistema / editor ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+*.swp
+.vscode/*
+!.vscode/extensions.json

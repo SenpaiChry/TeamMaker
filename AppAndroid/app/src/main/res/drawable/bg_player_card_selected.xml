@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Giocatore selezionato per la generazione squadre -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#1A8EBA86" />
+    <corners android:radius="16dp" />
+    <stroke
+        android:width="2dp"
+        android:color="#8EBA86" />
+</shape>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:gravity="center_vertical"
+    android:background="@drawable/bg_list_card">
+
+    <!-- Posizione nel girone -->
+    <TextView
+        android:id="@+id/txtPosition"
+        android:layout_width="26dp"
+        android:layout_height="wrap_content"
+        android:text="@string/zero"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/list_text_muted"
+        android:gravity="center"
+        android:textSize="17sp" />
+
+    <!-- Squadra sopra, giocatori sotto -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="10dp">
+
+        <TextView
+            android:id="@+id/txtTeam"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/team_n"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_primary"
+            android:textAllCaps="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/txtTeamPlayers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/player_1"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="italic"
+            android:textColor="@color/list_text_secondary"
+            android:lineSpacingMultiplier="1.05"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:layout_marginTop="1dp"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtPoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="46dp"
+        android:text="@string/points"
+        android:background="@drawable/bg_points_pill"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold"
+        android:textColor="@color/list_text_primary"
+        android:gravity="center"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="6dp"
+        android:textSize="20sp" />
+</LinearLayout>
