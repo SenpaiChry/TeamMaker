@@ -2,7 +2,6 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { HomeScreen } from '@/features/home/HomeScreen'
 import { GenerateScreen } from '@/features/generate/GenerateScreen'
 import { TeamsScreen } from '@/features/teams/TeamsScreen'
-import { PlayersList } from '@/features/players/PlayersList'
 import { TournamentScreen } from '@/features/tournament/TournamentScreen'
 import { ScorecardScreen } from '@/features/scorecard/ScorecardScreen'
 import { LiveScreen } from '@/features/live/LiveScreen'
@@ -32,7 +31,6 @@ export default function App() {
         <Route path="/" element={<HomeScreen />} />
         <Route path="/genera" element={<GenerateScreen />} />
         <Route path="/squadre" element={<TeamsScreen />} />
-        <Route path="/giocatori" element={<PlayersList />} />
         <Route path="/torneo" element={<TournamentScreen />} />
         <Route path="/segnapunti" element={<ScorecardScreen />} />
         <Route path="/diretta" element={<LiveScreen />} />

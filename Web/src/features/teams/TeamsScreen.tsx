@@ -3,12 +3,12 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { usePlayers } from '@/hooks/usePlayers'
 import { useTeamGenerator } from '@/hooks/useTeamGenerator'
 import { resolveSelected, useSelectionStore } from '@/store/selectionStore'
-import { countFemales, getTeamVote } from '@/domain/team'
-import { getVote } from '@/domain/player'
+import { getTeamVote } from '@/domain/team'
 import { Button } from '@/components/ui/Button'
-import { PlayerName } from '@/components/ui/PlayerName'
+import { TeamCard } from '@/components/ui/TeamCard'
 import { ScreenHeader } from '@/components/ui/ScreenHeader'
 import { SaveTournamentModal } from './SaveTournamentModal'
+import { useAuthStore } from '@/store/authStore'
 
 /**
  * Squadre generate, con la possibilità di rigenerare.
@@ -26,6 +26,7 @@ export function TeamsScreen() {
 
   const { running, result, retries, error, generate, workerCount } = useTeamGenerator()
   const [savingTournament, setSavingTournament] = useState(false)
+  const logged = useAuthStore((s) => s.logged)
 
   const selected = useMemo(() => resolveSelected(players, selectedKeys), [players, selectedKeys])
 
@@ -85,48 +86,27 @@ export function TeamsScreen() {
 
       {!running && teams.length > 0 && (
         <>
-          <p className="mb-3 text-sm text-list-text-muted">
-            Scarto fra la squadra più forte e la più debole:{' '}
-            <span className="font-bold text-list-highlight-text tabular-nums">
-              {String(spread).replace('.', ',')}
-            </span>
-            {result !== null && <> · trovata in {result.retries.toLocaleString('it')} tentativi</>}
-          </p>
+          {/*
+            Scarto e voti solo per chi gestisce. In ActivityTeams il riquadro
+            della differenza e il tasto di salvataggio sono `View.GONE` quando
+            la generazione non è per un torneo, e PlayerTeamsAdapter nasconde
+            il voto negli stessi casi: sono numeri che servono a chi compone le
+            squadre, non a chi le gioca.
+          */}
+          {logged && (
+            <p className="mb-3 text-sm text-list-text-muted">
+              Scarto fra la squadra più forte e la più debole:{' '}
+              <span className="font-bold text-list-highlight-text tabular-nums">
+                {String(spread).replace('.', ',')}
+              </span>
+              {result !== null && <> · trovata in {result.retries.toLocaleString('it')} tentativi</>}
+            </p>
+          )}
 
-          <ul className="flex flex-col gap-3">
+          <ul className="flex flex-col gap-2">
             {teams.map((team, i) => (
-              <li
-                key={team.key}
-                className="rounded-lg border border-list-card-border bg-list-card p-3"
-              >
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <h2 className="font-bold tracking-wide text-list-highlight-text">
-                    SQUADRA {i + 1}
-                  </h2>
-                  <div className="flex shrink-0 items-center gap-2">
-                    {countFemales(team) > 0 && (
-                      <span className="text-sm text-women-dark" title="giocatrici">
-                        ♀&nbsp;{countFemales(team)}
-                      </span>
-                    )}
-                    <span
-                      className="rounded-full bg-score-panel px-3 py-1 text-sm font-bold tabular-nums"
-                      title="voto totale della squadra"
-                    >
-                      {String(getTeamVote(team)).replace('.', ',')}
-                    </span>
-                  </div>
-                </div>
-                <ul className="flex flex-col divide-y divide-list-card-border">
-                  {team.players.map((player) => (
-                    <li key={player.key} className="flex items-center justify-between py-1.5">
-                      <PlayerName player={player} showNickname={false} />
-                      <span className="text-sm tabular-nums text-list-text-muted">
-                        {getVote(player)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+              <li key={team.key}>
+                <TeamCard team={team} teamNumber={i + 1} showVote={logged} showBracket={false} />
               </li>
             ))}
           </ul>
@@ -146,14 +126,18 @@ export function TeamsScreen() {
           >
             RIGENERA
           </Button>
-          <Button
-            variant="confirm"
-            disabled={running || teams.length === 0}
-            onClick={() => setSavingTournament(true)}
-            className="grow"
-          >
-            SALVA COME TORNEO
-          </Button>
+          {/* Salvare come torneo è un'azione di gestione: in Android il tasto
+              esiste solo sul percorso che parte dalla gestione tornei. */}
+          {logged && (
+            <Button
+              variant="confirm"
+              disabled={running || teams.length === 0}
+              onClick={() => setSavingTournament(true)}
+              className="grow"
+            >
+              Salva come torneo
+            </Button>
+          )}
         </div>
       </div>
 
