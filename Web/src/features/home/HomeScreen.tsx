@@ -1,65 +1,55 @@
 import { Link } from 'react-router-dom'
-import { usePlayers } from '@/hooks/usePlayers'
 import { useLiveMatch } from '@/hooks/useLiveMatch'
+import { useAuthStore } from '@/store/authStore'
 
 /**
- * Schermata iniziale. Porta MainActivity, compreso il tasto DIRETTA che
- * compare solo quando c'è davvero una partita trasmessa.
+ * Schermata iniziale, ricalcata su activity_main.xml: logo, colonna di tasti
+ * blu larghi 250dp e il tasto LIVE che compare pulsando solo quando c'è
+ * davvero una partita in corso.
+ *
+ * Come nell'originale l'ultimo tasto porta all'accesso finché non si è entrati,
+ * e alla gestione una volta dentro.
  */
 export function HomeScreen() {
-  const { players, loading } = usePlayers()
   const { isLive } = useLiveMatch()
-  const activeCount = players.filter((p) => p.isActive).length
+  const logged = useAuthStore((s) => s.logged)
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-2xl flex-col justify-center p-6">
-      <h1 className="mb-2 text-center text-4xl font-black tracking-widest text-brand-orange">
-        TEAM MAKER
-      </h1>
-      <p className="mb-8 text-center text-sm text-list-text-muted">
-        {loading ? 'Caricamento…' : `${activeCount} giocatori attivi`}
-      </p>
+    <div className="flex min-h-dvh flex-col items-center justify-center px-9 py-10">
+      <img
+        src="/icon-512.png"
+        alt="Team Maker"
+        className="mb-10 size-[250px] max-w-[70vw] object-contain"
+      />
 
-      <nav className="flex flex-col gap-3">
-        {isLive && (
-          <Link
-            to="/diretta"
-            className="flex animate-pulse items-center justify-between rounded-xl border
-                       border-action-danger bg-action-danger/20 px-5 py-4 text-lg
-                       font-bold tracking-wide text-white"
-          >
-            PARTITA IN DIRETTA
-            <span aria-hidden>→</span>
-          </Link>
-        )}
-        <HomeLink to="/genera" label="GENERA SQUADRE" />
-        <HomeLink to="/giocatori" label="GIOCATORI" />
-        <HomeLink to="/torneo" label="TORNEO" />
-        <HomeLink to="/segnapunti" label="SEGNAPUNTI" />
-        <HomeLink to="/admin" label="GESTIONE" />
+      {isLive && (
+        <Link
+          to="/diretta"
+          className="app-title mb-5 w-[250px] max-w-full animate-pulse rounded-[20px]
+                     bg-action-danger py-2.5 text-center text-lg text-white"
+        >
+          ● Live
+        </Link>
+      )}
+
+      <nav className="flex w-[250px] max-w-full flex-col gap-5">
+        <HomeButton to="/genera" label="Crea squadre" />
+        <HomeButton to="/torneo" label="Torneo" />
+        <HomeButton to="/segnapunti" label="Segnapunti" />
+        <HomeButton to={logged ? '/admin' : '/login'} label="Admin" />
       </nav>
     </div>
   )
 }
 
-function HomeLink({ to, label, hint }: { to?: string; label: string; hint?: string }) {
-  const className =
-    'flex items-center justify-between rounded-xl border border-list-card-border ' +
-    'bg-list-card px-5 py-4 text-lg font-bold tracking-wide transition'
-
-  if (to === undefined) {
-    return (
-      <span className={`${className} cursor-not-allowed opacity-35`}>
-        {label}
-        {hint !== undefined && <span className="text-xs font-normal">{hint}</span>}
-      </span>
-    )
-  }
-
+function HomeButton({ to, label }: { to: string; label: string }) {
   return (
-    <Link to={to} className={`${className} hover:border-brand-blue hover:bg-score-panel`}>
+    <Link
+      to={to}
+      className="app-title rounded-[11px] bg-brand-blue py-2.5 text-center text-lg
+                 text-white transition hover:bg-brand-blue-pressed active:bg-brand-blue-pressed"
+    >
       {label}
-      <span aria-hidden>→</span>
     </Link>
   )
 }

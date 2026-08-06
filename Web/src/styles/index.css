@@ -1,6 +1,28 @@
 @import 'tailwindcss';
 
 /**
+ * Font dell'app Android, presi da res/font. `helvetica_black` è quello usato
+ * ovunque nell'originale, sempre in bold + italic: è la voce dell'app.
+ *
+ * ⚠️ I .ttf originali non sono utilizzabili così come sono: `helvetica_black`
+ * ha la tabella `post` malformata e il browser lo rifiuta in silenzio,
+ * ripiegando sul font di sistema. Sono stati ricostruiti in WOFF2 con
+ * fontTools, che sistema le tabelle e pesa un quarto.
+ */
+/*
+ * Un solo file: nei layout Android `helvetica_black` compare 305 volte,
+ * mentre `helvetica` e `helvetica_bold` non sono referenziati da nessuna
+ * parte. Dichiararlo per tutti i pesi evita che il browser lo ingrassi da
+ * solo, e fa risparmiare 200 KB rispetto a caricare tutte e tre le varianti.
+ */
+@font-face {
+  font-family: 'Helvetica App';
+  src: url('./fonts/helvetica_black.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/**
  * Design token estratti da AppAndroid/app/src/main/res/values/colors.xml.
  * I nomi seguono le sezioni del file originale, così il confronto con l'app
  * Android resta immediato quando si porta una schermata.
@@ -9,6 +31,8 @@
   /* Brand */
   --color-brand-orange: #fe7b00;
   --color-brand-blue: #27a9c5;
+  /* button_main_pressed */
+  --color-brand-blue-pressed: #3eb6d0;
 
   /* Sfondo (l'app Android usa un tema scuro) */
   --color-surface: #666666;
@@ -60,6 +84,9 @@
   --color-match-meta: #8fa6b0;
   --color-points-pill: #ffffff22;
   --color-icon-action: #ffffff18;
+  --color-search-box: #ffffff1a;
+  --color-search-box-border: #ffffff33;
+  --color-search-hint: #a6a6a6;
   --color-player-archived: #ffffff0d;
   --color-player-archived-border: #ffffff40;
 
@@ -82,6 +109,16 @@ body {
   );
   background-attachment: fixed;
   color: var(--color-list-text);
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Helvetica App', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+/**
+ * Stile dei titoli e dei tasti dell'app Android: helvetica black, corsivo,
+ * maiuscolo. Nell'originale è `textStyle="bold|italic"` con textAllCaps.
+ */
+.app-title {
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
 }

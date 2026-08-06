@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react'
 
-/** Intestazione con il tasto indietro, come la barra in cima alle Activity. */
+/**
+ * Intestazione con il tasto indietro, come la barra in cima alle Activity:
+ * quadrato blu da 42dp con la freccia, titolo in helvetica black corsivo.
+ */
 export function ScreenHeader({
   title,
   onBack,
@@ -17,13 +20,13 @@ export function ScreenHeader({
           type="button"
           onClick={onBack}
           aria-label="Indietro"
-          className="grid size-9 shrink-0 place-items-center rounded-lg border
-                     border-list-card-border bg-list-card text-lg hover:bg-score-panel"
+          className="grid size-[42px] shrink-0 place-items-center rounded-[11px] bg-brand-blue
+                     text-xl text-white transition hover:bg-brand-blue-pressed"
         >
           ←
         </button>
       )}
-      <h1 className="grow truncate text-xl font-bold tracking-wide">{title}</h1>
+      <h1 className="app-title grow truncate text-2xl">{title}</h1>
       {right}
     </header>
   )

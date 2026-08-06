@@ -20,6 +20,7 @@ dist-ssr/
 .vite/
 coverage/
 *.local
+*.tsbuildinfo
 
 # Variabili d'ambiente: si committano solo l'esempio e la configurazione di
 # pubblicazione, che non contiene segreti. Restano fuori .env e .env.local.
