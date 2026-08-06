@@ -40,6 +40,19 @@ export interface GenerateOptions {
    * istanze diverse esplorano lo spazio delle soluzioni in modo diverso.
    */
   threadIndex?: number
+  /**
+   * Chiamata ogni `progressEvery` tentativi. Serve a mostrare un progresso
+   * reale: a seconda del roster la ricerca finisce al primo tentativo o dopo
+   * qualche migliaio.
+   */
+  onProgress?: (retry: number) => void
+  /** Ogni quanti tentativi chiamare `onProgress`. */
+  progressEvery?: number
+  /**
+   * Consultata insieme a `onProgress`: se restituisce `true` la ricerca si
+   * interrompe. Permette di fermare i worker quando un altro ha già vinto.
+   */
+  shouldStop?: () => boolean
 }
 
 export interface GenerationResult {
@@ -114,6 +127,9 @@ export function searchBalancedTeams(
     maxRetries = DEFAULT_MAX_RETRIES,
     seed = Date.now(),
     threadIndex = 0,
+    onProgress,
+    progressEvery = 1_000,
+    shouldStop,
   } = options
 
   const nPlayers = players.length
@@ -138,6 +154,11 @@ export function searchBalancedTeams(
   const teamFemales = new Int32Array(nTeams)
 
   for (let retry = 0; retry < maxRetries; retry++) {
+    if (retry > 0 && retry % progressEvery === 0) {
+      onProgress?.(retry)
+      if (shouldStop?.() === true) return null
+    }
+
     // La perturbazione è cumulativa: `indices` non viene mai riportato
     // all'ordine iniziale, esattamente come nel Java.
     perturb(indices, rng, 1 + (retry % 4) + threadIndex)
