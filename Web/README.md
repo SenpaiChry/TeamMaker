@@ -57,8 +57,8 @@ vivono in `src/data/mappers.ts` e da nessun'altra parte.
 
 - ✅ **Fase 0** — scaffolding, Firebase in sola lettura, design token
 - ✅ **Fase 1** — dominio completo (voto, generatore squadre, calendario, classifica) con i test
-- ⬜ **Fase 2** — schermata giocatori completa
-- ⬜ **Fase 3** — generazione squadre + Web Worker
+- ✅ **Fase 2** — elenco giocatori con ricerca e scheda statistiche
+- ✅ **Fase 3** — selezione, generazione squadre su Web Worker, rigenerazione
 - ⬜ **Fase 4** — torneo: classifica, gironi, calendario
 - ⬜ **Fase 5** — segnapunti e live
 - ⬜ **Fase 6** — admin e autenticazione
