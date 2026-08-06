@@ -82,6 +82,9 @@ export function TournamentsAdminScreen() {
                   </SmallButton>
                 )}
                 <SmallButton onClick={() => setEditing(tournament)}>rinomina</SmallButton>
+                <SmallButton onClick={() => navigate(`/admin/tornei/${tournament.key}`)}>
+                  squadre e partite
+                </SmallButton>
                 <SmallButton onClick={() => setCalendarFor(tournament)}>calendario</SmallButton>
                 {tournament.matches.length > 0 && (
                   <SmallButton onClick={() => setToClearCalendar(tournament)}>

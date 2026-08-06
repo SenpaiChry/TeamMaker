@@ -56,6 +56,18 @@ export async function replaceMatches(
   await set(dbRef(`tournaments/${tournamentKey}/matches`), node)
 }
 
+/** Aggiunge una singola partita. Porta addNewMatch. */
+export async function addMatch(
+  tournamentKey: string,
+  match: Omit<Match, 'key'>,
+): Promise<string> {
+  const ref = push(dbRef(`tournaments/${tournamentKey}/matches`))
+  if (ref.key === null) throw new Error('Firebase non ha restituito una chiave per la partita.')
+
+  await set(ref, serializeMatch(match))
+  return ref.key
+}
+
 export async function deleteMatch(tournamentKey: string, matchKey: string): Promise<void> {
   await remove(dbRef(`tournaments/${tournamentKey}/matches/${matchKey}`))
 }

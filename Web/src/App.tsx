@@ -11,6 +11,7 @@ import { LoginScreen } from '@/features/admin/LoginScreen'
 import { AdminScreen } from '@/features/admin/AdminScreen'
 import { PlayersAdminScreen } from '@/features/admin/PlayersAdminScreen'
 import { TournamentsAdminScreen } from '@/features/admin/TournamentsAdminScreen'
+import { TournamentDetailScreen } from '@/features/admin/TournamentDetailScreen'
 import { IS_PRODUCTION_DATA } from '@/data/firebase'
 
 export default function App() {
@@ -57,6 +58,14 @@ export default function App() {
           element={
             <AdminGate>
               <TournamentsAdminScreen />
+            </AdminGate>
+          }
+        />
+        <Route
+          path="/admin/tornei/:key"
+          element={
+            <AdminGate>
+              <TournamentDetailScreen />
             </AdminGate>
           }
         />

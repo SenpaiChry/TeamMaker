@@ -1,34 +1,40 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayers } from '@/hooks/usePlayers'
-import { byNameAsc, getVote, matchesQuery } from '@/domain/player'
+import { getVote, matchesQuery } from '@/domain/player'
 import type { Player } from '@/domain/models'
 import { deletePlayer, setPlayerActive } from '@/data/playersRepo'
 import { SearchField } from '@/components/ui/SearchField'
 import { ScreenHeader } from '@/components/ui/ScreenHeader'
-import { PlayerName } from '@/components/ui/PlayerName'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { PlayerStatsModal } from '@/features/players/PlayerStatsModal'
 import { PlayerEditModal } from './PlayerEditModal'
+import { PlayerAdminRow } from './PlayerAdminRow'
 
 /**
- * Anagrafica giocatori: creazione, modifica, archiviazione, eliminazione.
- * Porta ActivityAdmin + PlayerAdminAdapter.
+ * Anagrafica giocatori. Porta ActivityAdmin + PlayerAdminAdapter.
+ *
+ * Come nell'originale attivi e archiviati stanno in UNA sola lista ordinata
+ * per voto decrescente: gli archiviati si riconoscono perché sono spenti.
+ * Serviva a vedere subito dove si colloca un giocatore rispetto agli altri,
+ * cosa che due schede separate rendevano impossibile.
  */
 export function PlayersAdminScreen() {
   const navigate = useNavigate()
   const { players, loading } = usePlayers()
   const [query, setQuery] = useState('')
-  const [showArchived, setShowArchived] = useState(false)
+
   const [editing, setEditing] = useState<Player | null>(null)
   const [editorOpen, setEditorOpen] = useState(false)
+  const [inspecting, setInspecting] = useState<Player | null>(null)
   const [toDelete, setToDelete] = useState<Player | null>(null)
+  const [toArchive, setToArchive] = useState<Player | null>(null)
 
   const visible = useMemo(() => {
-    const byState = players.filter((p) => p.isActive !== showArchived)
-    const filtered = query.trim().length > 0 ? byState.filter((p) => matchesQuery(p, query)) : byState
-    return [...filtered].sort(byNameAsc)
-  }, [players, query, showArchived])
+    const filtered = query.trim().length > 0 ? players.filter((p) => matchesQuery(p, query)) : players
+    return [...filtered].sort((a, b) => getVote(b) - getVote(a))
+  }, [players, query])
 
   const archivedCount = players.filter((p) => !p.isActive).length
 
@@ -36,62 +42,32 @@ export function PlayersAdminScreen() {
 
   return (
     <div className="mx-auto max-w-2xl p-4 pb-28">
-      <ScreenHeader title="GIOCATORI" onBack={() => navigate('/admin')} />
+      <ScreenHeader title="Giocatori" onBack={() => navigate('/admin')} />
 
-      <div className="mb-3 grid grid-cols-2 gap-1 rounded-lg border border-list-card-border bg-list-card p-1">
-        <TabButton active={!showArchived} onClick={() => setShowArchived(false)}>
-          ATTIVI ({players.length - archivedCount})
-        </TabButton>
-        <TabButton active={showArchived} onClick={() => setShowArchived(true)}>
-          ARCHIVIATI ({archivedCount})
-        </TabButton>
-      </div>
-
-      <div className="mb-4">
+      <div className="mb-3">
         <SearchField value={query} onChange={setQuery} />
       </div>
+
+      <p className="mb-3 text-sm text-list-text-muted">
+        {players.length} giocatori · {archivedCount} archiviati · ordinati per voto
+      </p>
 
       {visible.length === 0 ? (
         <p className="text-list-text-muted">Nessun giocatore.</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {visible.map((player) => (
-            <li
-              key={player.key}
-              className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${
-                player.isActive
-                  ? 'border-list-card-border bg-list-card'
-                  : 'border-player-archived-border bg-player-archived'
-              }`}
-            >
-              <span className="min-w-0 grow">
-                <PlayerName player={player} />
-              </span>
-
-              <span className="shrink-0 rounded-full bg-score-panel px-2 py-1 text-sm font-bold tabular-nums">
-                {getVote(player)}
-              </span>
-
-              <IconButton
-                label={`Modifica ${player.name}`}
-                onClick={() => {
+            <li key={player.key}>
+              <PlayerAdminRow
+                player={player}
+                onEdit={() => {
                   setEditing(player)
                   setEditorOpen(true)
                 }}
-              >
-                ✎
-              </IconButton>
-
-              <IconButton
-                label={player.isActive ? `Archivia ${player.name}` : `Riattiva ${player.name}`}
-                onClick={() => void setPlayerActive(player.key, !player.isActive)}
-              >
-                {player.isActive ? '↓' : '↑'}
-              </IconButton>
-
-              <IconButton label={`Elimina ${player.name}`} onClick={() => setToDelete(player)} danger>
-                ✕
-              </IconButton>
+                onToggleActive={() => setToArchive(player)}
+                onDelete={() => setToDelete(player)}
+                onInfo={() => setInspecting(player)}
+              />
             </li>
           ))}
         </ul>
@@ -106,18 +82,39 @@ export function PlayersAdminScreen() {
             }}
             className="w-full"
           >
-            NUOVO GIOCATORE
+            Nuovo giocatore
           </Button>
         </div>
       </div>
 
       <PlayerEditModal player={editing} open={editorOpen} onClose={() => setEditorOpen(false)} />
+      <PlayerStatsModal player={inspecting} onClose={() => setInspecting(null)} />
+
+      <ConfirmDialog
+        open={toArchive !== null}
+        title={
+          toArchive?.isActive === true
+            ? `Archiviare ${toArchive.name}?`
+            : `Riattivare ${toArchive?.name ?? ''}?`
+        }
+        message={
+          toArchive?.isActive === true
+            ? 'Non comparirà più fra i giocatori selezionabili, ma resta nei tornei passati.'
+            : 'Tornerà selezionabile per la generazione delle squadre.'
+        }
+        confirmLabel={toArchive?.isActive === true ? 'Archivia' : 'Riattiva'}
+        onConfirm={() => {
+          if (toArchive !== null) void setPlayerActive(toArchive.key, !toArchive.isActive)
+          setToArchive(null)
+        }}
+        onCancel={() => setToArchive(null)}
+      />
 
       <ConfirmDialog
         open={toDelete !== null}
         title={`Eliminare ${toDelete?.name ?? ''}?`}
         message="L'eliminazione è definitiva. I tornei passati resteranno con una squadra incompleta: se il giocatore non gioca più, conviene archiviarlo."
-        confirmLabel="ELIMINA"
+        confirmLabel="Elimina"
         onConfirm={() => {
           if (toDelete !== null) void deletePlayer(toDelete.key)
           setToDelete(null)
@@ -125,52 +122,5 @@ export function PlayersAdminScreen() {
         onCancel={() => setToDelete(null)}
       />
     </div>
-  )
-}
-
-function TabButton({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded px-2 py-2 text-sm font-bold tracking-wide transition ${
-        active ? 'bg-action-selected text-white' : 'text-list-text-secondary hover:text-list-text'
-      }`}
-    >
-      {children}
-    </button>
-  )
-}
-
-function IconButton({
-  label,
-  onClick,
-  danger = false,
-  children,
-}: {
-  label: string
-  onClick: () => void
-  danger?: boolean
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      title={label}
-      className={`grid size-8 shrink-0 place-items-center rounded-lg bg-icon-action
-                  hover:brightness-150 ${danger ? 'text-action-delete' : 'text-list-text'}`}
-    >
-      {children}
-    </button>
   )
 }

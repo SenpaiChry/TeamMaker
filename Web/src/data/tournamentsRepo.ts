@@ -109,3 +109,38 @@ export async function saveTeamBrackets(
 export async function updateBracketCount(tournamentKey: string, count: number): Promise<void> {
   await set(dbRef(`tournaments/${tournamentKey}/nBracket`), count)
 }
+
+/** Aggiunge una squadra a un torneo. Porta addTeamToTournament. */
+export async function addTeamToTournament(
+  tournamentKey: string,
+  players: Player[],
+): Promise<string> {
+  const ref = push(dbRef(`tournaments/${tournamentKey}/teams`))
+  if (ref.key === null) throw new Error('Firebase non ha restituito una chiave per la squadra.')
+
+  await set(ref, serializeTeam({ bracket: '', players }))
+  return ref.key
+}
+
+/**
+ * Sostituisce i giocatori di una squadra.
+ *
+ * ⚠️ Riscrive l'intero nodo invece di aggiornarlo: se la squadra passa da 4 a
+ * 3 giocatori, un update lascerebbe `player4` orfano e la squadra risulterebbe
+ * ancora di quattro. Il girone assegnato va quindi riscritto insieme.
+ */
+export async function updateTeamPlayers(
+  tournamentKey: string,
+  team: Team,
+  players: Player[],
+): Promise<void> {
+  await set(
+    dbRef(`tournaments/${tournamentKey}/teams/${team.key}`),
+    serializeTeam({ bracket: team.bracket, players }),
+  )
+}
+
+/** Elimina una squadra dal torneo. Porta deleteTeam. */
+export async function deleteTeam(tournamentKey: string, teamKey: string): Promise<void> {
+  await remove(dbRef(`tournaments/${tournamentKey}/teams/${teamKey}`))
+}
