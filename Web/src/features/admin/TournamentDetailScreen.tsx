@@ -3,8 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useTournaments } from '@/hooks/useTournaments'
 import { usePlayers } from '@/hooks/usePlayers'
 import type { Match, Team } from '@/domain/models'
-import { formatFullNames, getTeamNumber, getTeamVote } from '@/domain/team'
-import { formatPhase } from '@/domain/phases'
+import { getTeamNumber } from '@/domain/team'
 import { deleteTeam } from '@/data/tournamentsRepo'
 import { deleteAllMatches, deleteMatch } from '@/data/matchesRepo'
 import { ScreenHeader } from '@/components/ui/ScreenHeader'
@@ -13,11 +12,17 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { TeamEditModal } from './TeamEditModal'
 import { MatchEditModal } from './MatchEditModal'
 import { CalendarModal } from './CalendarModal'
+import { TeamManageCard } from './TeamManageCard'
+import { MatchManageRow } from './MatchManageRow'
 
 /**
- * Gestione di un singolo torneo: squadre e calendario.
+ * Gestione di un torneo: squadre e calendario.
  * Porta TournamentActivityManageTeams e TournamentActivityManageMatches, che
- * nell'app Android sono due schermate raggiunte dalla stessa modale.
+ * nell'app Android sono due schermate distinte raggiunte dalla stessa modale.
+ *
+ * Come nell'originale la generazione del calendario compare solo quando il
+ * torneo non ne ha uno: per rifarlo bisogna prima azzerarlo, così non si
+ * sovrascrivono per sbaglio partite con risultati già inseriti.
  */
 
 type Tab = 'squadre' | 'partite'
@@ -54,6 +59,8 @@ export function TournamentDetailScreen() {
     )
   }
 
+  const hasCalendar = tournament.matches.length > 0
+
   return (
     <div className="mx-auto max-w-2xl p-4 pb-28">
       <ScreenHeader
@@ -71,98 +78,65 @@ export function TournamentDetailScreen() {
       </div>
 
       {tab === 'squadre' && (
-        <ul className="flex flex-col gap-2">
-          {tournament.teams.length === 0 && (
+        <>
+          {tournament.teams.length === 0 ? (
             <p className="text-list-text-muted">Il torneo non ha ancora squadre.</p>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {tournament.teams.map((team) => (
+                <li key={team.key}>
+                  <TeamManageCard
+                    team={team}
+                    teamNumber={getTeamNumber(tournament.teams, team.key)}
+                    onEdit={() => {
+                      setEditingTeam(team)
+                      setTeamModalOpen(true)
+                    }}
+                    onDelete={() => setTeamToDelete(team)}
+                  />
+                </li>
+              ))}
+            </ul>
           )}
-          {tournament.teams.map((team) => (
-            <li
-              key={team.key}
-              className="flex items-center gap-2 rounded-[14px] border border-list-card-border bg-list-card p-2.5"
-            >
-              <span className="min-w-0 grow">
-                <span className="app-title block text-base">
-                  Team {getTeamNumber(tournament.teams, team.key)}
-                  {team.bracket.length > 0 && (
-                    <span className="ml-2 text-sm text-list-text-muted">girone {team.bracket}</span>
-                  )}
-                </span>
-                <span className="block truncate text-[13px] italic text-list-text-secondary">
-                  {formatFullNames(team)}
-                </span>
-              </span>
-
-              <span className="shrink-0 rounded-xl bg-points-pill px-2.5 py-1 text-sm font-bold">
-                {String(getTeamVote(team)).replace('.', ',')}
-              </span>
-
-              <SmallButton
-                onClick={() => {
-                  setEditingTeam(team)
-                  setTeamModalOpen(true)
-                }}
-              >
-                modifica
-              </SmallButton>
-              <SmallButton onClick={() => setTeamToDelete(team)} danger>
-                elimina
-              </SmallButton>
-            </li>
-          ))}
-        </ul>
+        </>
       )}
 
       {tab === 'partite' && (
         <>
           <div className="mb-3 flex flex-wrap gap-2">
-            <SmallButton onClick={() => setCalendarOpen(true)}>genera calendario</SmallButton>
-            {tournament.matches.length > 0 && (
+            {hasCalendar ? (
               <SmallButton onClick={() => setClearingCalendar(true)} danger>
                 azzera calendario
               </SmallButton>
+            ) : (
+              <SmallButton onClick={() => setCalendarOpen(true)}>genera calendario</SmallButton>
             )}
           </div>
 
-          <ul className="flex flex-col gap-2">
-            {tournament.matches.length === 0 && (
-              <p className="text-list-text-muted">Nessuna partita in calendario.</p>
-            )}
-            {tournament.matches.map((match) => (
-              <li
-                key={match.key}
-                className="flex items-center gap-2 rounded-[14px] border border-list-card-border bg-list-card p-2.5"
-              >
-                <span className="min-w-0 grow">
-                  <span className="app-title block text-[13px] text-match-meta">
-                    {formatPhase(match.type)} · giorno {match.day} · {match.time}
-                  </span>
-                  <span className="flex items-baseline gap-2 text-[15px]">
-                    <span className="app-title truncate">
-                      Team {getTeamNumber(tournament.teams, match.keyTeam1)}
-                    </span>
-                    <span className="shrink-0 font-bold tabular-nums">
-                      {match.points1}–{match.points2}
-                    </span>
-                    <span className="app-title truncate">
-                      Team {getTeamNumber(tournament.teams, match.keyTeam2)}
-                    </span>
-                  </span>
-                </span>
-
-                <SmallButton
-                  onClick={() => {
-                    setEditingMatch(match)
-                    setMatchModalOpen(true)
-                  }}
-                >
-                  modifica
-                </SmallButton>
-                <SmallButton onClick={() => setMatchToDelete(match)} danger>
-                  elimina
-                </SmallButton>
-              </li>
-            ))}
-          </ul>
+          {!hasCalendar ? (
+            <p className="text-list-text-muted">
+              Nessuna partita. Genera il calendario, oppure aggiungi le partite una a una.
+            </p>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {tournament.matches.map((match) => (
+                <li key={match.key}>
+                  <MatchManageRow
+                    match={match}
+                    teams={tournament.teams}
+                    onPlay={() =>
+                      navigate(`/segnapunti?torneo=${tournament.key}&partita=${match.key}`)
+                    }
+                    onEdit={() => {
+                      setEditingMatch(match)
+                      setMatchModalOpen(true)
+                    }}
+                    onDelete={() => setMatchToDelete(match)}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
         </>
       )}
 
@@ -208,7 +182,7 @@ export function TournamentDetailScreen() {
 
       <ConfirmDialog
         open={teamToDelete !== null}
-        title="Eliminare la squadra?"
+        title={`Eliminare Team ${teamToDelete === null ? '' : getTeamNumber(tournament.teams, teamToDelete.key)}?`}
         message="Le partite che la citano resteranno in calendario, ma senza avversario riconoscibile."
         confirmLabel="Elimina"
         onConfirm={() => {
@@ -233,7 +207,7 @@ export function TournamentDetailScreen() {
       <ConfirmDialog
         open={clearingCalendar}
         title="Azzerare il calendario?"
-        message="Tutte le partite e i gironi verranno cancellati. Le squadre restano."
+        message="Tutte le partite e i gironi verranno cancellati, risultati compresi. Le squadre restano."
         confirmLabel="Azzera"
         onConfirm={() => {
           void deleteAllMatches(

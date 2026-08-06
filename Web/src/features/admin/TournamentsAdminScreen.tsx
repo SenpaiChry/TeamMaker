@@ -8,25 +8,22 @@ import {
   setActiveTournament,
   updateTournamentDetails,
 } from '@/data/tournamentsRepo'
-import { deleteAllMatches } from '@/data/matchesRepo'
 import { ScreenHeader } from '@/components/ui/ScreenHeader'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Modal } from '@/components/ui/Modal'
-import { CalendarModal } from './CalendarModal'
 
 /**
- * Gestione dei tornei: attivazione, rinomina, calendario, eliminazione.
+ * Elenco dei tornei: attivazione, rinomina, eliminazione.
  * Porta TournamentActivityManageTournaments + ActivityPopUpManageTournament.
+ * Squadre e calendario stanno nel dettaglio del singolo torneo.
  */
 export function TournamentsAdminScreen() {
   const navigate = useNavigate()
   const { tournaments, loading } = useTournaments()
 
   const [editing, setEditing] = useState<Tournament | null>(null)
-  const [calendarFor, setCalendarFor] = useState<Tournament | null>(null)
   const [toDelete, setToDelete] = useState<Tournament | null>(null)
-  const [toClearCalendar, setToClearCalendar] = useState<Tournament | null>(null)
 
   if (loading) return <p className="p-6 text-list-text-secondary">Caricamento tornei…</p>
 
@@ -82,15 +79,12 @@ export function TournamentsAdminScreen() {
                   </SmallButton>
                 )}
                 <SmallButton onClick={() => setEditing(tournament)}>rinomina</SmallButton>
+                {/* Squadre e calendario si gestiscono dal dettaglio: tenere qui
+                    anche i tasti del calendario significava averli in due posti
+                    con regole diverse su quando compaiono. */}
                 <SmallButton onClick={() => navigate(`/admin/tornei/${tournament.key}`)}>
                   squadre e partite
                 </SmallButton>
-                <SmallButton onClick={() => setCalendarFor(tournament)}>calendario</SmallButton>
-                {tournament.matches.length > 0 && (
-                  <SmallButton onClick={() => setToClearCalendar(tournament)}>
-                    azzera calendario
-                  </SmallButton>
-                )}
                 <SmallButton onClick={() => setToDelete(tournament)} danger>
                   elimina
                 </SmallButton>
@@ -104,36 +98,11 @@ export function TournamentsAdminScreen() {
         <RenameModal tournament={editing} onClose={() => setEditing(null)} />
       )}
 
-      {calendarFor !== null && (
-        <CalendarModal
-          tournament={calendarFor}
-          open
-          onClose={() => setCalendarFor(null)}
-        />
-      )}
-
-      <ConfirmDialog
-        open={toClearCalendar !== null}
-        title="Azzerare il calendario?"
-        message="Tutte le partite e i gironi verranno cancellati. Le squadre restano."
-        confirmLabel="AZZERA"
-        onConfirm={() => {
-          if (toClearCalendar !== null) {
-            void deleteAllMatches(
-              toClearCalendar.key,
-              toClearCalendar.teams.map((t) => t.key),
-            )
-          }
-          setToClearCalendar(null)
-        }}
-        onCancel={() => setToClearCalendar(null)}
-      />
-
       <ConfirmDialog
         open={toDelete !== null}
         title={`Eliminare "${toDelete?.name ?? ''}"?`}
         message="Squadre, calendario e risultati verranno cancellati definitivamente."
-        confirmLabel="ELIMINA"
+        confirmLabel="Elimina"
         onConfirm={() => {
           if (toDelete !== null) void deleteTournament(toDelete.key)
           setToDelete(null)
