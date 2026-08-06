@@ -36,7 +36,7 @@ export function HomeScreen() {
         <HomeLink to="/giocatori" label="GIOCATORI" />
         <HomeLink to="/torneo" label="TORNEO" />
         <HomeLink to="/segnapunti" label="SEGNAPUNTI" />
-        <HomeLink label="ADMIN" hint="fase 6" />
+        <HomeLink to="/admin" label="GESTIONE" />
       </nav>
     </div>
   )

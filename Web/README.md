@@ -61,5 +61,17 @@ vivono in `src/data/mappers.ts` e da nessun'altra parte.
 - ✅ **Fase 3** — selezione, generazione squadre su Web Worker, rigenerazione
 - ✅ **Fase 4** — torneo: squadre, calendario e classifica (sola lettura)
 - ✅ **Fase 5** — segnapunti, diretta e salvataggio del risultato
-- ⬜ **Fase 6** — admin e autenticazione
+- ✅ **Fase 6** — gestione giocatori, tornei e calendario
 - ⬜ **Fase 7** — PWA, i18n, deploy
+
+## Sicurezza
+
+Lo sbarramento dell'area di gestione (`VITE_ADMIN_PASSWORD` in `.env.local`) è
+una **comodità, non una protezione**: la password viaggia nel bundle JavaScript.
+Vale lo stesso per l'app Android, dove è scritta in chiaro in `Constants.java`.
+
+L'unica protezione reale del database sono le sue **regole**, da configurare
+nella console Firebase. Un punto di partenza è in
+[`../database.rules.json`](../database.rules.json), con l'avvertenza che
+attivarle oggi bloccherebbe anche le scritture dell'app Android, che scrive
+senza autenticarsi.

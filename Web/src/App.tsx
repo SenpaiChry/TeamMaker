@@ -6,6 +6,10 @@ import { PlayersList } from '@/features/players/PlayersList'
 import { TournamentScreen } from '@/features/tournament/TournamentScreen'
 import { ScorecardScreen } from '@/features/scorecard/ScorecardScreen'
 import { LiveScreen } from '@/features/live/LiveScreen'
+import { AdminGate } from '@/features/admin/AdminGate'
+import { AdminScreen } from '@/features/admin/AdminScreen'
+import { PlayersAdminScreen } from '@/features/admin/PlayersAdminScreen'
+import { TournamentsAdminScreen } from '@/features/admin/TournamentsAdminScreen'
 import { IS_PRODUCTION_DATA, DB_ROOT } from '@/data/firebase'
 
 export default function App() {
@@ -24,6 +28,30 @@ export default function App() {
         <Route path="/torneo" element={<TournamentScreen />} />
         <Route path="/segnapunti" element={<ScorecardScreen />} />
         <Route path="/diretta" element={<LiveScreen />} />
+        <Route
+          path="/admin"
+          element={
+            <AdminGate>
+              <AdminScreen />
+            </AdminGate>
+          }
+        />
+        <Route
+          path="/admin/giocatori"
+          element={
+            <AdminGate>
+              <PlayersAdminScreen />
+            </AdminGate>
+          }
+        />
+        <Route
+          path="/admin/tornei"
+          element={
+            <AdminGate>
+              <TournamentsAdminScreen />
+            </AdminGate>
+          }
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

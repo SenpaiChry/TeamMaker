@@ -59,6 +59,9 @@
   --color-bracket-header-text: #08343b;
   --color-match-meta: #8fa6b0;
   --color-points-pill: #ffffff22;
+  --color-icon-action: #ffffff18;
+  --color-player-archived: #ffffff0d;
+  --color-player-archived-border: #ffffff40;
 
   /* Stelle del voto */
   --color-stars: #cda434;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { usePlayers } from '@/hooks/usePlayers'
 import { useTeamGenerator } from '@/hooks/useTeamGenerator'
@@ -8,6 +8,7 @@ import { getVote } from '@/domain/player'
 import { Button } from '@/components/ui/Button'
 import { PlayerName } from '@/components/ui/PlayerName'
 import { ScreenHeader } from '@/components/ui/ScreenHeader'
+import { SaveTournamentModal } from './SaveTournamentModal'
 
 /**
  * Squadre generate, con la possibilità di rigenerare.
@@ -24,6 +25,7 @@ export function TeamsScreen() {
   const setTeams = useSelectionStore((s) => s.setTeams)
 
   const { running, result, retries, error, generate, workerCount } = useTeamGenerator()
+  const [savingTournament, setSavingTournament] = useState(false)
 
   const selected = useMemo(() => resolveSelected(players, selectedKeys), [players, selectedKeys])
 
@@ -135,17 +137,31 @@ export function TeamsScreen() {
         className="fixed inset-x-0 bottom-0 border-t border-list-card-border
                    bg-score-bg-bottom/95 p-4 backdrop-blur"
       >
-        <div className="mx-auto max-w-2xl">
+        <div className="mx-auto flex max-w-2xl gap-2">
           <Button
             variant="ghost"
             disabled={running}
             onClick={() => generate(selected, playersPerTeam)}
-            className="w-full"
+            className="grow"
           >
             RIGENERA
           </Button>
+          <Button
+            variant="confirm"
+            disabled={running || teams.length === 0}
+            onClick={() => setSavingTournament(true)}
+            className="grow"
+          >
+            SALVA COME TORNEO
+          </Button>
         </div>
       </div>
+
+      <SaveTournamentModal
+        teams={teams}
+        open={savingTournament}
+        onClose={() => setSavingTournament(false)}
+      />
     </div>
   )
 }

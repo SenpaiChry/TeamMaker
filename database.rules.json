@@ -1,0 +1,37 @@
+{
+  "_commento": [
+    "Regole del Realtime Database. Da incollare nella console Firebase:",
+    "Realtime Database -> Regole.",
+    "",
+    "ATTENZIONE: queste sono le UNICHE protezioni reali del database. Le",
+    "schermate di login, sia dell'app Android sia della web app, sono solo",
+    "comodita': chiunque conosca l'URL del database puo' scrivere se le regole",
+    "sono aperte, senza nemmeno aprire l'applicazione.",
+    "",
+    "Le regole qui sotto sono un PUNTO DI PARTENZA, non sono attive finche' non",
+    "vengono incollate nella console. Prevedono:",
+    "  - lettura libera (i tabelloni sono pubblici)",
+    "  - scrittura solo per utenti autenticati",
+    "  - live_match scrivibile da chiunque sia autenticato, perche' il",
+    "    segnapunti gira su dispositivi diversi",
+    "",
+    "Per usarle serve prima registrare una app web nella console Firebase e",
+    "attivare un metodo di accesso in Authentication. Finche' non lo si fa,",
+    "attivarle bloccherebbe le scritture SIA della web app SIA dell'app",
+    "Android, che oggi scrive senza autenticarsi."
+  ],
+
+  "rules": {
+    "teammaker": {
+      ".read": true,
+      ".write": "auth != null",
+      "live_match": {
+        ".write": "auth != null"
+      }
+    },
+    "teammakerStaging": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}
