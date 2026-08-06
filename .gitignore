@@ -21,10 +21,12 @@ dist-ssr/
 coverage/
 *.local
 
-# Variabili d'ambiente: si committa solo .env.example
+# Variabili d'ambiente: si committano solo l'esempio e la configurazione di
+# pubblicazione, che non contiene segreti. Restano fuori .env e .env.local.
 .env
 .env.*
 !.env.example
+!.env.production
 
 # ---------- Firebase ----------
 .firebase/

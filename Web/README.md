@@ -62,7 +62,37 @@ vivono in `src/data/mappers.ts` e da nessun'altra parte.
 - ✅ **Fase 4** — torneo: squadre, calendario e classifica (sola lettura)
 - ✅ **Fase 5** — segnapunti, diretta e salvataggio del risultato
 - ✅ **Fase 6** — gestione giocatori, tornei e calendario
-- ⬜ **Fase 7** — PWA, i18n, deploy
+- ✅ **Fase 7** — PWA e pubblicazione su Firebase Hosting
+
+Le traduzioni previste inizialmente sono state saltate: l'app è tutta in
+italiano e non c'è un pubblico che ne abbia bisogno.
+
+## Pubblicazione
+
+L'app va su Firebase Hosting, nel progetto `team-maker-d811f`. La versione
+pubblicata usa `.env.production`, che punta allo **staging**: per passare ai
+dati reali si cambia `VITE_DB_ROOT` in `teammaker/` e si ripubblica.
+
+La prima volta serve autenticarsi (apre il browser sul tuo account Google):
+
+```bash
+npx firebase-tools login
+```
+
+Poi, da questa cartella:
+
+```bash
+npm run deploy
+```
+
+L'indirizzo sarà `https://team-maker-d811f.web.app`.
+
+### App installabile
+
+È una PWA: dal telefono, "Aggiungi alla schermata Home" installa l'icona e
+l'app si apre a schermo intero. Il guscio dell'app resta in cache, così si apre
+anche con la rete incerta; i dati invece non vengono mai messi in cache — un
+punteggio vecchio servito dal service worker sarebbe peggio di nessun dato.
 
 ## Sicurezza
 

@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--prefix", "Web"],
       "port": 5173
+    },
+    {
+      "name": "web-build",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "preview", "--prefix", "Web", "--", "--port", "4173"],
+      "port": 4173
     }
   ]
 }
