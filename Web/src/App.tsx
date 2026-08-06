@@ -3,6 +3,7 @@ import { HomeScreen } from '@/features/home/HomeScreen'
 import { GenerateScreen } from '@/features/generate/GenerateScreen'
 import { TeamsScreen } from '@/features/teams/TeamsScreen'
 import { PlayersList } from '@/features/players/PlayersList'
+import { TournamentScreen } from '@/features/tournament/TournamentScreen'
 import { IS_PRODUCTION_DATA, DB_ROOT } from '@/data/firebase'
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/genera" element={<GenerateScreen />} />
         <Route path="/squadre" element={<TeamsScreen />} />
         <Route path="/giocatori" element={<PlayersList />} />
+        <Route path="/torneo" element={<TournamentScreen />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

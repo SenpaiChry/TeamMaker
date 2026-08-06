@@ -59,7 +59,7 @@ vivono in `src/data/mappers.ts` e da nessun'altra parte.
 - ✅ **Fase 1** — dominio completo (voto, generatore squadre, calendario, classifica) con i test
 - ✅ **Fase 2** — elenco giocatori con ricerca e scheda statistiche
 - ✅ **Fase 3** — selezione, generazione squadre su Web Worker, rigenerazione
-- ⬜ **Fase 4** — torneo: classifica, gironi, calendario
+- ✅ **Fase 4** — torneo: squadre, calendario e classifica (sola lettura)
 - ⬜ **Fase 5** — segnapunti e live
 - ⬜ **Fase 6** — admin e autenticazione
 - ⬜ **Fase 7** — PWA, i18n, deploy

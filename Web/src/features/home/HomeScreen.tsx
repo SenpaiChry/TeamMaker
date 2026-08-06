@@ -22,7 +22,7 @@ export function HomeScreen() {
       <nav className="flex flex-col gap-3">
         <HomeLink to="/genera" label="GENERA SQUADRE" />
         <HomeLink to="/giocatori" label="GIOCATORI" />
-        <HomeLink label="TORNEO" hint="fase 4" />
+        <HomeLink to="/torneo" label="TORNEO" />
         <HomeLink label="SEGNAPUNTI" hint="fase 5" />
         <HomeLink label="ADMIN" hint="fase 6" />
       </nav>

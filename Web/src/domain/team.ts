@@ -1,5 +1,5 @@
 import type { Player, Team } from './models'
-import { getNameAndSurname, getVote } from './player'
+import { getNameAndSurname, getVote, matchesQuery } from './player'
 
 /**
  * Funzioni pure su Team, portate da Team.java.
@@ -19,6 +19,16 @@ export function getTeamVote(team: Team): number {
     total = Math.round((total + getVote(player)) * 10) / 10
   }
   return total
+}
+
+/**
+ * `true` se un giocatore della squadra corrisponde al testo cercato.
+ * È il criterio con cui la schermata torneo filtra squadre e partite e
+ * evidenzia le righe di classifica.
+ */
+export function teamMatchesQuery(team: Team | undefined, query: string): boolean {
+  if (team === undefined || query.trim().length === 0) return false
+  return team.players.some((player) => matchesQuery(player, query))
 }
 
 /** Numero di giocatrici nella squadra: vincolo di bilanciamento del generatore. */
