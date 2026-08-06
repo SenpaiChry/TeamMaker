@@ -14,10 +14,12 @@ import { MatchDetailModal } from './MatchDetailModal'
 export function MatchesTab({
   matches,
   teams,
+  tournamentKey,
   query,
 }: {
   matches: Match[]
   teams: Team[]
+  tournamentKey: string
   query: string
 }) {
   const [detail, setDetail] = useState<Match | null>(null)
@@ -58,6 +60,10 @@ export function MatchesTab({
                   <button
                     type="button"
                     onClick={() => setDetail(match)}
+                    aria-label={
+                      `Partita delle ${match.time}: TEAM ${getTeamNumber(teams, match.keyTeam1)} ` +
+                      `${match.points1} a ${match.points2} TEAM ${getTeamNumber(teams, match.keyTeam2)}`
+                    }
                     className="flex w-full items-center gap-3 rounded-lg border border-list-card-border
                                bg-list-card px-3 py-2 text-left hover:border-brand-blue hover:bg-score-panel"
                   >
@@ -94,7 +100,12 @@ export function MatchesTab({
         ))}
       </div>
 
-      <MatchDetailModal match={detail} teams={teams} onClose={() => setDetail(null)} />
+      <MatchDetailModal
+        match={detail}
+        teams={teams}
+        tournamentKey={tournamentKey}
+        onClose={() => setDetail(null)}
+      />
     </>
   )
 }

@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom'
 import { usePlayers } from '@/hooks/usePlayers'
+import { useLiveMatch } from '@/hooks/useLiveMatch'
 
 /**
- * Schermata iniziale. Porta MainActivity.
- * Le voci non ancora migrate restano visibili ma disattivate, così è chiaro
- * a che punto è il porting.
+ * Schermata iniziale. Porta MainActivity, compreso il tasto DIRETTA che
+ * compare solo quando c'è davvero una partita trasmessa.
  */
 export function HomeScreen() {
   const { players, loading } = usePlayers()
+  const { isLive } = useLiveMatch()
   const activeCount = players.filter((p) => p.isActive).length
 
   return (
@@ -20,10 +21,21 @@ export function HomeScreen() {
       </p>
 
       <nav className="flex flex-col gap-3">
+        {isLive && (
+          <Link
+            to="/diretta"
+            className="flex animate-pulse items-center justify-between rounded-xl border
+                       border-action-danger bg-action-danger/20 px-5 py-4 text-lg
+                       font-bold tracking-wide text-white"
+          >
+            PARTITA IN DIRETTA
+            <span aria-hidden>→</span>
+          </Link>
+        )}
         <HomeLink to="/genera" label="GENERA SQUADRE" />
         <HomeLink to="/giocatori" label="GIOCATORI" />
         <HomeLink to="/torneo" label="TORNEO" />
-        <HomeLink label="SEGNAPUNTI" hint="fase 5" />
+        <HomeLink to="/segnapunti" label="SEGNAPUNTI" />
         <HomeLink label="ADMIN" hint="fase 6" />
       </nav>
     </div>

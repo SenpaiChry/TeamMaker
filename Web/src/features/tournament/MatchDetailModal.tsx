@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import type { Match, Team } from '@/domain/models'
 import { getTeamNumber } from '@/domain/team'
 import { Modal } from '@/components/ui/Modal'
@@ -12,12 +13,15 @@ import { pointsForMatch } from '@/domain/standings'
 export function MatchDetailModal({
   match,
   teams,
+  tournamentKey,
   onClose,
 }: {
   match: Match | null
   teams: Team[]
+  tournamentKey: string
   onClose: () => void
 }) {
+  const navigate = useNavigate()
   const team1 = teams.find((t) => t.key === match?.keyTeam1)
   const team2 = teams.find((t) => t.key === match?.keyTeam2)
   const [awarded1, awarded2] = match === null ? [0, 0] : pointsForMatch(match)
@@ -59,9 +63,17 @@ export function MatchDetailModal({
             />
           </div>
 
-          <Button variant="ghost" onClick={onClose} className="mt-5 w-full">
-            OK
-          </Button>
+          <div className="mt-5 flex gap-2">
+            <Button variant="ghost" onClick={onClose} className="grow">
+              CHIUDI
+            </Button>
+            <Button
+              onClick={() => navigate(`/segnapunti?torneo=${tournamentKey}&partita=${match.key}`)}
+              className="grow"
+            >
+              SEGNAPUNTI
+            </Button>
+          </div>
         </>
       )}
     </Modal>
