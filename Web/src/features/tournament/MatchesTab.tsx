@@ -51,48 +51,71 @@ export function MatchesTab({
       <div className="flex flex-col gap-4">
         {byDay.map(([day, dayMatches]) => (
           <section key={day}>
-            <h2 className="mb-2 rounded bg-bracket-header px-3 py-1 text-sm font-bold tracking-wide text-bracket-header-text">
-              GIORNO {day}
+            <h2 className="app-title mb-2 rounded-[10px] bg-bracket-header px-3 py-1.5 text-bracket-header-text">
+              Giorno {day}
             </h2>
+            {/* Struttura da tournament_layout_bracket.xml: intestazione con
+                tipo e orario, divisore, poi le due squadre col punteggio. */}
             <ul className="flex flex-col gap-2">
               {dayMatches.map((match) => (
-                <li key={match.key}>
-                  <button
-                    type="button"
-                    onClick={() => setDetail(match)}
-                    aria-label={
-                      `Partita delle ${match.time}: TEAM ${getTeamNumber(teams, match.keyTeam1)} ` +
-                      `${match.points1} a ${match.points2} TEAM ${getTeamNumber(teams, match.keyTeam2)}`
-                    }
-                    className="flex w-full items-center gap-3 rounded-lg border border-list-card-border
-                               bg-list-card px-3 py-2 text-left hover:border-brand-blue hover:bg-score-panel"
-                  >
-                    <span className="w-14 shrink-0 text-sm tabular-nums text-match-meta">
-                      {match.time}
-                    </span>
+                <li
+                  key={match.key}
+                  className="rounded-[14px] border border-list-card-border bg-list-card p-2.5"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="min-w-0 grow">
+                      {match.type.trim().length > 0 && (
+                        <div className="app-title truncate text-[13px] text-match-meta">
+                          {match.type.trim()}
+                        </div>
+                      )}
+                      <div className="app-title flex gap-2 text-[13px] text-match-meta">
+                        <span>Giorno {match.day}</span>
+                        <span>{match.time}</span>
+                      </div>
+                    </div>
 
-                    <span className="flex min-w-0 grow items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setDetail(match)}
+                      aria-label={
+                        `Dettaglio partita delle ${match.time}: Team ${getTeamNumber(teams, match.keyTeam1)} ` +
+                        `${match.points1} a ${match.points2} Team ${getTeamNumber(teams, match.keyTeam2)}`
+                      }
+                      className="app-title h-[34px] shrink-0 rounded-[11px] bg-brand-blue px-3.5
+                                 text-sm text-white transition hover:bg-brand-blue-pressed"
+                    >
+                      Info
+                    </button>
+                  </div>
+
+                  <div className="my-2 h-px bg-list-divider" />
+
+                  <div className="flex items-center">
+                    <span className="min-w-0 grow">
                       <TeamChip
-                        label={`TEAM ${getTeamNumber(teams, match.keyTeam1)}`}
+                        label={`Team ${getTeamNumber(teams, match.keyTeam1)}`}
                         highlighted={teamMatchesQuery(teamsByKey.get(match.keyTeam1), query)}
                       />
-                      <span className="shrink-0 tabular-nums">
-                        <b>{match.points1}</b>
-                        <span className="mx-1 text-list-text-muted">–</span>
-                        <b>{match.points2}</b>
-                      </span>
+                    </span>
+
+                    <span className="app-title min-w-[30px] text-center text-[19px] not-italic">
+                      {match.points1}
+                    </span>
+                    <span className="app-title px-[3px] text-[17px] not-italic text-list-text-muted">
+                      -
+                    </span>
+                    <span className="app-title min-w-[30px] text-center text-[19px] not-italic">
+                      {match.points2}
+                    </span>
+
+                    <span className="flex min-w-0 grow justify-end">
                       <TeamChip
-                        label={`TEAM ${getTeamNumber(teams, match.keyTeam2)}`}
+                        label={`Team ${getTeamNumber(teams, match.keyTeam2)}`}
                         highlighted={teamMatchesQuery(teamsByKey.get(match.keyTeam2), query)}
                       />
                     </span>
-
-                    {match.type.trim().length > 0 && (
-                      <span className="w-20 shrink-0 truncate text-right text-xs text-match-meta">
-                        {match.type.trim()}
-                      </span>
-                    )}
-                  </button>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -110,12 +133,16 @@ export function MatchesTab({
   )
 }
 
+/**
+ * Nome squadra nella riga partita. Quando corrisponde alla ricerca prende la
+ * pillola ciano di bg_team_chip, come fa applyTeamHighlight nell'adapter.
+ */
 function TeamChip({ label, highlighted }: { label: string; highlighted: boolean }) {
   return (
     <span
-      className={`shrink-0 rounded-full px-2 py-0.5 text-sm ${
+      className={`app-title inline-block max-w-full truncate px-1.5 py-[3px] text-[15px] ${
         highlighted
-          ? 'bg-list-card-highlight font-bold text-list-highlight-text'
+          ? 'rounded-full bg-list-card-highlight text-list-highlight-text'
           : 'text-list-text'
       }`}
     >

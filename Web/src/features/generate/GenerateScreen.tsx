@@ -1,13 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayers } from '@/hooks/usePlayers'
-import { byNameAsc, getVote, matchesQuery } from '@/domain/player'
-import type { Player } from '@/domain/models'
+import { byNameAsc, matchesQuery } from '@/domain/player'
 import { resolveSelected, useSelectionStore } from '@/store/selectionStore'
 import { SearchField } from '@/components/ui/SearchField'
 import { Button } from '@/components/ui/Button'
-import { PlayerName } from '@/components/ui/PlayerName'
-import { PlayerStatsModal } from '@/features/players/PlayerStatsModal'
+import { PlayerCard } from '@/components/ui/PlayerCard'
 import { GenerateOptionsModal } from './GenerateOptionsModal'
 import { ScreenHeader } from '@/components/ui/ScreenHeader'
 
@@ -19,7 +17,6 @@ export function GenerateScreen() {
   const navigate = useNavigate()
   const { players, loading, error } = usePlayers()
   const [query, setQuery] = useState('')
-  const [inspecting, setInspecting] = useState<Player | null>(null)
   const [choosingSize, setChoosingSize] = useState(false)
 
   const selectedKeys = useSelectionStore((s) => s.selectedKeys)
@@ -76,49 +73,15 @@ export function GenerateScreen() {
         <p className="text-list-text-muted">Nessun giocatore trovato.</p>
       ) : (
         <ul className="flex flex-col gap-2">
-          {visible.map((player) => {
-            const selected = selectedKeys.has(player.key)
-            return (
-              <li key={player.key}>
-                <div
-                  className={`flex items-center gap-3 rounded-lg border px-3 py-2 transition ${
-                    selected
-                      ? 'border-player-selected-border bg-player-selected/30'
-                      : 'border-list-card-border bg-list-card'
-                  }`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => toggle(player.key)}
-                    aria-pressed={selected}
-                    className="flex min-w-0 grow items-center gap-3 text-left"
-                  >
-                    <span
-                      className={`grid size-8 shrink-0 place-items-center rounded-full text-sm font-bold ${
-                        player.gender === 'F'
-                          ? 'bg-women text-black'
-                          : 'bg-men-icon text-black'
-                      }`}
-                      aria-hidden
-                    >
-                      {player.gender}
-                    </span>
-                    <PlayerName player={player} />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setInspecting(player)}
-                    aria-label={`Statistiche di ${player.name}`}
-                    className="shrink-0 rounded-full bg-score-panel px-3 py-1 text-sm
-                               font-bold tabular-nums hover:bg-score-panel-border"
-                  >
-                    {getVote(player)}
-                  </button>
-                </div>
-              </li>
-            )
-          })}
+          {visible.map((player) => (
+            <li key={player.key}>
+              <PlayerCard
+                player={player}
+                selected={selectedKeys.has(player.key)}
+                onToggle={() => toggle(player.key)}
+              />
+            </li>
+          ))}
         </ul>
       )}
 
@@ -137,7 +100,6 @@ export function GenerateScreen() {
         </div>
       </div>
 
-      <PlayerStatsModal player={inspecting} onClose={() => setInspecting(null)} />
       <GenerateOptionsModal
         open={choosingSize}
         selectedCount={selectedCount}

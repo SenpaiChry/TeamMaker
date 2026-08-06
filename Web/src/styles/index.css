@@ -51,6 +51,9 @@
   --color-women: #e96ee4;
   --color-women-dark: #e96ee4;
   --color-women-icon: #dda0dd;
+  /* men_icon_background / women_icon_background */
+  --color-men-icon-bg: #3609e7;
+  --color-women-icon-bg: #e96ee4;
   --color-men: #491fed;
   --color-men-dark: #8e82ff;
   --color-men-icon: #a896f0;
@@ -60,6 +63,9 @@
   --color-player-plate-border: #878787;
   --color-player-selected: #86a97f;
   --color-player-selected-border: #8eba86;
+  /* bg_player_card_selected: riempimento al 10% */
+  --color-player-selected-fill: #8eba861a;
+  --color-list-divider: #ffffff1f;
 
   /* Segnapunti: colori legati alla squadra, restano tali anche dopo lo swap */
   --color-score-team-a: #3fc4d2;
