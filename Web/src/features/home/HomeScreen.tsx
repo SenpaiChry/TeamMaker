@@ -16,10 +16,15 @@ export function HomeScreen() {
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center px-9 py-10">
+      {/*
+        Logo con sfondo trasparente: si posa sullo sfondo scuro dell'app senza
+        il riquadro quadrato dell'icona PWA. L'altezza fa da vincolo perché il
+        logo è più largo che alto (rapporto ~5:4).
+      */}
       <img
-        src="/icon-512.png"
-        alt="Team Maker"
-        className="mb-10 size-[250px] max-w-[70vw] object-contain"
+        src="/logo.png"
+        alt="La Foce Beach Volley Cup 2025"
+        className="mb-10 h-[220px] max-w-[80vw] object-contain"
       />
 
       {isLive && (

@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { usePlayers } from '@/hooks/usePlayers'
 import { byNameAsc, matchesQuery } from '@/domain/player'
 import { resolveSelected, useSelectionStore } from '@/store/selectionStore'
 import { SearchField } from '@/components/ui/SearchField'
 import { Button } from '@/components/ui/Button'
 import { PlayerCard } from '@/components/ui/PlayerCard'
+import { SelectAllButton } from './SelectAllButton'
 import { GenerateOptionsModal } from './GenerateOptionsModal'
 import { ScreenHeader } from '@/components/ui/ScreenHeader'
 
@@ -15,6 +16,11 @@ import { ScreenHeader } from '@/components/ui/ScreenHeader'
  */
 export function GenerateScreen() {
   const navigate = useNavigate()
+  const [params] = useSearchParams()
+  // Se la generazione è per un nuovo torneo, propaghiamo il flag a `/squadre`
+  // così mostra scarto, voti e tasto di salvataggio. Su ogni altra provenienza
+  // (Home) la vista resta minimale.
+  const contesto = params.get('contesto')
   const { players, loading, error } = usePlayers()
   const [query, setQuery] = useState('')
   const [choosingSize, setChoosingSize] = useState(false)
@@ -55,13 +61,10 @@ export function GenerateScreen() {
         <div className="grow">
           <SearchField value={query} onChange={setQuery} />
         </div>
-        <Button
-          variant="ghost"
+        <SelectAllButton
+          allSelected={allSelected}
           onClick={() => (allSelected ? clear() : selectAll(active.map((p) => p.key)))}
-          className="shrink-0 whitespace-nowrap px-3 py-2 text-sm"
-        >
-          {allSelected ? 'DESELEZIONA' : 'SELEZIONA'} TUTTI
-        </Button>
+        />
       </div>
 
       <p className="mb-3 text-sm text-list-text-muted">
@@ -106,7 +109,9 @@ export function GenerateScreen() {
         onClose={() => setChoosingSize(false)}
         onConfirm={(playersPerTeam) => {
           setChoosingSize(false)
-          navigate(`/squadre?perSquadra=${playersPerTeam}`)
+          const query = new URLSearchParams({ perSquadra: String(playersPerTeam) })
+          if (contesto !== null) query.set('contesto', contesto)
+          navigate(`/squadre?${query.toString()}`)
         }}
       />
     </div>

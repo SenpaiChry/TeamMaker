@@ -36,9 +36,18 @@ export function TournamentsAdminScreen() {
     <div className="mx-auto max-w-2xl p-4">
       <ScreenHeader title="TORNEI" onBack={() => navigate('/admin')} />
 
+      {/*
+        L'unico modo per creare un torneo è generare le squadre e salvarle: il
+        parametro `contesto=torneo` segnala a `/genera` e `/squadre` che siamo
+        nel flusso di gestione, così compaiono voti, scarto e tasto di salvataggio.
+      */}
+      <div className="mb-4">
+        <Button onClick={() => navigate('/genera?contesto=torneo')}>Nuovo torneo</Button>
+      </div>
+
       {sorted.length === 0 ? (
         <p className="text-list-text-muted">
-          Nessun torneo. Creane uno generando delle squadre e salvandole.
+          Nessun torneo. Creane uno con «Nuovo torneo».
         </p>
       ) : (
         <ul className="flex flex-col gap-3">

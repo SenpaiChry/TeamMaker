@@ -7,7 +7,16 @@ import { useCallback, useEffect, useRef } from 'react'
 const INITIAL_DELAY_MS = 400
 const REPEAT_INTERVAL_MS = 80
 
-export function RepeatButton({ onTrigger, label }: { onTrigger: () => void; label: string }) {
+export function RepeatButton({
+  onTrigger,
+  label,
+  primary = false,
+}: {
+  onTrigger: () => void
+  label: string
+  /** Tasto più in evidenza: sfondo pieno anziché contorno. Va sul + del segnapunti. */
+  primary?: boolean
+}) {
   const delayRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -44,8 +53,12 @@ export function RepeatButton({ onTrigger, label }: { onTrigger: () => void; labe
       onPointerUp={stop}
       onPointerLeave={stop}
       onPointerCancel={stop}
-      className="size-12 rounded-lg border border-score-panel-border bg-score-panel
-                 text-2xl leading-none select-none hover:bg-score-panel-border"
+      className={`h-14 rounded-xl text-3xl font-bold leading-none select-none transition
+                  active:scale-95 ${
+                    primary
+                      ? 'bg-brand-blue text-white hover:bg-brand-blue-pressed'
+                      : 'border border-score-panel-border bg-score-panel text-list-text hover:bg-score-panel-border'
+                  }`}
     >
       {label}
     </button>

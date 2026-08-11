@@ -6,9 +6,9 @@ import type { Player } from '@/domain/models'
  * quadrato colorato da 45dp con l'icona del sesso, nome e cognome su due righe
  * da 17sp in helvetica black corsivo colorati per sesso.
  *
- * Come nell'originale è l'INTERA riga a selezionare: il ⊕ / ⊖ a destra è solo
- * un indicatore di stato, non un tasto a sé (nel layout Android è infatti
- * `clickable="false"`).
+ * Come nell'originale è l'INTERA riga a selezionare: l'indicatore a destra
+ * (cerchio + / cerchio ✓ pieno) è solo uno stato, non un tasto a sé (nel layout
+ * Android è infatti `clickable="false"`).
  */
 export function PlayerCard({
   player,
@@ -50,8 +50,36 @@ export function PlayerCard({
         )}
       </span>
 
-      <span className="grid w-[50px] shrink-0 place-items-center text-3xl leading-none" aria-hidden>
-        {selected ? '⊖' : '⊕'}
+      <span className="grid w-[50px] shrink-0 place-items-center" aria-hidden>
+        {selected ? (
+          <svg
+            viewBox="0 0 24 24"
+            className="size-8 text-player-selected-border drop-shadow-sm"
+            fill="currentColor"
+          >
+            <circle cx="12" cy="12" r="11" />
+            <path
+              d="M7 12.5l3.2 3.2L17 9"
+              fill="none"
+              stroke="#ffffff"
+              strokeWidth="2.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        ) : (
+          <svg
+            viewBox="0 0 24 24"
+            className="size-8 text-brand-blue"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v8M8 12h8" />
+          </svg>
+        )}
       </span>
     </button>
   )

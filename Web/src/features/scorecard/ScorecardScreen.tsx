@@ -156,7 +156,7 @@ export function ScorecardScreen() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-3xl flex-col p-4">
+    <div className="mx-auto flex min-h-dvh max-w-3xl flex-col p-3 sm:p-4">
       <ScreenHeader
         title="SEGNAPUNTI"
         onBack={() => navigate(isTournamentMatch ? '/torneo' : '/')}
@@ -164,25 +164,53 @@ export function ScorecardScreen() {
           <button
             type="button"
             onClick={() => apply(swapSides(score))}
-            className="shrink-0 rounded-lg border border-list-card-border bg-list-card
-                       px-3 py-2 text-sm font-bold hover:bg-score-panel"
+            aria-label="Inverti i lati"
+            title="Inverti i lati"
+            className="grid size-[42px] shrink-0 place-items-center rounded-[11px]
+                       border border-list-card-border bg-list-card text-lg text-list-text
+                       transition hover:bg-score-panel"
           >
-            ⇄ INVERTI
+            {/* Icona swap orizzontale — due frecce contrapposte. */}
+            <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor"
+                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M8 7H21" />
+              <path d="M17 3l4 4-4 4" />
+              <path d="M16 17H3" />
+              <path d="M7 13l-4 4 4 4" />
+            </svg>
           </button>
         }
       />
 
       {isTournamentMatch && (
-        <p className="mb-3 text-center text-sm text-list-text-muted">
-          Giorno {match.day} · ore {match.time}
-          {match.type.trim().length > 0 && <> · {match.type.trim()}</>}
-          <span className="ml-2 rounded bg-action-danger px-2 py-0.5 text-xs font-bold text-white">
-            IN DIRETTA
+        <div className="mb-3 flex flex-wrap items-center justify-center gap-2 text-sm">
+          <span className="rounded-full border border-list-card-border bg-list-card px-3 py-1
+                           text-list-text-muted">
+            Giorno <b className="text-list-text">{match.day}</b> · ore{' '}
+            <b className="text-list-text">{match.time}</b>
+            {match.type.trim().length > 0 && (
+              <>
+                {' · '}
+                <b className="text-list-text">{match.type.trim()}</b>
+              </>
+            )}
           </span>
-        </p>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-action-danger
+                           px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
+            <span className="size-2 animate-pulse rounded-full bg-white" aria-hidden />
+            In diretta
+          </span>
+        </div>
       )}
 
-      <div className="grid grow grid-cols-2 gap-3">
+      {/*
+        Come nell'app Android: portrait = squadre sopra/sotto (il telefono in
+        verticale sta più comodo così), landscape = sinistra/destra.
+        In portrait la barra dei SET va in mezzo alle due squadre, con i due
+        contatori affiancati; in landscape sparisce e ogni pannello riprende il
+        suo stepper interno.
+      */}
+      <div className="flex grow flex-col gap-2 landscape:flex-row sm:gap-3">
         <SidePanel
           side={1}
           score={score}
@@ -190,6 +218,12 @@ export function ScorecardScreen() {
           players={teamOnSide(score, 1) === 1 ? playersA : playersB}
           onPoints={(d) => apply(changePoints(score, 1, d))}
           onSets={(d) => apply(changeSets(score, 1, d))}
+        />
+        <SetsBar
+          score={score}
+          titleA={titleA}
+          titleB={titleB}
+          onSetsSide={(side, delta) => apply(changeSets(score, side, delta))}
         />
         <SidePanel
           side={2}
@@ -237,14 +271,28 @@ function SidePanel({
   // Il colore segue la squadra: dopo lo swap si sposta con lei.
   const isTeamA = teamOnSide(score, side) === 1
   const accent = isTeamA ? 'text-score-team-a' : 'text-score-team-b'
-  const border = isTeamA ? 'border-score-team-a/40' : 'border-score-team-b/40'
+  const ribbon = isTeamA ? 'bg-score-team-a' : 'bg-score-team-b'
+  const border = isTeamA ? 'border-score-team-a/60' : 'border-score-team-b/60'
+
+  const points = pointsOnSide(score, side)
+  const sets = setsOnSide(score, side)
 
   return (
-    <section className={`flex flex-col rounded-xl border-2 ${border} bg-score-panel p-3`}>
-      <h2 className={`text-center text-lg font-black tracking-wide ${accent}`}>{title}</h2>
+    <section
+      className={`flex grow basis-0 flex-col overflow-hidden rounded-2xl border-2 ${border}
+                  bg-score-panel`}
+    >
+      {/* Fascia colorata col nome squadra: la squadra si riconosce a colpo d'occhio. */}
+      <header className={`${ribbon} px-3 py-2`}>
+        <h2 className="app-title truncate text-center text-base leading-none text-white
+                       sm:text-lg">
+          {title}
+        </h2>
+      </header>
 
       {players.length > 0 && (
-        <ul className="mb-2 text-center text-xs text-score-player-name/80">
+        <ul className="border-b border-score-divider px-2 py-1.5 text-center text-[11px]
+                       leading-tight text-score-player-name/80 sm:text-xs">
           {players.map((name) => (
             <li key={name} className="truncate">
               {name}
@@ -253,41 +301,133 @@ function SidePanel({
         </ul>
       )}
 
-      <button
-        type="button"
-        onClick={() => onPoints(+1)}
-        className={`my-2 text-7xl font-black tabular-nums sm:text-8xl ${accent}`}
-        aria-label={`Aggiungi un punto a ${title}`}
-      >
-        {pointsOnSide(score, side)}
-      </button>
-
-      <div className="flex items-center justify-center gap-2">
-        <RepeatButton onTrigger={() => onPoints(-1)} label="−" />
-        <RepeatButton onTrigger={() => onPoints(+1)} label="+" />
+      {/* Punteggio: solo display, per non aggiungere punti per sbaglio. */}
+      <div className="flex grow items-center justify-center px-2 py-3">
+        <span
+          className={`app-title tabular-nums leading-none ${accent}
+                     text-[clamp(4rem,22vw,7.5rem)]`}
+        >
+          {points}
+        </span>
       </div>
 
-      <div className="mt-4 flex items-center justify-center gap-3 border-t border-score-divider pt-3">
+      {/* +/- grandi: il tocco principale del segnapunti. Il + è a destra e più
+          in evidenza perché è quello che si usa 9 volte su 10. */}
+      <div className="grid grid-cols-[1fr_1.4fr] gap-1.5 px-2 pb-2">
+        <RepeatButton onTrigger={() => onPoints(-1)} label="−" />
+        <RepeatButton onTrigger={() => onPoints(+1)} label="+" primary />
+      </div>
+
+      {/* Riga set: solo in landscape. In portrait i set stanno nella barra
+          centrale fra le due squadre, per non affastellare il pannello. */}
+      <div className="hidden landscape:flex items-center justify-between gap-2
+                      border-t border-score-divider px-3 py-2">
         <button
           type="button"
           onClick={() => onSets(-1)}
-          className="size-8 rounded-lg border border-score-panel-border text-lg leading-none"
           aria-label={`Togli un set a ${title}`}
+          className="grid size-9 place-items-center rounded-lg border border-score-panel-border
+                     bg-score-panel text-lg leading-none hover:bg-score-panel-border"
         >
           −
         </button>
-        <span className="text-sm text-list-text-muted">
-          set <b className={`text-xl tabular-nums ${accent}`}>{setsOnSide(score, side)}</b>
-        </span>
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-xs uppercase tracking-wide text-list-text-muted">Set</span>
+          <b className={`text-2xl tabular-nums leading-none ${accent}`}>{sets}</b>
+        </div>
         <button
           type="button"
           onClick={() => onSets(+1)}
-          className="size-8 rounded-lg border border-score-panel-border text-lg leading-none"
           aria-label={`Aggiungi un set a ${title}`}
+          className="grid size-9 place-items-center rounded-lg border border-score-panel-border
+                     bg-score-panel text-lg leading-none hover:bg-score-panel-border"
         >
           +
         </button>
       </div>
     </section>
+  )
+}
+
+/**
+ * Barra dei set in mezzo alle due squadre (solo in portrait).
+ *
+ * Due stepper affiancati, uno per lato, colorati con la squadra che in quel
+ * momento è sopra/sotto (i colori seguono lo swap come nei pannelli). Serve a
+ * tenere il gesto naturale: il set del pannello di sopra sta sopra, quello del
+ * pannello di sotto sta sotto — anche se qui la barra è orizzontale.
+ */
+function SetsBar({
+  score,
+  titleA,
+  titleB,
+  onSetsSide,
+}: {
+  score: ScoreState
+  titleA: string
+  titleB: string
+  onSetsSide: (side: Side, delta: number) => void
+}) {
+  return (
+    <div
+      className="grid grid-cols-2 divide-x divide-list-card-border overflow-hidden
+                 rounded-2xl border border-list-card-border bg-list-card landscape:hidden"
+    >
+      <SetsHalf
+        side={1}
+        score={score}
+        title={teamOnSide(score, 1) === 1 ? titleA : titleB}
+        onSets={(d) => onSetsSide(1, d)}
+      />
+      <SetsHalf
+        side={2}
+        score={score}
+        title={teamOnSide(score, 2) === 1 ? titleA : titleB}
+        onSets={(d) => onSetsSide(2, d)}
+      />
+    </div>
+  )
+}
+
+function SetsHalf({
+  side,
+  score,
+  title,
+  onSets,
+}: {
+  side: Side
+  score: ScoreState
+  title: string
+  onSets: (delta: number) => void
+}) {
+  const isTeamA = teamOnSide(score, side) === 1
+  const accent = isTeamA ? 'text-score-team-a' : 'text-score-team-b'
+  const sets = setsOnSide(score, side)
+
+  return (
+    <div className="flex items-center justify-between gap-2 px-3 py-2">
+      <button
+        type="button"
+        onClick={() => onSets(-1)}
+        aria-label={`Togli un set a ${title}`}
+        className="grid size-10 place-items-center rounded-lg border border-score-panel-border
+                   bg-score-panel text-xl leading-none hover:bg-score-panel-border"
+      >
+        −
+      </button>
+      <div className="flex items-baseline gap-1.5">
+        <span className="text-[11px] uppercase tracking-wide text-list-text-muted">Set</span>
+        <b className={`text-2xl tabular-nums leading-none ${accent}`}>{sets}</b>
+      </div>
+      <button
+        type="button"
+        onClick={() => onSets(+1)}
+        aria-label={`Aggiungi un set a ${title}`}
+        className="grid size-10 place-items-center rounded-lg border border-score-panel-border
+                   bg-score-panel text-xl leading-none hover:bg-score-panel-border"
+      >
+        +
+      </button>
+    </div>
   )
 }

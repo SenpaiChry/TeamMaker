@@ -19,7 +19,8 @@ export function SearchField({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className="w-full rounded-[20px] border border-search-box-border bg-search-box
-                   py-2.5 pl-5 pr-10 text-list-text placeholder:text-search-hint
+                   py-2.5 pl-5 pr-10 text-list-text
+                   placeholder:text-list-text-secondary placeholder:opacity-100
                    focus:border-brand-blue focus:outline-none"
       />
       {value.length > 0 && (

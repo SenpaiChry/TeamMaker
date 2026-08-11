@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/Button'
 import { TeamCard } from '@/components/ui/TeamCard'
 import { ScreenHeader } from '@/components/ui/ScreenHeader'
 import { SaveTournamentModal } from './SaveTournamentModal'
-import { useAuthStore } from '@/store/authStore'
 
 /**
  * Squadre generate, con la possibilità di rigenerare.
@@ -18,6 +17,10 @@ export function TeamsScreen() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const playersPerTeam = Number(params.get('perSquadra') ?? 0)
+  // Flag di contesto: la generazione parte dall'admin («Nuovo torneo») o da
+  // «Crea squadre» in home? Scarto, voti e tasto di salvataggio compaiono solo
+  // nel primo caso — nel secondo servono squadre da giocare, non da amministrare.
+  const perTorneo = params.get('contesto') === 'torneo'
 
   const { players } = usePlayers()
   const selectedKeys = useSelectionStore((s) => s.selectedKeys)
@@ -26,7 +29,6 @@ export function TeamsScreen() {
 
   const { running, result, retries, error, generate, workerCount } = useTeamGenerator()
   const [savingTournament, setSavingTournament] = useState(false)
-  const logged = useAuthStore((s) => s.logged)
 
   const selected = useMemo(() => resolveSelected(players, selectedKeys), [players, selectedKeys])
 
@@ -93,7 +95,7 @@ export function TeamsScreen() {
             il voto negli stessi casi: sono numeri che servono a chi compone le
             squadre, non a chi le gioca.
           */}
-          {logged && (
+          {perTorneo && (
             <p className="mb-3 text-sm text-list-text-muted">
               Scarto fra la squadra più forte e la più debole:{' '}
               <span className="font-bold text-list-highlight-text tabular-nums">
@@ -106,7 +108,7 @@ export function TeamsScreen() {
           <ul className="flex flex-col gap-2">
             {teams.map((team, i) => (
               <li key={team.key}>
-                <TeamCard team={team} teamNumber={i + 1} showVote={logged} showBracket={false} />
+                <TeamCard team={team} teamNumber={i + 1} showVote={perTorneo} showBracket={false} />
               </li>
             ))}
           </ul>
@@ -128,7 +130,7 @@ export function TeamsScreen() {
           </Button>
           {/* Salvare come torneo è un'azione di gestione: in Android il tasto
               esiste solo sul percorso che parte dalla gestione tornei. */}
-          {logged && (
+          {perTorneo && (
             <Button
               variant="confirm"
               disabled={running || teams.length === 0}
