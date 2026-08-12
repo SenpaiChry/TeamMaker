@@ -39,7 +39,9 @@ export function ScreenHeader({
           </svg>
         </button>
       )}
-      <h1 className="app-title grow truncate text-2xl">{title}</h1>
+      {/* `leading-none` toglie l'extra line-height (default 1.5) che spostava
+          il titolo in alto rispetto ai tasti sui lati. */}
+      <h1 className="app-title grow truncate text-2xl leading-none">{title}</h1>
       {right}
     </header>
   )

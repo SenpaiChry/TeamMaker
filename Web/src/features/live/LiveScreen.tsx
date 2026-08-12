@@ -59,12 +59,7 @@ export function LiveScreen() {
               sets={live.sets1}
               team="a"
             />
-            <SetsBar
-              nameA={live.team1Name}
-              nameB={live.team2Name}
-              setsA={live.sets1}
-              setsB={live.sets2}
-            />
+            <SetsBar setsA={live.sets1} setsB={live.sets2} />
             <LiveSide
               name={live.team2Name}
               players={live.team2Players}
@@ -73,17 +68,9 @@ export function LiveScreen() {
               team="b"
             />
           </div>
-
-          <p className="mt-3 text-center text-xs text-list-text-muted">
-            Ultimo aggiornamento:{' '}
-            <b className="text-list-text-secondary tabular-nums">
-              {new Date(live.timestamp).toLocaleTimeString('it', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-              })}
-            </b>
-          </p>
+          {/* Il timestamp «Ultimo aggiornamento» era ridondante: il badge LIVE
+              pulsante e il fatto stesso che il punteggio arrivi via Realtime
+              Database dicono già che i dati sono in tempo reale. */}
         </>
       )}
     </div>
@@ -150,40 +137,28 @@ function LiveSide({
 }
 
 /**
- * Barra dei set fra le due squadre (solo portrait): nome squadra a sinistra e
- * a destra colorati, con i due contatori grandi al centro divisi da un pallino.
+ * Barra dei set fra le due squadre (solo portrait). Niente nomi: le squadre
+ * sono già identificate dal colore e dal pannello sopra/sotto, ripeterli qui
+ * era rumore.
  */
-function SetsBar({
-  nameA,
-  nameB,
-  setsA,
-  setsB,
-}: {
-  nameA: string
-  nameB: string
-  setsA: number
-  setsB: number
-}) {
+function SetsBar({ setsA, setsB }: { setsA: number; setsB: number }) {
   return (
     <div
       className="grid grid-cols-2 divide-x divide-list-card-border overflow-hidden
                  rounded-2xl border border-list-card-border bg-list-card landscape:hidden"
     >
-      <SetsHalf name={nameA} sets={setsA} team="a" />
-      <SetsHalf name={nameB} sets={setsB} team="b" />
+      <SetsHalf sets={setsA} team="a" />
+      <SetsHalf sets={setsB} team="b" />
     </div>
   )
 }
 
-function SetsHalf({ name, sets, team }: { name: string; sets: number; team: 'a' | 'b' }) {
+function SetsHalf({ sets, team }: { sets: number; team: 'a' | 'b' }) {
   const accent = team === 'a' ? 'text-score-team-a' : 'text-score-team-b'
   return (
-    <div className="flex items-center justify-between gap-3 px-4 py-2">
-      <span className={`app-title truncate text-sm ${accent}`}>{name}</span>
-      <div className="flex items-baseline gap-1.5">
-        <span className="text-[11px] uppercase tracking-wide text-list-text-muted">Set</span>
-        <b className={`text-2xl tabular-nums leading-none ${accent}`}>{sets}</b>
-      </div>
+    <div className="flex items-center justify-center gap-2 px-4 py-2">
+      <span className="text-xs uppercase tracking-wide text-list-text-muted">Set</span>
+      <b className={`text-3xl tabular-nums leading-none ${accent}`}>{sets}</b>
     </div>
   )
 }
