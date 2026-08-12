@@ -117,7 +117,8 @@ export function PlayerEditModal({
               <select
                 value={String(Math.trunc(stats.height))}
                 onChange={(e) => setStats({ ...stats, height: Number(e.target.value) })}
-                className="rounded border border-list-card-border bg-list-card px-2 py-1 text-sm"
+                className="min-w-24 rounded-lg border border-list-card-border bg-list-card
+                           px-3 py-2 text-sm text-list-text"
               >
                 {HEIGHT_VALUES.map((label, i) => (
                   <option key={label} value={i}>

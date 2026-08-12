@@ -113,7 +113,8 @@ export function MatchEditModal({
         <select
           value={phase}
           onChange={(e) => setPhase(e.target.value)}
-          className="w-full rounded-lg border border-list-card-border bg-list-card px-3 py-2"
+          className="w-full rounded-lg border border-list-card-border bg-list-card px-3 py-2
+                     text-list-text focus:border-brand-blue focus:outline-none"
         >
           <option value="">— scegli —</option>
           {phases.map((p) => (
@@ -197,7 +198,8 @@ function TeamSelect({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full rounded-lg border border-list-card-border bg-list-card px-3 py-2"
+      className="w-full rounded-lg border border-list-card-border bg-list-card px-3 py-2
+                 text-list-text focus:border-brand-blue focus:outline-none"
     >
       <option value="">— scegli —</option>
       {tournament.teams.map((team) => (

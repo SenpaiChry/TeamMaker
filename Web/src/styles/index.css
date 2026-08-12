@@ -128,3 +128,15 @@ body {
   font-style: italic;
   text-transform: uppercase;
 }
+
+/*
+ * <option> nei <select>: senza queste regole il browser (specie Chrome/Brave
+ * su desktop) apre la tendina bianca con testo nero perché il colore del
+ * <select> non si eredita al menu. Sul tema scuro si trasforma in un blocco
+ * bianco che stona; peggio: quando è highlightato in white-on-white non si
+ * legge. Forziamo sfondo/colori coerenti con il resto della UI.
+ */
+option {
+  background-color: var(--color-score-bg-top);
+  color: var(--color-list-text);
+}

@@ -23,15 +23,27 @@ export function LoginScreen() {
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <div className="p-2">
+      <div className="p-3">
         <button
           type="button"
           onClick={() => navigate('/')}
           aria-label="Indietro"
-          className="grid size-[42px] place-items-center rounded-[11px] bg-brand-blue
-                     text-xl text-white transition hover:bg-brand-blue-pressed"
+          className="grid size-11 place-items-center rounded-full text-list-text transition
+                     hover:bg-list-card active:scale-95"
         >
-          ←
+          {/* Stessa freccia SVG di ScreenHeader per uniformità. */}
+          <svg
+            viewBox="0 0 24 24"
+            className="size-7"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <path d="M15 6l-6 6 6 6" />
+          </svg>
         </button>
       </div>
 
