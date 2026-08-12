@@ -5,6 +5,11 @@ import { ScreenHeader } from '@/components/ui/ScreenHeader'
 /**
  * Partita in diretta, sola lettura. Porta ActivityLiveMatch.
  * Non ha comandi: si aggiorna da sola quando il segnapunti scrive.
+ *
+ * Il layout ricalca il segnapunti — fascia colorata col nome, punteggio
+ * grande in mezzo, riga set — così chi guarda in diretta ha la stessa
+ * "forma" di chi tiene il conteggio a bordo campo. In portrait le squadre
+ * sono impilate con la barra dei set in mezzo, in landscape affiancate.
  */
 export function LiveScreen() {
   const navigate = useNavigate()
@@ -13,51 +18,71 @@ export function LiveScreen() {
   if (loading) return <p className="p-6 text-list-text-secondary">Caricamento…</p>
 
   return (
-    <div className="mx-auto max-w-3xl p-4">
+    <div className="mx-auto flex min-h-dvh max-w-3xl flex-col p-3 sm:p-4">
       <ScreenHeader
         title="DIRETTA"
         onBack={() => navigate('/')}
         right={
           isLive ? (
-            <span className="animate-pulse rounded bg-action-danger px-2 py-1 text-xs font-bold text-white">
-              LIVE
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full bg-action-danger
+                         px-3 py-1 text-xs font-bold uppercase tracking-wide text-white"
+            >
+              <span className="size-2 animate-pulse rounded-full bg-white" aria-hidden />
+              Live
             </span>
           ) : undefined
         }
       />
 
       {!isLive || live === null ? (
-        <p className="mt-10 text-center text-list-text-secondary">
-          Nessuna partita in diretta al momento.
-        </p>
+        <div className="mt-20 flex flex-col items-center gap-2 text-center">
+          <span
+            className="grid size-14 place-items-center rounded-full border border-list-card-border
+                       bg-list-card text-2xl"
+            aria-hidden
+          >
+            ●
+          </span>
+          <p className="text-list-text-secondary">Nessuna partita in diretta al momento.</p>
+          <p className="text-xs text-list-text-muted">
+            Comparirà qui appena qualcuno apre il segnapunti su una partita di torneo.
+          </p>
+        </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="flex grow flex-col gap-2 landscape:flex-row sm:gap-3">
             <LiveSide
               name={live.team1Name}
               players={live.team1Players}
               points={live.points1}
               sets={live.sets1}
-              accent="text-score-team-a"
-              border="border-score-team-a/40"
+              team="a"
+            />
+            <SetsBar
+              nameA={live.team1Name}
+              nameB={live.team2Name}
+              setsA={live.sets1}
+              setsB={live.sets2}
             />
             <LiveSide
               name={live.team2Name}
               players={live.team2Players}
               points={live.points2}
               sets={live.sets2}
-              accent="text-score-team-b"
-              border="border-score-team-b/40"
+              team="b"
             />
           </div>
 
-          <p className="mt-4 text-center text-xs text-list-text-muted">
+          <p className="mt-3 text-center text-xs text-list-text-muted">
             Ultimo aggiornamento:{' '}
-            {new Date(live.timestamp).toLocaleTimeString('it', {
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit',
-            })}
+            <b className="text-list-text-secondary tabular-nums">
+              {new Date(live.timestamp).toLocaleTimeString('it', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+              })}
+            </b>
           </p>
         </>
       )}
@@ -70,26 +95,95 @@ function LiveSide({
   players,
   points,
   sets,
-  accent,
-  border,
+  team,
 }: {
   name: string
   players: string
   points: number
   sets: number
-  accent: string
-  border: string
+  team: 'a' | 'b'
 }) {
+  const accent = team === 'a' ? 'text-score-team-a' : 'text-score-team-b'
+  const ribbon = team === 'a' ? 'bg-score-team-a' : 'bg-score-team-b'
+  const border = team === 'a' ? 'border-score-team-a/60' : 'border-score-team-b/60'
+
   return (
-    <section className={`rounded-xl border-2 ${border} bg-score-panel p-4 text-center`}>
-      <h2 className={`text-lg font-black tracking-wide ${accent}`}>{name}</h2>
+    <section
+      className={`flex grow basis-0 flex-col overflow-hidden rounded-2xl border-2 ${border}
+                  bg-score-panel`}
+    >
+      <header className={`${ribbon} px-3 py-2`}>
+        <h2 className="app-title truncate text-center text-base leading-none text-white sm:text-lg">
+          {name}
+        </h2>
+      </header>
+
       {players.length > 0 && (
-        <p className="mt-1 text-xs text-score-player-name/80">{players}</p>
+        <p
+          className="border-b border-score-divider px-3 py-1.5 text-center text-[11px]
+                     leading-tight text-score-player-name/80 sm:text-xs"
+        >
+          {players}
+        </p>
       )}
-      <div className={`my-3 text-7xl font-black tabular-nums sm:text-8xl ${accent}`}>{points}</div>
-      <div className="border-t border-score-divider pt-2 text-sm text-list-text-muted">
-        set <b className={`text-xl tabular-nums ${accent}`}>{sets}</b>
+
+      <div className="flex grow items-center justify-center px-2 py-3">
+        <span
+          className={`app-title tabular-nums leading-none ${accent}
+                     text-[clamp(4rem,22vw,7.5rem)]`}
+        >
+          {points}
+        </span>
+      </div>
+
+      {/* Set in fondo al pannello: solo in landscape. In portrait vive nella
+          barra centrale, come nel segnapunti. */}
+      <div
+        className="hidden landscape:flex items-center justify-center gap-2 border-t
+                   border-score-divider px-3 py-2 text-sm text-list-text-muted"
+      >
+        <span className="text-xs uppercase tracking-wide">Set</span>
+        <b className={`text-2xl tabular-nums leading-none ${accent}`}>{sets}</b>
       </div>
     </section>
+  )
+}
+
+/**
+ * Barra dei set fra le due squadre (solo portrait): nome squadra a sinistra e
+ * a destra colorati, con i due contatori grandi al centro divisi da un pallino.
+ */
+function SetsBar({
+  nameA,
+  nameB,
+  setsA,
+  setsB,
+}: {
+  nameA: string
+  nameB: string
+  setsA: number
+  setsB: number
+}) {
+  return (
+    <div
+      className="grid grid-cols-2 divide-x divide-list-card-border overflow-hidden
+                 rounded-2xl border border-list-card-border bg-list-card landscape:hidden"
+    >
+      <SetsHalf name={nameA} sets={setsA} team="a" />
+      <SetsHalf name={nameB} sets={setsB} team="b" />
+    </div>
+  )
+}
+
+function SetsHalf({ name, sets, team }: { name: string; sets: number; team: 'a' | 'b' }) {
+  const accent = team === 'a' ? 'text-score-team-a' : 'text-score-team-b'
+  return (
+    <div className="flex items-center justify-between gap-3 px-4 py-2">
+      <span className={`app-title truncate text-sm ${accent}`}>{name}</span>
+      <div className="flex items-baseline gap-1.5">
+        <span className="text-[11px] uppercase tracking-wide text-list-text-muted">Set</span>
+        <b className={`text-2xl tabular-nums leading-none ${accent}`}>{sets}</b>
+      </div>
+    </div>
   )
 }
