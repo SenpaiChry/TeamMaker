@@ -96,9 +96,11 @@ punteggio vecchio servito dal service worker sarebbe peggio di nessun dato.
 
 ## Sicurezza
 
-Lo sbarramento dell'area di gestione (`VITE_ADMIN_PASSWORD` in `.env.local`) è
-una **comodità, non una protezione**: la password viaggia nel bundle JavaScript.
-Vale lo stesso per l'app Android, dove è scritta in chiaro in `Constants.java`.
+Lo sbarramento dell'area di gestione è una **comodità, non una protezione**: la
+password vive sul Realtime Database al nodo `admin-pw` e viaggia in chiaro nel
+traffico di rete. Il vantaggio rispetto a tenerla nel bundle è che si cambia
+dalla console Firebase senza ripubblicare il sito. Vale lo stesso per l'app
+Android, dove è scritta in chiaro in `Constants.java`.
 
 L'unica protezione reale del database sono le sue **regole**, da configurare
 nella console Firebase. Un punto di partenza è in
