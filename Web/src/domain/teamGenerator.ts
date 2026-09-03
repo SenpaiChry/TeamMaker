@@ -179,19 +179,19 @@ export function searchBalancedTeams(
 
     const tolerance = floorTolerance + retry / 10_000
 
-    if (isValid(teamVotes, teamFemales, tolerance)) {
+    if (isValid(teamVotes, teamSizes, teamFemales, tolerance)) {
       return commit(players, assignment, nTeams, retry, teamVotes)
     }
 
-    if (!isFemaleBalanced(teamFemales)) {
-      balanceFemales(assignment, votes, isFemale, teamVotes, teamFemales, nPlayers, nTeams)
-      if (isValid(teamVotes, teamFemales, tolerance)) {
+    if (!isFemaleBalanced(teamFemales) || !isMaleBalanced(teamSizes, teamFemales)) {
+      balanceGenders(assignment, votes, isFemale, teamVotes, teamSizes, teamFemales, nPlayers, nTeams)
+      if (isValid(teamVotes, teamSizes, teamFemales, tolerance)) {
         return commit(players, assignment, nTeams, retry, teamVotes)
       }
     }
 
-    balanceVotes(assignment, votes, isFemale, teamVotes, teamFemales, nPlayers, nTeams, tolerance)
-    if (isValid(teamVotes, teamFemales, tolerance)) {
+    balanceVotes(assignment, votes, isFemale, teamVotes, teamSizes, teamFemales, nPlayers, nTeams, tolerance)
+    if (isValid(teamVotes, teamSizes, teamFemales, tolerance)) {
       return commit(players, assignment, nTeams, retry, teamVotes)
     }
   }
@@ -217,10 +217,15 @@ function findWeakestTeam(
   return best
 }
 
-/** Entrambi i vincoli soddisfatti: scarto di voto entro la tolleranza e squadre bilanciate per genere. */
-function isValid(teamVotes: Float64Array, teamFemales: Int32Array, tolerance: number): boolean {
+/** Tutti i vincoli soddisfatti: scarto di voto entro la tolleranza e squadre bilanciate per genere (M e F). */
+function isValid(
+  teamVotes: Float64Array,
+  teamSizes: Int32Array,
+  teamFemales: Int32Array,
+  tolerance: number,
+): boolean {
   const { min, max } = minMax(teamVotes)
-  return max - min <= tolerance && isFemaleBalanced(teamFemales)
+  return max - min <= tolerance && isFemaleBalanced(teamFemales) && isMaleBalanced(teamSizes, teamFemales)
 }
 
 /** Le giocatrici sono distribuite con uno scarto massimo di 1 fra le squadre. */
@@ -230,6 +235,18 @@ function isFemaleBalanced(teamFemales: Int32Array): boolean {
   for (const f of teamFemales) {
     if (f < min) min = f
     if (f > max) max = f
+  }
+  return max - min <= 1
+}
+
+/** I maschi (dimensione squadra − femmine) devono differire al massimo di 1 fra le squadre. */
+function isMaleBalanced(teamSizes: Int32Array, teamFemales: Int32Array): boolean {
+  let min = Number.MAX_SAFE_INTEGER
+  let max = 0
+  for (let i = 0; i < teamSizes.length; i++) {
+    const males = teamSizes[i]! - teamFemales[i]!
+    if (males < min) min = males
+    if (males > max) max = males
   }
   return max - min <= 1
 }
@@ -245,66 +262,108 @@ function minMax(values: Float64Array): { min: number; max: number } {
 }
 
 /**
- * Riequilibra le giocatrici scambiando una donna della squadra che ne ha di più
- * con un uomo di quella che ne ha di meno, scegliendo la coppia con i voti più
- * simili per non sbilanciare la classifica dei voti.
+ * Bilancia i generi: tiene sia le femmine sia i maschi entro spread 1 fra le
+ * squadre. A ogni passata interviene sulla dimensione (femmine o maschi) più
+ * sbilanciata, scambiando una femmina con un maschio fra le due squadre
+ * coinvolte (scegliendo i voti più simili per non alterare l'equilibrio).
  */
-function balanceFemales(
+function balanceGenders(
+  assignment: number[],
+  votes: number[],
+  isFemale: boolean[],
+  teamVotes: Float64Array,
+  teamSizes: Int32Array,
+  teamFemales: Int32Array,
+  nPlayers: number,
+  nTeams: number,
+): void {
+  for (let pass = 0; pass < 2 * nTeams; pass++) {
+    let femRich = 0
+    let femPoor = 0
+    let maleRich = 0
+    let malePoor = 0
+    for (let i = 1; i < nTeams; i++) {
+      if (teamFemales[i]! > teamFemales[femRich]!) femRich = i
+      if (teamFemales[i]! < teamFemales[femPoor]!) femPoor = i
+      const males = teamSizes[i]! - teamFemales[i]!
+      if (males > teamSizes[maleRich]! - teamFemales[maleRich]!) maleRich = i
+      if (males < teamSizes[malePoor]! - teamFemales[malePoor]!) malePoor = i
+    }
+
+    const femSpread = teamFemales[femRich]! - teamFemales[femPoor]!
+    const maleSpread =
+      (teamSizes[maleRich]! - teamFemales[maleRich]!) -
+      (teamSizes[malePoor]! - teamFemales[malePoor]!)
+
+    if (femSpread <= 1 && maleSpread <= 1) break
+
+    let done: boolean
+    if (femSpread >= maleSpread) {
+      // Troppa disparità di femmine: ne sposto una dalla squadra che ne ha di più a quella che ne ha di meno.
+      done = swapFemaleForMale(femRich, femPoor, assignment, votes, isFemale, teamVotes, teamFemales, nPlayers)
+    } else {
+      // Troppa disparità di maschi: ne sposto uno dalla squadra che ne ha di più a quella che ne ha di meno.
+      done = swapFemaleForMale(malePoor, maleRich, assignment, votes, isFemale, teamVotes, teamFemales, nPlayers)
+    }
+
+    if (!done) break
+  }
+}
+
+/**
+ * Scambia una femmina della squadra `giveFTeam` con un maschio della squadra
+ * `giveMTeam` (voti più simili possibile). Aggiorna voti e conteggio femmine;
+ * le dimensioni restano invariate. Ritorna `false` se lo scambio non è possibile.
+ */
+function swapFemaleForMale(
+  giveFTeam: number,
+  giveMTeam: number,
   assignment: number[],
   votes: number[],
   isFemale: boolean[],
   teamVotes: Float64Array,
   teamFemales: Int32Array,
   nPlayers: number,
-  nTeams: number,
-): void {
-  for (let pass = 0; pass < nTeams; pass++) {
-    let richTeam = 0
-    let poorTeam = 0
-    for (let i = 1; i < nTeams; i++) {
-      if (teamFemales[i]! > teamFemales[richTeam]!) richTeam = i
-      if (teamFemales[i]! < teamFemales[poorTeam]!) poorTeam = i
-    }
-    if (teamFemales[richTeam]! - teamFemales[poorTeam]! <= 1) break
+): boolean {
+  let bestF = -1
+  let bestM = -1
+  let bestDelta = Number.MAX_VALUE
 
-    let bestFemale = -1
-    let bestMale = -1
-    let bestDelta = Number.MAX_VALUE
-
-    for (let p = 0; p < nPlayers; p++) {
-      if (assignment[p] !== richTeam || !isFemale[p]) continue
-      for (let q = 0; q < nPlayers; q++) {
-        if (assignment[q] !== poorTeam || isFemale[q]) continue
-        const delta = Math.abs(votes[p]! - votes[q]!)
-        if (delta < bestDelta) {
-          bestDelta = delta
-          bestFemale = p
-          bestMale = q
-        }
+  for (let p = 0; p < nPlayers; p++) {
+    if (assignment[p] !== giveFTeam || !isFemale[p]) continue
+    for (let q = 0; q < nPlayers; q++) {
+      if (assignment[q] !== giveMTeam || isFemale[q]) continue
+      const delta = Math.abs(votes[p]! - votes[q]!)
+      if (delta < bestDelta) {
+        bestDelta = delta
+        bestF = p
+        bestM = q
       }
     }
-
-    if (bestFemale === -1 || bestMale === -1) break
-
-    teamVotes[richTeam] = teamVotes[richTeam]! + votes[bestMale]! - votes[bestFemale]!
-    teamVotes[poorTeam] = teamVotes[poorTeam]! + votes[bestFemale]! - votes[bestMale]!
-    teamFemales[richTeam]! -= 1
-    teamFemales[poorTeam]! += 1
-    assignment[bestFemale] = poorTeam
-    assignment[bestMale] = richTeam
   }
+
+  if (bestF === -1 || bestM === -1) return false
+
+  teamVotes[giveFTeam] = teamVotes[giveFTeam]! + votes[bestM]! - votes[bestF]!
+  teamVotes[giveMTeam] = teamVotes[giveMTeam]! + votes[bestF]! - votes[bestM]!
+  teamFemales[giveFTeam]! -= 1
+  teamFemales[giveMTeam]! += 1
+  assignment[bestF] = giveMTeam
+  assignment[bestM] = giveFTeam
+  return true
 }
 
 /**
  * Riequilibra i voti scambiando un giocatore forte della squadra più forte con
  * uno debole della più debole, scartando gli scambi che romperebbero il
- * bilanciamento delle giocatrici.
+ * bilanciamento per genere (sia femmine sia maschi).
  */
 function balanceVotes(
   assignment: number[],
   votes: number[],
   isFemale: boolean[],
   teamVotes: Float64Array,
+  teamSizes: Int32Array,
   teamFemales: Int32Array,
   nPlayers: number,
   nTeams: number,
@@ -345,7 +404,7 @@ function balanceVotes(
             simulated[richTeam]! += 1
             simulated[poorTeam]! -= 1
           }
-          if (!isFemaleBalanced(simulated)) continue
+          if (!isFemaleBalanced(simulated) || !isMaleBalanced(teamSizes, simulated)) continue
         }
 
         bestImprovement = improvement
