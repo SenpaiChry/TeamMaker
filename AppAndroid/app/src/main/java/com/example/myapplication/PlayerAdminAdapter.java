@@ -56,6 +56,10 @@ public class PlayerAdminAdapter extends BaseAdapter {
         convertView.findViewById(R.id.btnArchive).setVisibility(active ? View.VISIBLE : View.GONE);
         convertView.findViewById(R.id.btnUnarchive).setVisibility(active ? View.GONE : View.VISIBLE);
 
+        // Numero di classifica
+        TextView txtRank = convertView.findViewById(R.id.txtRank);
+        txtRank.setText(String.valueOf(position + 1));
+
         TextView txtName = convertView.findViewById(R.id.txtName);
         TextView txtSurname = convertView.findViewById(R.id.txtSurname);
         TextView txtValue = convertView.findViewById(R.id.txtValue);
@@ -64,33 +68,19 @@ public class PlayerAdminAdapter extends BaseAdapter {
         txtSurname.setText(player.getSurnameOrNickname());
         txtValue.setText(player.getVote().toString());
 
-        View iconContainer = convertView.findViewById(R.id.iconContainer);
-        View viewImage = convertView.findViewById(R.id.icon_background);
-        ImageView imageView = convertView.findViewById(R.id.imgCategory);
-
-        // Icona per genere (sempre)
-        if ("F".equals(player.gender)) {
-            imageView.setImageResource(R.drawable.women_icon);
-            viewImage.setBackground(ContextCompat.getDrawable(context, R.drawable.women_icon_background));
-        } else {
-            imageView.setImageResource(R.drawable.men_icon);
-            viewImage.setBackground(ContextCompat.getDrawable(context, R.drawable.men_icon_background));
-        }
-
-        // Colore testo: attivo = colore del genere, archiviato = grigio spento
+        // Colore per genere: attivo = colore del genere, archiviato = grigio
         int textColor;
         if (!active) {
             textColor = ContextCompat.getColor(context, R.color.list_text_muted);
+            txtRank.setTextColor(ContextCompat.getColor(context, R.color.list_text_muted));
         } else {
             textColor = ContextCompat.getColor(context,
                     "F".equals(player.gender) ? R.color.women_color_name_dark : R.color.men_color_name_dark);
+            txtRank.setTextColor(ContextCompat.getColor(context, R.color.list_text_secondary));
         }
         txtName.setTextColor(textColor);
         txtSurname.setTextColor(textColor);
         txtValue.setTextColor(textColor);
-
-        // Avatar sbiadito quando archiviato (reset a 1 quando la riga viene riusata)
-        iconContainer.setAlpha(active ? 1f : 0.4f);
 
         convertView.findViewById(R.id.btnArchive)
                 .setOnClickListener(v -> openActivityPopUp(position, PopUpType.ARCHIVE_PLAYER));

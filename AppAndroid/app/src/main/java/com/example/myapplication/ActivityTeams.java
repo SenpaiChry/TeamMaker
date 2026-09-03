@@ -136,25 +136,35 @@ public class ActivityTeams extends AppCompatActivity {
     }
 
     /**
-     * Scambia un giocatore casuale tra due squadre casuali.
-     * Garantisce un risultato diverso dal precedente, anche se potenzialmente peggiore.
+     * Scambia due giocatori dello STESSO genere tra due squadre diverse: il
+     * risultato cambia rispetto al precedente, ma i conteggi maschi/femmine
+     * restano invariati (niente squadre tipo 2F vs 2M). Se non trova una coppia
+     * stesso-genere da scambiare, non forza nulla (meglio invariato che sbilanciato).
      */
     private static void forceRandomSwap() {
+        if (Constants.teams.size() < 2) return;
         Random rng = new Random();
-        int t1idx = rng.nextInt(Constants.teams.size());
-        int t2idx;
-        do {
-            t2idx = rng.nextInt(Constants.teams.size());
-        } while (t2idx == t1idx);
 
-        Team team1 = Constants.teams.get(t1idx);
-        Team team2 = Constants.teams.get(t2idx);
-        int p1 = rng.nextInt(team1.players.size());
-        int p2 = rng.nextInt(team2.players.size());
+        for (int attempt = 0; attempt < 100; attempt++) {
+            int t1idx = rng.nextInt(Constants.teams.size());
+            int t2idx = rng.nextInt(Constants.teams.size());
+            if (t1idx == t2idx) continue;
 
-        Player tmp = team1.players.get(p1);
-        team1.players.set(p1, team2.players.get(p2));
-        team2.players.set(p2, tmp);
+            Team team1 = Constants.teams.get(t1idx);
+            Team team2 = Constants.teams.get(t2idx);
+            if (team1.players.isEmpty() || team2.players.isEmpty()) continue;
+
+            int p1 = rng.nextInt(team1.players.size());
+            int p2 = rng.nextInt(team2.players.size());
+
+            Player a = team1.players.get(p1);
+            Player b = team2.players.get(p2);
+            if (a.gender == null || !a.gender.equalsIgnoreCase(b.gender)) continue; // solo stesso genere
+
+            team1.players.set(p1, b);
+            team2.players.set(p2, a);
+            return;
+        }
     }
 
     private float calcMaxDiff() {

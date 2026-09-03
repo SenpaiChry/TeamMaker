@@ -81,29 +81,38 @@ public class PlayerTeamsAdapter extends BaseAdapter {
         llPlayer34.setVisibility(View.GONE);
         llPlayer5.setVisibility(View.GONE);
 
-        txtPlayer1Name.setText(getItem(position).get(0).name);
-        txtPlayer1Surname.setText(getItem(position).get(0).getSurnameOrNickname());
+        ArrayList<Player> players = getItem(position);
 
-        if (getItem(position).size() >= 2) {
-            llPlayer2.setVisibility(View.VISIBLE);
-            txtPlayer2Name.setText(getItem(position).get(1).name);
-            txtPlayer2Surname.setText(getItem(position).get(1).getSurnameOrNickname());
+        // Squadra senza giocatori (es. stato transitorio durante la generazione): niente crash
+        if (players.isEmpty()) {
+            txtPlayer1Name.setText("");
+            txtPlayer1Surname.setText("");
+            return convertView;
         }
-        if (getItem(position).size() >= 3) {
+
+        txtPlayer1Name.setText(players.get(0).name);
+        txtPlayer1Surname.setText(players.get(0).getSurnameOrNickname());
+
+        if (players.size() >= 2) {
+            llPlayer2.setVisibility(View.VISIBLE);
+            txtPlayer2Name.setText(players.get(1).name);
+            txtPlayer2Surname.setText(players.get(1).getSurnameOrNickname());
+        }
+        if (players.size() >= 3) {
             llPlayer34.setVisibility(View.VISIBLE);
             llPlayer4.setVisibility(View.GONE);
-            txtPlayer3Name.setText(getItem(position).get(2).name);
-            txtPlayer3Surname.setText(getItem(position).get(2).getSurnameOrNickname());
+            txtPlayer3Name.setText(players.get(2).name);
+            txtPlayer3Surname.setText(players.get(2).getSurnameOrNickname());
         }
-        if (getItem(position).size() >= 4) {
+        if (players.size() >= 4) {
             llPlayer4.setVisibility(View.VISIBLE);
-            txtPlayer4Name.setText(getItem(position).get(3).name);
-            txtPlayer4Surname.setText(getItem(position).get(3).getSurnameOrNickname());
+            txtPlayer4Name.setText(players.get(3).name);
+            txtPlayer4Surname.setText(players.get(3).getSurnameOrNickname());
         }
-        if (getItem(position).size() >= 5) {
+        if (players.size() >= 5) {
             llPlayer5.setVisibility(View.VISIBLE);
-            txtPlayer5Name.setText(getItem(position).get(4).name);
-            txtPlayer5Surname.setText(getItem(position).get(4).getSurnameOrNickname());
+            txtPlayer5Name.setText(players.get(4).name);
+            txtPlayer5Surname.setText(players.get(4).getSurnameOrNickname());
         }
 
         return convertView;

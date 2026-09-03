@@ -67,6 +67,15 @@ public class TournamentBracketAdminAdapter extends BaseAdapter {
         txtPoints1.setText(String.valueOf(match.points1));
         txtPoints2.setText(String.valueOf(match.points2));
 
+        TextView txtSetDetail = convertView.findViewById(R.id.txtSetDetail);
+        String setDetail = match.detailString();
+        if (setDetail.isEmpty()) {
+            txtSetDetail.setVisibility(View.GONE);
+        } else {
+            txtSetDetail.setText(setDetail);
+            txtSetDetail.setVisibility(View.VISIBLE);
+        }
+
         ImageView btnPlay = convertView.findViewById(R.id.btnPlay);
         View finalConvertView = convertView;
         btnPlay.setOnClickListener(v -> {

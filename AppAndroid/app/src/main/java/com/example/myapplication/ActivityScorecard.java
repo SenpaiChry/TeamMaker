@@ -33,6 +33,9 @@ public class ActivityScorecard extends AppCompatActivity {
     private boolean isTournament = false;
     private boolean swapped = false;
 
+    // Punti dei set completati, in ordine {puntiTeam1, puntiTeam2}. Costruisce il "detail" della partita.
+    private final ArrayList<int[]> detail = new ArrayList<>();
+
     // Timer per scrivere il punteggio live su Firebase ogni 30 secondi
     private final android.os.Handler liveHandler = new android.os.Handler(android.os.Looper.getMainLooper());
     private static final int LIVE_INTERVAL_MS = 30_000;
@@ -70,6 +73,13 @@ public class ActivityScorecard extends AppCompatActivity {
             sets1 = savedInstanceState.getInt("sets1", 0);
             sets2 = savedInstanceState.getInt("sets2", 0);
             swapped = savedInstanceState.getBoolean("swapped", false);
+
+            @SuppressWarnings("unchecked")
+            ArrayList<int[]> savedDetail = (ArrayList<int[]>) savedInstanceState.getSerializable("detail");
+            if (savedDetail != null) {
+                detail.clear();
+                detail.addAll(savedDetail);
+            }
         }
 
         txtPoints1 = findViewById(R.id.txtPoints1);
@@ -130,6 +140,7 @@ public class ActivityScorecard extends AppCompatActivity {
         findViewById(R.id.btnSwap).setOnClickListener(v -> {
             swapped = !swapped;
             renderAll();
+            if (isTournament) writeLiveScore();
         });
 
         findViewById(R.id.btnGoBack).setOnClickListener(v -> finish());
@@ -176,6 +187,7 @@ public class ActivityScorecard extends AppCompatActivity {
 
         // Se e' una partita del torneo, inizia a trasmettere il punteggio live
         if (isTournament) {
+            LiveMatchUtility.registerOnDisconnect(); // pulizia automatica in caso di crash/kill
             writeLiveScore(); // scrivi subito
             liveHandler.postDelayed(liveWriter, LIVE_INTERVAL_MS); // poi ogni 30s
         }
@@ -198,6 +210,7 @@ public class ActivityScorecard extends AppCompatActivity {
         outState.putInt("sets1", sets1);
         outState.putInt("sets2", sets2);
         outState.putBoolean("swapped", swapped);
+        outState.putSerializable("detail", detail);
     }
 
     /** Scrive il punteggio attuale su Firebase per la visualizzazione live. */
@@ -209,7 +222,7 @@ public class ActivityScorecard extends AppCompatActivity {
                 titleA, titleB,
                 String.join(", ", playersA),
                 String.join(", ", playersB),
-                points1, points2, sets1, sets2
+                points1, points2, sets1, sets2, swapped
         );
     }
 
@@ -234,14 +247,28 @@ public class ActivityScorecard extends AppCompatActivity {
 
     private void changeSet(int side, int delta) {
         int team = teamOnSide(side);
-        if (team == 1) {
-            if (delta < 0 && sets1 == 0) return;
-            sets1 += delta;
+        if (delta > 0) {
+            // Set vinto: registra i punti del set corrente (se giocato) e riparte da 0
+            if (points1 > 0 || points2 > 0) {
+                detail.add(new int[]{points1, points2});
+            }
+            if (team == 1) sets1++; else sets2++;
+            points1 = points2 = 0;
         } else {
-            if (delta < 0 && sets2 == 0) return;
-            sets2 += delta;
+            // Annulla l'ultimo set: ripristina i punti registrati
+            if (team == 1) {
+                if (sets1 == 0) return;
+                sets1--;
+            } else {
+                if (sets2 == 0) return;
+                sets2--;
+            }
+            if (!detail.isEmpty()) {
+                int[] last = detail.remove(detail.size() - 1);
+                points1 = last[0];
+                points2 = last[1];
+            }
         }
-        points1 = points2 = 0; // cambiando set i punti si azzerano
         renderPoints();
         renderSets();
         if (isTournament) writeLiveScore();
@@ -350,17 +377,21 @@ public class ActivityScorecard extends AppCompatActivity {
 
     private void saveAndOpenActivity(String tournamentKey) {
         Tournament tournament = TournamentUtility.getTournamentByKey(tournamentKey);
-        Match match;
+
+        // Finalizza l'eventuale set in corso non ancora confermato (es. partita a set unico)
+        if (points1 > 0 || points2 > 0) {
+            detail.add(new int[]{points1, points2});
+            if (points1 > points2) sets1++;
+            else if (points2 > points1) sets2++;
+            points1 = points2 = 0;
+        }
 
         // Nota: points1/sets1 sono SEMPRE del team keyTeam1, points2/sets2 di keyTeam2,
         // indipendentemente dallo swap visivo -> il salvataggio resta corretto.
-        if (sets1 != 0 || sets2 != 0) {
-            match = new Match(tournament.matches.get(position).keyTeam1, tournament.matches.get(position).keyTeam2,
-                    tournament.matches.get(position).day, tournament.matches.get(position).time, sets1, sets2, tournament.matches.get(position).type);
-        } else {
-            match = new Match(tournament.matches.get(position).keyTeam1, tournament.matches.get(position).keyTeam2,
-                    tournament.matches.get(position).day, tournament.matches.get(position).time, points1, points2, tournament.matches.get(position).type);
-        }
+        // points1/points2 salvati = set vinti (headline); detail = punti dei set.
+        Match match = new Match(tournament.matches.get(position).keyTeam1, tournament.matches.get(position).keyTeam2,
+                tournament.matches.get(position).day, tournament.matches.get(position).time, sets1, sets2, tournament.matches.get(position).type);
+        match.detail = new ArrayList<>(detail);
 
         match.key = tournament.matches.get(position).key;
         MatchUtility.editMatch(tournamentKey, match);

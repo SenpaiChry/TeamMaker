@@ -76,6 +76,11 @@
     <color name="list_text_muted">#80FFFFFF</color>
     <color name="list_highlight_text">#3FC4D2</color>
     <color name="list_divider">#1FFFFFFF</color>
+    <!--    CAMPI (stile secondario, scuro)    -->
+    <color name="field_secondary_bg">#14FFFFFF</color>
+    <color name="field_secondary_border">#26FFFFFF</color>
+    <color name="spinner_selected_bg">#223FC4D2</color>
+    <color name="spinner_sub_text">#5F5E5A</color>
     <color name="bracket_header_background">#3FC4D2</color>
     <color name="bracket_header_text">#08343B</color>
     <color name="search_box_fill">#1AFFFFFF</color>

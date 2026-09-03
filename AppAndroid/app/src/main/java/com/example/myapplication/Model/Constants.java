@@ -20,7 +20,7 @@ public class Constants {
     public static ArrayList<Team> teams = new ArrayList<>();
     public static ArrayList<Tournament> tournaments = new ArrayList<>();
     public static boolean logged = true; //TODO PRIMA DELLA RELEASE
-    public static String password = "FATASS";
+    public static String password = null; // letta in tempo reale dal nodo admin-pw (AdminUtility)
     public static boolean downloadEnd = false;
     public static final String dbRoot = "teammaker/";
 //    public static final String dbRoot = "teammakerStaging/";

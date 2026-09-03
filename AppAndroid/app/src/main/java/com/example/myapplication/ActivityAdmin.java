@@ -20,7 +20,7 @@ import java.util.Collections;
 
 public class ActivityAdmin extends AppCompatActivity {
 
-    private static ArrayList<Player> playersToSee;// = new ArrayList<>();
+    private static ArrayList<Player> playersToSee;
     public static ActivityAdmin activityAdmin;
     public static PlayerAdminAdapter playerAdminAdapter;
     ListView listViewAdmin;
@@ -34,7 +34,7 @@ public class ActivityAdmin extends AppCompatActivity {
         activityAdmin = this;
         listViewAdmin = findViewById(R.id.listViewAdmin);
         playersToSee = new ArrayList<>(Constants.players);
-//       todo playersToSee = Utility.getPlayersActive(true);
+        sortActiveFirst(playersToSee);
         playerAdminAdapter = new PlayerAdminAdapter(listViewAdmin.getContext(), playersToSee);
         listViewAdmin.setAdapter(playerAdminAdapter);
 
@@ -47,12 +47,6 @@ public class ActivityAdmin extends AppCompatActivity {
             intent.putExtra("player_key", "null");
             activityAdmin.startActivity(intent);
         });
-
-//        Button btnUnarchivePlayer = findViewById(R.id.btnUnarchivePlayer);
-//        btnUnarchivePlayer.setOnClickListener(v -> {
-//            Intent intent = new Intent(activityAdmin.getApplicationContext(), ActivityUnarchivePlayer.class);
-//            activityAdmin.startActivity(intent);
-//        });
 
         EditText txtSearch = findViewById(R.id.txtSearch);
         txtSearch.setOnTouchListener((v, event) -> {
@@ -81,6 +75,7 @@ public class ActivityAdmin extends AppCompatActivity {
                     }
                 }
 
+                sortActiveFirst(playersToSee);
                 playerAdminAdapter.notifyDataSetChanged();
             }
 
@@ -92,7 +87,19 @@ public class ActivityAdmin extends AppCompatActivity {
     public static void reloadPlayers() {
         playersToSee.clear();
         playersToSee.addAll(Constants.players);
-        Collections.sort(playersToSee);
+        sortActiveFirst(playersToSee);
         playerAdminAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Attivi prima (ordinati per voto), archiviati in fondo (ordinati per voto).
+     */
+    private static void sortActiveFirst(ArrayList<Player> list) {
+        Collections.sort(list, (p1, p2) -> {
+            if (p1.isActive != p2.isActive) {
+                return p1.isActive ? -1 : 1;
+            }
+            return p1.compareTo(p2);
+        });
     }
 }

@@ -6,6 +6,8 @@ import com.example.myapplication.Utility.TimeUtility;
 import com.example.myapplication.Utility.TournamentTeamUtility;
 import com.example.myapplication.Utility.Utility;
 
+import java.util.ArrayList;
+
 public class Match implements Comparable<Match> {
     public String key;
     public String keyTeam1;
@@ -15,6 +17,12 @@ public class Match implements Comparable<Match> {
     public int points1;
     public int points2;
     public String type = "";
+
+    /**
+     * Dettaglio dei periodi (nel volley: i punti di ogni set), ogni elemento è
+     * {puntiTeam1, puntiTeam2}. Vuoto per le partite legacy (solo points1/points2).
+     */
+    public ArrayList<int[]> detail = new ArrayList<>();
 
     public Match(String keyTeam1, String keyTeam2, int day, String time, int points1, int points2) {
         this.keyTeam1 = keyTeam1;
@@ -33,6 +41,17 @@ public class Match implements Comparable<Match> {
         this.points1 = points1;
         this.points2 = points2;
         this.type = type;
+    }
+
+    /** Punti dei set formattati, es. "25-20 · 23-25 · 15-12". Stringa vuota se non c'è dettaglio. */
+    public String detailString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < detail.size(); i++) {
+            int[] set = detail.get(i);
+            if (i > 0) sb.append(" · ");
+            sb.append(set[0]).append("-").append(set[1]);
+        }
+        return sb.toString();
     }
 
     @Override

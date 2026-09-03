@@ -30,7 +30,10 @@ public class ActivityLogin extends AppCompatActivity {
 
         Button btnAccessAdmin = findViewById(R.id.btnAccessAdmin);
         btnAccessAdmin.setOnClickListener(v -> {
-            if (txtPassword.getText().toString().equals(Constants.password)) {
+            // password null = non ancora arrivata dal DB (o nodo vuoto): rifiuta,
+            // così non c'è una finestra iniziale di «password vuota accettata».
+            if (Constants.password != null
+                    && txtPassword.getText().toString().equals(Constants.password)) {
                 Intent intent = new Intent(activityLogin.getApplicationContext(), TournamentActivityManage.class);
                 activityLogin.startActivity(intent);
                 finish();

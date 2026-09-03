@@ -10,9 +10,55 @@ import com.example.myapplication.TournamentActivityManageTournaments;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MatchUtility {
+
+    /** Costruisce il nodo "detail" (punti dei set) da salvare su Firebase. */
+    private static List<Map<String, Object>> buildDetail(Match match) {
+        List<Map<String, Object>> detailList = new ArrayList<>();
+        for (int[] set : match.detail) {
+            Map<String, Object> setData = new HashMap<>();
+            setData.put("points1", set[0] + "");
+            setData.put("points2", set[1] + "");
+            detailList.add(setData);
+        }
+        return detailList;
+    }
+
+    /**
+     * Salva più partite in un'unica scrittura atomica: ogni nodo partita viene
+     * scritto completo (mai a metà) con updateChildren. Usato dalla generazione
+     * calendario, al posto di tanti addNewMatch in loop (fragili e frammentati).
+     */
+    public static void saveMatches(String tournamentKey, List<Match> matches) {
+        Tournament tournament = TournamentUtility.getTournamentByKey(tournamentKey);
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key + "/matches/");
+
+        Map<String, Object> updates = new HashMap<>();
+        for (Match match : matches) {
+            String key = dbRef.push().getKey();
+            match.key = key;
+
+            Map<String, Object> matchData = new HashMap<>();
+            matchData.put("day", match.day + "");
+            matchData.put("time", match.time);
+            matchData.put("team1", match.keyTeam1);
+            matchData.put("team2", match.keyTeam2);
+            matchData.put("points1", match.points1 + "");
+            matchData.put("points2", match.points2 + "");
+            matchData.put("type", match.type);
+            matchData.put("detail", buildDetail(match));
+
+            updates.put(key, matchData);
+        }
+
+        dbRef.updateChildren(updates);
+    }
 
     public static void addNewMatch(String tournamentKey, Match match) {
         Tournament tournament = TournamentUtility.getTournamentByKey(tournamentKey);
@@ -26,6 +72,7 @@ public class MatchUtility {
         dbRef.child(match.key).child("points1").setValue(match.points1 + "");
         dbRef.child(match.key).child("points2").setValue(match.points2 + "");
         dbRef.child(match.key).child("type").setValue(match.type);
+        dbRef.child(match.key).child("detail").setValue(buildDetail(match));
 
         tournament.matches.add(match);
 
@@ -33,7 +80,7 @@ public class MatchUtility {
             if (m1.day != m2.day) {
                 return Integer.compare(m1.day, m2.day);
             } else {
-                return m2.time.compareTo(m1.time);
+                return Integer.compare(TimeUtility.toMinutes(m2.time), TimeUtility.toMinutes(m1.time));
             }
         });
 
@@ -56,6 +103,7 @@ public class MatchUtility {
                 databaseReference.child("points1").setValue(match.points1 + "");
                 databaseReference.child("points2").setValue(match.points2 + "");
                 databaseReference.child("type").setValue(match.type);
+                databaseReference.child("detail").setValue(buildDetail(match));
 
                 tournament.matches.get(i).day = match.day;
                 tournament.matches.get(i).time = match.time;
@@ -64,10 +112,11 @@ public class MatchUtility {
                 tournament.matches.get(i).points1 = match.points1;
                 tournament.matches.get(i).points2 = match.points2;
                 tournament.matches.get(i).type = match.type;
+                tournament.matches.get(i).detail = match.detail;
 
                 Collections.sort(tournament.matches, (m1, m2) -> {
                     if (m1.day != m2.day) return Integer.compare(m1.day, m2.day);
-                    return m1.time.compareTo(m2.time); // ASC
+                    return Integer.compare(TimeUtility.toMinutes(m1.time), TimeUtility.toMinutes(m2.time)); // ASC
                 });
 
                 TournamentActivityManageMatches.tournamentBracketAdminAdapter.refresh();

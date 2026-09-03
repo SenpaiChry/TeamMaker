@@ -10,6 +10,9 @@ import com.example.myapplication.Model.Constants;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TournamentTeamUtility {
 
     public static void saveBracketForTeams(String tournamentKey) {
@@ -45,9 +48,16 @@ public class TournamentTeamUtility {
         for (Team team : tournament.teams) {
             DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key + "/teams/" + team.key);
 
+            // Mappa completa del nodo: setValue lo sostituisce per intero, così i
+            // playerN residui (es. player4 quando la squadra passa da 4 a 3) spariscono.
+            Map<String, Object> teamData = new HashMap<>();
+            teamData.put("bracket", team.bracket);
+
             for (int i = 0; i < team.players.size(); i ++) {
-                dbRef.child("player" + (i + 1)).setValue(team.players.get(i).key);
+                teamData.put("player" + (i + 1), team.players.get(i).key);
             }
+
+            dbRef.setValue(teamData);
         }
     }
 

@@ -57,6 +57,19 @@
     <string name="download_file">DOWNLOAD FILE</string>
     <string name="generate_multiple_brackets">GENERATE MULTIPLE BRACKETS</string>
     <string name="generate_italian_bracket">GENERATE ITALIAN BRACKET</string>
+    <string name="result">RESULT</string>
+    <string name="slot_team_1">SQUAD 1</string>
+    <string name="slot_team_2">SQUAD 2</string>
+    <string name="add_set_button">ADD SET</string>
+    <string name="set_short" translatable="false">SET</string>
+    <string name="invalid_set">INVALID SET</string>
+    <string name="col_wins">W</string>
+    <string name="col_set_quotient">SQ</string>
+    <string name="col_points_quotient">PQ</string>
+    <string name="generate_champions">GENERATE CHAMPIONS</string>
+    <string name="matches_per_team">MATCHES PER TEAM</string>
+    <string name="home_and_away">HOME AND AWAY</string>
+    <string name="invalid_champions_config">INVALID: K MUST BE &lt; TEAMS AND TEAMS×K EVEN</string>
     <string name="delete_match">DELETE MATCH</string>
     <string name="reboot_tournament">REBOOT TOURNAMENT</string>
     <string name="players" translatable="false">PLAYERS</string>
@@ -82,6 +95,20 @@
     <string name="n" translatable="false">n</string>
     <string name="minutes_for_match">MINUTES FOR MATCH</string>
     <string name="add_time_section">ADD TIME SECTION</string>
+    <string name="generate_calendar">GENERATE CALENDAR</string>
+    <string name="format_italian">ITALIAN</string>
+    <string name="format_groups">GROUPS</string>
+    <string name="format_champions">CHAMPIONS</string>
+    <string name="time_slots">TIME SLOTS</string>
+    <string name="add_slot">+ ADD</string>
+    <string name="matches_to_generate">MATCHES TO GENERATE</string>
+    <string name="slots_not_hosting">SLOTS CAN\'T HOST</string>
+    <string name="for_time">FOR</string>
+    <string name="hours">HOURS</string>
+    <string name="hour">HOUR</string>
+    <string name="and_word">AND</string>
+    <string name="minutes_short">MIN</string>
+    <string name="arrow_right" translatable="false">→</string>
     <string name="type" translatable="false">TYPE</string>
     <string name="match">"MATCH"</string>
     <string name="team" translatable="false">TEAM </string>

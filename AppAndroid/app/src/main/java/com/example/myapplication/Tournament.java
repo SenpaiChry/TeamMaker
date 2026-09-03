@@ -1,5 +1,7 @@
 package com.example.myapplication;
 
+import com.example.myapplication.Utility.TimeUtility;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -87,7 +89,7 @@ public class Tournament {
             if (m1.day != m2.day) {
                 return Integer.compare(m1.day, m2.day);
             } else {
-                return m2.time.compareTo(m1.time);
+                return Integer.compare(TimeUtility.toMinutes(m2.time), TimeUtility.toMinutes(m1.time));
             }
         });
         Collections.reverse(matchesTemp);

@@ -43,7 +43,7 @@
         android:paddingBottom="6dp">
 
         <Button
-            android:id="@+id/btnCreateItalianBracket"
+            android:id="@+id/btnGenerateCalendar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -53,20 +53,7 @@
             android:textStyle="bold|italic"
             android:textColor="@color/white"
             android:textSize="15sp"
-            android:text="@string/generate_italian_bracket" />
-
-        <Button
-            android:id="@+id/btnCreateBaseBracket"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="4dp"
-            android:background="@drawable/buttons_main"
-            android:fontFamily="@font/helvetica_black"
-            android:textStyle="bold|italic"
-            android:textColor="@color/white"
-            android:textSize="15sp"
-            android:text="@string/generate_multiple_brackets" />
+            android:text="@string/generate_calendar" />
 
         <Button
             android:id="@+id/btnDeleteEveryMatch"

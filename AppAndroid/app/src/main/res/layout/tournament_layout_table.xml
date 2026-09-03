@@ -55,6 +55,87 @@
             android:textSize="13sp" />
     </LinearLayout>
 
+    <!-- Vittorie -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:minWidth="30dp"
+        android:layout_marginEnd="4dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/col_wins"
+            android:fontFamily="@font/helvetica_black"
+            android:textColor="@color/list_text_muted"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/txtWins"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold"
+            android:textColor="@color/list_text_secondary"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <!-- Quoziente set -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:minWidth="42dp"
+        android:layout_marginEnd="4dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/col_set_quotient"
+            android:fontFamily="@font/helvetica_black"
+            android:textColor="@color/list_text_muted"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/txtSetQuotient"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold"
+            android:textColor="@color/list_text_secondary"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <!-- Quoziente punti -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:minWidth="42dp"
+        android:layout_marginEnd="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/col_points_quotient"
+            android:fontFamily="@font/helvetica_black"
+            android:textColor="@color/list_text_muted"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/txtPointsQuotient"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold"
+            android:textColor="@color/list_text_secondary"
+            android:textSize="15sp" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/txtPoints"
         android:layout_width="wrap_content"

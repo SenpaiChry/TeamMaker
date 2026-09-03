@@ -18,16 +18,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TeamGeneratorUtility {
 
-    public static void makeTeams(int nPlayerInSquad, int nAlgorithm, ArrayList<Player> playersSelected) {
+    /** @return true se è stata prodotta una nuova soluzione valida, false altrimenti. */
+    public static boolean makeTeams(int nPlayerInSquad, int nAlgorithm, ArrayList<Player> playersSelected) {
         Constants.nCycle = 0;
 
         if (nAlgorithm == 2) {
             initTeams(playersSelected, nPlayerInSquad);
             algorithm2(playersSelected);
+            return true;
         } else if (nAlgorithm == 5) {
             int nThreads = Runtime.getRuntime().availableProcessors(); // o un valore dinamico, tipo
-            makeTeamsThreads(nPlayerInSquad, nThreads, playersSelected);
+            return makeTeamsThreads(nPlayerInSquad, nThreads, playersSelected);
         }
+
+        return false;
     }
 
     public static void initTeams(ArrayList<Player> playersSelected, int nPlayerInSquad) {
@@ -52,7 +56,11 @@ public class TeamGeneratorUtility {
         }
     }
 
-    public static void makeTeamsThreads(int nPlayerInSquad, int nThreads, ArrayList<Player> playersSelected) {
+    public static boolean makeTeamsThreads(int nPlayerInSquad, int nThreads, ArrayList<Player> playersSelected) {
+        // Constants.teams NON va azzerato qui: verrebbe letto vuoto dalla UI durante
+        // il reroll (race). Su successo lo sostituisce atomicamente tryCommitSolution;
+        // su fallimento restano le squadre precedenti (il chiamante gestisce l'esito).
+
         final int maxRetries = 50_000;
         final AtomicBoolean solutionFound = new AtomicBoolean(false);
         final ExecutorService executor = Executors.newFixedThreadPool(nThreads);
@@ -102,21 +110,21 @@ public class TeamGeneratorUtility {
 
                     float tolerance = Math.max(Constants.inputMaxDifference, baseTolerance) + retry / 10000f;
 
-                    if (isValid(teamVotes, teamFemales, tolerance)) {
+                    if (isValid(teamVotes, teamSizes, teamFemales, tolerance)) {
                         tryCommitSolution(solutionFound, assignment, playersSelected, nTeams, retry, teamVotes);
                         return;
                     }
 
-                    if (!femaleBalanced(teamFemales)) {
-                        swapToBalanceFemales(assignment, votes, isFemale, teamVotes, teamFemales, nPlayers, nTeams);
-                        if (isValid(teamVotes, teamFemales, tolerance)) {
+                    if (!femaleBalanced(teamFemales) || !maleBalanced(teamSizes, teamFemales)) {
+                        swapToBalanceGenders(assignment, votes, isFemale, teamVotes, teamSizes, teamFemales, nPlayers, nTeams);
+                        if (isValid(teamVotes, teamSizes, teamFemales, tolerance)) {
                             tryCommitSolution(solutionFound, assignment, playersSelected, nTeams, retry, teamVotes);
                             return;
                         }
                     }
 
-                    swapToBalanceVotes(assignment, votes, isFemale, teamVotes, teamFemales, nPlayers, nTeams, tolerance);
-                    if (isValid(teamVotes, teamFemales, tolerance)) {
+                    swapToBalanceVotes(assignment, votes, isFemale, teamVotes, teamSizes, teamFemales, nPlayers, nTeams, tolerance);
+                    if (isValid(teamVotes, teamSizes, teamFemales, tolerance)) {
                         tryCommitSolution(solutionFound, assignment, playersSelected, nTeams, retry, teamVotes);
                         return;
                     }
@@ -131,6 +139,8 @@ public class TeamGeneratorUtility {
         } catch (InterruptedException e) {
             Log.d("FATAL", e.toString());
         }
+
+        return solutionFound.get();
     }
 
     private static int findWeakestTeam(float[] teamVotes, int[] teamSizes, int maxSize) {
@@ -142,13 +152,15 @@ public class TeamGeneratorUtility {
         return best;
     }
 
-    private static boolean isValid(float[] teamVotes, int[] teamFemales, float tolerance) {
+    private static boolean isValid(float[] teamVotes, int[] teamSizes, int[] teamFemales, float tolerance) {
         float minV = Float.MAX_VALUE, maxV = 0;
         for (float v : teamVotes) {
             if (v < minV) minV = v;
             if (v > maxV) maxV = v;
         }
-        return (maxV - minV <= tolerance) && femaleBalanced(teamFemales);
+        return (maxV - minV <= tolerance)
+                && femaleBalanced(teamFemales)
+                && maleBalanced(teamSizes, teamFemales);
     }
 
     private static boolean femaleBalanced(int[] teamFemales) {
@@ -160,46 +172,92 @@ public class TeamGeneratorUtility {
         return (max - min) <= 1;
     }
 
-    private static void swapToBalanceFemales(int[] assignment, float[] votes, boolean[] isFemale,
-                                             float[] teamVotes, int[] teamFemales, int nPlayers, int nTeams) {
+    /** I maschi (dimensione squadra - femmine) devono differire al massimo di 1 fra le squadre. */
+    private static boolean maleBalanced(int[] teamSizes, int[] teamFemales) {
+        int min = Integer.MAX_VALUE, max = 0;
+        for (int i = 0; i < teamSizes.length; i++) {
+            int males = teamSizes[i] - teamFemales[i];
+            if (males < min) min = males;
+            if (males > max) max = males;
+        }
+        return (max - min) <= 1;
+    }
 
-        for (int pass = 0; pass < nTeams; pass++) {
-            int richTeam = 0, poorTeam = 0;
+    /**
+     * Bilancia i generi: tiene sia le femmine sia i maschi entro spread 1 fra le
+     * squadre. A ogni passata interviene sulla dimensione (femmine o maschi) più
+     * sbilanciata, scambiando una femmina con un maschio fra le due squadre
+     * coinvolte (scegliendo i voti più simili per non alterare l'equilibrio).
+     */
+    private static void swapToBalanceGenders(int[] assignment, float[] votes, boolean[] isFemale,
+                                             float[] teamVotes, int[] teamSizes, int[] teamFemales,
+                                             int nPlayers, int nTeams) {
+
+        for (int pass = 0; pass < 2 * nTeams; pass++) {
+            int femRich = 0, femPoor = 0, maleRich = 0, malePoor = 0;
             for (int i = 1; i < nTeams; i++) {
-                if (teamFemales[i] > teamFemales[richTeam]) richTeam = i;
-                if (teamFemales[i] < teamFemales[poorTeam]) poorTeam = i;
-            }
-            if (teamFemales[richTeam] - teamFemales[poorTeam] <= 1) break;
-
-            int bestF = -1, bestM = -1;
-            float bestDelta = Float.MAX_VALUE;
-
-            for (int p = 0; p < nPlayers; p++) {
-                if (assignment[p] != richTeam || !isFemale[p]) continue;
-                for (int q = 0; q < nPlayers; q++) {
-                    if (assignment[q] != poorTeam || isFemale[q]) continue;
-                    float delta = Math.abs(votes[p] - votes[q]);
-                    if (delta < bestDelta) {
-                        bestDelta = delta;
-                        bestF = p;
-                        bestM = q;
-                    }
-                }
+                if (teamFemales[i] > teamFemales[femRich]) femRich = i;
+                if (teamFemales[i] < teamFemales[femPoor]) femPoor = i;
+                int males = teamSizes[i] - teamFemales[i];
+                if (males > teamSizes[maleRich] - teamFemales[maleRich]) maleRich = i;
+                if (males < teamSizes[malePoor] - teamFemales[malePoor]) malePoor = i;
             }
 
-            if (bestF == -1 || bestM == -1) break;
+            int femSpread = teamFemales[femRich] - teamFemales[femPoor];
+            int maleSpread = (teamSizes[maleRich] - teamFemales[maleRich])
+                    - (teamSizes[malePoor] - teamFemales[malePoor]);
 
-            teamVotes[richTeam] += votes[bestM] - votes[bestF];
-            teamVotes[poorTeam] += votes[bestF] - votes[bestM];
-            teamFemales[richTeam]--;
-            teamFemales[poorTeam]++;
-            assignment[bestF] = poorTeam;
-            assignment[bestM] = richTeam;
+            if (femSpread <= 1 && maleSpread <= 1) break;
+
+            boolean done;
+            if (femSpread >= maleSpread) {
+                // troppa disparità di femmine: ne sposto una dalla squadra che ne ha di più a quella che ne ha di meno
+                done = swapFemaleForMale(femRich, femPoor, assignment, votes, isFemale, teamVotes, teamFemales, nPlayers);
+            } else {
+                // troppa disparità di maschi: ne sposto uno dalla squadra che ne ha di più a quella che ne ha di meno
+                done = swapFemaleForMale(malePoor, maleRich, assignment, votes, isFemale, teamVotes, teamFemales, nPlayers);
+            }
+
+            if (!done) break;
         }
     }
 
+    /**
+     * Scambia una femmina della squadra giveFteam con un maschio della squadra
+     * giveMteam (voti più simili possibile). Aggiorna voti e conteggio femmine;
+     * le dimensioni restano invariate. Ritorna false se lo scambio non è possibile.
+     */
+    private static boolean swapFemaleForMale(int giveFteam, int giveMteam, int[] assignment, float[] votes,
+                                             boolean[] isFemale, float[] teamVotes, int[] teamFemales, int nPlayers) {
+        int bestF = -1, bestM = -1;
+        float bestDelta = Float.MAX_VALUE;
+
+        for (int p = 0; p < nPlayers; p++) {
+            if (assignment[p] != giveFteam || !isFemale[p]) continue;
+            for (int q = 0; q < nPlayers; q++) {
+                if (assignment[q] != giveMteam || isFemale[q]) continue;
+                float delta = Math.abs(votes[p] - votes[q]);
+                if (delta < bestDelta) {
+                    bestDelta = delta;
+                    bestF = p;
+                    bestM = q;
+                }
+            }
+        }
+
+        if (bestF == -1 || bestM == -1) return false;
+
+        teamVotes[giveFteam] += votes[bestM] - votes[bestF];
+        teamVotes[giveMteam] += votes[bestF] - votes[bestM];
+        teamFemales[giveFteam]--;
+        teamFemales[giveMteam]++;
+        assignment[bestF] = giveMteam;
+        assignment[bestM] = giveFteam;
+        return true;
+    }
+
     private static void swapToBalanceVotes(int[] assignment, float[] votes, boolean[] isFemale,
-                                           float[] teamVotes, int[] teamFemales, int nPlayers, int nTeams, float tolerance) {
+                                           float[] teamVotes, int[] teamSizes, int[] teamFemales, int nPlayers, int nTeams, float tolerance) {
 
         for (int pass = 0; pass < 20; pass++) {
             int richTeam = 0, poorTeam = 0;
@@ -231,7 +289,8 @@ public class TeamGeneratorUtility {
                         int[] simulatedFemales = teamFemales.clone();
                         if (isFemale[p]) { simulatedFemales[richTeam]--; simulatedFemales[poorTeam]++; }
                         else             { simulatedFemales[richTeam]++; simulatedFemales[poorTeam]--; }
-                        if (!femaleBalanced(simulatedFemales)) continue;
+                        if (!femaleBalanced(simulatedFemales)
+                                || !maleBalanced(teamSizes, simulatedFemales)) continue;
                     }
 
                     bestImprovement = improvement;

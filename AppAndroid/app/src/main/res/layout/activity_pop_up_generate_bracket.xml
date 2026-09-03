@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="5dp"
-    android:layout_margin="20dp"
+    android:padding="14dp"
+    android:layout_margin="12dp"
     android:background="@drawable/bg_modal_dark">
 
     <TextView
@@ -13,155 +13,272 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/helvetica_black"
         android:textStyle="bold|italic"
-        android:lineSpacingMultiplier="1.1"
         android:textColor="@color/white"
-        android:text="@string/title"
+        android:text="@string/generate_calendar"
         android:textAlignment="center"
-        android:textSize="30sp"
-        android:layout_marginBottom="5dp"/>
+        android:textSize="26sp"
+        android:layout_marginBottom="10dp" />
 
+    <!-- Toggle formato -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="4dp"
+        android:background="@drawable/bg_field_secondary">
+
+        <TextView
+            android:id="@+id/btnFormatItalian"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingVertical="8dp"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/white"
+            android:text="@string/format_italian"
+            android:textAlignment="center"
+            android:textSize="13sp"
+            android:background="@drawable/bg_segment_selected" />
+
+        <TextView
+            android:id="@+id/btnFormatGroups"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingVertical="8dp"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_muted"
+            android:text="@string/format_groups"
+            android:textAlignment="center"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/btnFormatChampions"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingVertical="8dp"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_muted"
+            android:text="@string/format_champions"
+            android:textAlignment="center"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <!-- Numero gironi (solo GIRONI) -->
     <LinearLayout
         android:id="@+id/llNBrackets"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_margin="5dp"
-        android:padding="5dp"
-        android:background="@drawable/player_style">
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        android:layout_marginTop="8dp"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="4dp"
+        android:background="@drawable/bg_field_secondary">
 
         <TextView
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:fontFamily="@font/helvetica_black"
             android:textStyle="bold|italic"
-            android:lineSpacingMultiplier="1.1"
-            android:textColor="@color/black"
-            android:layout_height="wrap_content"
+            android:textColor="@color/list_text_secondary"
             android:text="@string/number_of_brackets"
-            android:textSize="20sp"
-            android:layout_marginLeft="5dp"
-            android:textAlignment="center"
-            android:layout_weight="1" />
+            android:textSize="14sp" />
 
         <EditText
             android:id="@+id/txtNBrackets"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
             android:fontFamily="@font/helvetica_black"
             android:textStyle="bold|italic"
-            android:textColor="@color/black"
-            android:textColorHint="@color/search_hint"
+            android:textColor="@color/list_text_primary"
+            android:textColorHint="@color/list_text_muted"
             android:hint="@string/n"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
-            android:textAlignment="center"
-            android:textSize="18sp"
-            android:inputType="number" />
+            android:gravity="center"
+            android:inputType="number"
+            android:textSize="16sp" />
     </LinearLayout>
 
+    <!-- Partite per squadra (solo CHAMPIONS) -->
+    <LinearLayout
+        android:id="@+id/llMatchesPerTeam"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        android:layout_marginTop="8dp"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="4dp"
+        android:background="@drawable/bg_field_secondary">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_secondary"
+            android:text="@string/matches_per_team"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/txtMatchesPerTeam"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_primary"
+            android:textColorHint="@color/list_text_muted"
+            android:hint="@string/n"
+            android:gravity="center"
+            android:inputType="number"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <!-- Andata e ritorno (ITALIANA / GIRONI) -->
+    <LinearLayout
+        android:id="@+id/llHomeAndAway"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="8dp"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="4dp"
+        android:background="@drawable/bg_field_secondary">
+
+        <CheckBox
+            android:id="@+id/chkHomeAndAway"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_secondary"
+            android:text="@string/home_and_away"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Minuti per partita -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="8dp"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="4dp"
+        android:background="@drawable/bg_field_secondary">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_secondary"
+            android:text="@string/minutes_for_match"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/txtMinutesForMatch"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_primary"
+            android:textColorHint="@color/list_text_muted"
+            android:hint="@string/mm"
+            android:gravity="center"
+            android:inputType="number"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <!-- Fasce orarie: header + aggiungi -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="12dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_primary"
+            android:text="@string/time_slots"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/btnAddTimes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/white"
+            android:text="@string/add_slot"
+            android:textSize="13sp"
+            android:background="@drawable/bg_segment_selected" />
+    </LinearLayout>
+
+    <com.example.myapplication.MaxHeightScrollView
+        android:id="@+id/scrollTimes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/llTimes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </com.example.myapplication.MaxHeightScrollView>
+
+    <!-- Info: partite da generare / non ospitate -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_margin="5dp"
-        android:padding="5dp"
-        android:background="@drawable/player_style">
+        android:layout_marginTop="10dp">
 
         <TextView
-            android:layout_width="0dp"
+            android:id="@+id/txtMatchCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:fontFamily="@font/helvetica_black"
             android:textStyle="bold|italic"
-            android:lineSpacingMultiplier="1.1"
-            android:textColor="@color/black"
-            android:layout_height="wrap_content"
-            android:text="@string/minutes_for_match"
-            android:textSize="20sp"
-            android:layout_marginStart="5dp"
-            android:textAlignment="center"
-            android:layout_weight="1" />
+            android:textColor="@color/list_text_muted"
+            android:textSize="13sp" />
 
-        <EditText
-            android:id="@+id/txtMinutesForMatch"
+        <TextView
+            android:id="@+id/txtNotHosted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
             android:fontFamily="@font/helvetica_black"
             android:textStyle="bold|italic"
-            android:textColor="@color/black"
-            android:hint="@string/mm"
-            android:textColorHint="@color/search_hint"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
-            android:textAlignment="center"
-            android:textSize="18sp"
-            android:inputType="number" />
+            android:textColor="@color/button_danger"
+            android:textSize="13sp" />
     </LinearLayout>
-
-    <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center"
-    android:layout_margin="5dp"
-    android:padding="5dp"
-    android:background="@drawable/player_style">
-
-    <TextView
-        android:id="@+id/txtTimeNeed"
-        android:layout_width="0dp"
-        android:fontFamily="@font/helvetica_black"
-        android:textStyle="bold|italic"
-        android:lineSpacingMultiplier="1.1"
-        android:textColor="@color/black"
-        android:layout_height="wrap_content"
-        android:text="@string/time_need"
-        android:textSize="20sp"
-        android:layout_marginStart="5dp"
-        android:textAlignment="center"
-        android:layout_weight="1" />
-</LinearLayout>
-
-    <Button
-        android:id="@+id/btnAddTimes"
-        android:background="@drawable/buttons_main"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/helvetica_black"
-        android:textStyle="bold|italic"
-        android:textColor="@color/white"
-        android:text="@string/add_time_section"
-        android:textSize="18sp"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginVertical="5dp" />
-
-    <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:id="@+id/llTimes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-            </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginVertical="5dp"
+        android:layout_marginTop="10dp"
         android:gravity="center">
 
         <Button
@@ -191,5 +308,4 @@
             android:layout_weight="1"
             android:layout_marginHorizontal="5dp" />
     </LinearLayout>
-</LinearLayout>
 </LinearLayout>

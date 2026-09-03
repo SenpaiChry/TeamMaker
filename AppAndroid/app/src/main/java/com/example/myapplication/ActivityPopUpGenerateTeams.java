@@ -25,6 +25,7 @@ public class ActivityPopUpGenerateTeams extends AppCompatActivity {
 
     private int btnSelectedPlayer = 0;
     private Button[] playerButtons;
+    private ExecutorService executor;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -61,7 +62,7 @@ public class ActivityPopUpGenerateTeams extends AppCompatActivity {
                 // Precisione massima: differenza zero
                 Constants.inputMaxDifference = 0;
 
-                ExecutorService executor = Executors.newSingleThreadExecutor();
+                executor = Executors.newSingleThreadExecutor();
                 Handler handler = new Handler(Looper.getMainLooper());
 
                 Toast.makeText(ActivityGenerate.activityGenerate, R.string.generating, Toast.LENGTH_SHORT).show();
@@ -72,16 +73,24 @@ public class ActivityPopUpGenerateTeams extends AppCompatActivity {
                 setEnabledAllChildren(rootLayout, false);
 
                 executor.execute(() -> {
-                    TeamGeneratorUtility.makeTeams(btnSelectedPlayer, 5, Constants.playersSelected);
+                    boolean success = TeamGeneratorUtility.makeTeams(btnSelectedPlayer, 5, Constants.playersSelected);
 
                     handler.post(() -> {
-                        Intent intent = new Intent(ActivityGenerate.activityGenerate.getApplicationContext(), ActivityTeams.class);
-                        intent.putExtra("TYPE", type);
-                        intent.putExtra("nPlayers", btnSelectedPlayer);
-                        intent.putExtra("nAlgorithm", 5);
-                        ActivityGenerate.activityGenerate.startActivity(intent);
+                        if (success) {
+                            Intent intent = new Intent(ActivityGenerate.activityGenerate.getApplicationContext(), ActivityTeams.class);
+                            intent.putExtra("TYPE", type);
+                            intent.putExtra("nPlayers", btnSelectedPlayer);
+                            intent.putExtra("nAlgorithm", 5);
+                            ActivityGenerate.activityGenerate.startActivity(intent);
 
-                        finish();
+                            finish();
+                        } else {
+                            // Generazione fallita: non aprire Teams (mostrerebbe dati vecchi),
+                            // riabilita la popup e avvisa l'utente.
+                            progressBar1.setVisibility(View.GONE);
+                            setEnabledAllChildren(rootLayout, true);
+                            Toast.makeText(ActivityGenerate.activityGenerate, R.string.need_more_time, Toast.LENGTH_SHORT).show();
+                        }
                     });
                 });
             }
@@ -89,6 +98,14 @@ public class ActivityPopUpGenerateTeams extends AppCompatActivity {
 
         Button btnCancel = findViewById(R.id.btnCancel);
         btnCancel.setOnClickListener(v -> finish());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (executor != null) {
+            executor.shutdownNow();
+        }
     }
 
     /** Seleziona il numero di giocatori per squadra e aggiorna lo stato dei tasti. */

@@ -48,6 +48,15 @@ public class ActivityPopUpInfoMatch extends AppCompatActivity {
             txtFinalPoints1.setText(String.valueOf(match.points1));
             txtFinalPoints2.setText(String.valueOf(match.points2));
 
+            TextView txtSetDetail = findViewById(R.id.txtSetDetail);
+            String setDetail = match.detailString();
+            if (setDetail.isEmpty()) {
+                txtSetDetail.setVisibility(View.GONE);
+            } else {
+                txtSetDetail.setText(setDetail);
+                txtSetDetail.setVisibility(View.VISIBLE);
+            }
+
             txtPoints1.setVisibility(View.GONE);
             txtPoints2.setVisibility(View.GONE);
 

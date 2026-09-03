@@ -6,25 +6,33 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
-import com.example.myapplication.Utility.TeamGeneratorUtility;
+import com.example.myapplication.Utility.ScheduleOptions;
 import com.example.myapplication.Utility.TimeUtility;
 import com.example.myapplication.Utility.TournamentScheduleUtility;
 import com.example.myapplication.Utility.TournamentUtility;
-import com.example.myapplication.Utility.Utility;
 
 import java.util.ArrayList;
 
 public class ActivityPopUpGenerateBracket extends AppCompatActivity {
-    private int count = 0;
+
+    private ScheduleOptions.Format format = ScheduleOptions.Format.ITALIAN;
+
+    private String tournamentKey;
+
+    private LinearLayout llTimes, llNBrackets, llMatchesPerTeam, llHomeAndAway;
+    private TextView btnFormatItalian, btnFormatGroups, btnFormatChampions, txtMatchCount, txtNotHosted;
+    private EditText txtNBrackets, txtMatchesPerTeam, txtMinutesForMatch;
+    private CheckBox chkHomeAndAway;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -32,158 +40,260 @@ public class ActivityPopUpGenerateBracket extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pop_up_generate_bracket);
 
-        String type = getIntent().getExtras().getString("bracket_type");
-        String tournamentKey = getIntent().getExtras().getString("tournament_key");
-        Tournament tournament = TournamentUtility.getTournamentByKey(tournamentKey);
+        // La modale si adatta al contenuto; la lista fasce ha un tetto (MaxHeightScrollView)
+        // così con tante fasce scrolla e i tasti restano visibili.
+        if (getWindow() != null) {
+            getWindow().setLayout(
+                    (int) (getResources().getDisplayMetrics().widthPixels * 0.92),
+                    android.view.WindowManager.LayoutParams.WRAP_CONTENT);
+        }
+        MaxHeightScrollView scrollTimes = findViewById(R.id.scrollTimes);
+        float density = getResources().getDisplayMetrics().density;
+        int chromeHeight = (int) (430 * density); // spazio per titolo + toggle + campi + tasti
+        int cap = getResources().getDisplayMetrics().heightPixels - chromeHeight;
+        scrollTimes.setMaxHeight(Math.max((int) (120 * density), cap));
 
-        ArrayList<EditText> txtTimeSections = new ArrayList<>();
+        tournamentKey = getIntent().getExtras().getString("tournament_key");
 
-        TextView txtTitle = findViewById(R.id.txtTitle);
-        TextView txtTimeNeed = findViewById(R.id.txtTimeNeed);
-        EditText txtNBrackets = findViewById(R.id.txtNBrackets);
-        EditText txtMinutesForMatch = findViewById(R.id.txtMinutesForMatch);
-        LinearLayout llTimes = findViewById(R.id.llTimes);
+        llTimes = findViewById(R.id.llTimes);
+        llNBrackets = findViewById(R.id.llNBrackets);
+        llMatchesPerTeam = findViewById(R.id.llMatchesPerTeam);
+        llHomeAndAway = findViewById(R.id.llHomeAndAway);
+        btnFormatItalian = findViewById(R.id.btnFormatItalian);
+        btnFormatGroups = findViewById(R.id.btnFormatGroups);
+        btnFormatChampions = findViewById(R.id.btnFormatChampions);
+        txtMatchCount = findViewById(R.id.txtMatchCount);
+        txtNotHosted = findViewById(R.id.txtNotHosted);
+        txtNBrackets = findViewById(R.id.txtNBrackets);
+        txtMatchesPerTeam = findViewById(R.id.txtMatchesPerTeam);
+        txtMinutesForMatch = findViewById(R.id.txtMinutesForMatch);
+        chkHomeAndAway = findViewById(R.id.chkHomeAndAway);
+
+        btnFormatItalian.setOnClickListener(v -> setFormat(ScheduleOptions.Format.ITALIAN));
+        btnFormatGroups.setOnClickListener(v -> setFormat(ScheduleOptions.Format.GROUPS));
+        btnFormatChampions.setOnClickListener(v -> setFormat(ScheduleOptions.Format.CHAMPIONS));
+
+        TextView btnAddTimes = findViewById(R.id.btnAddTimes);
+        btnAddTimes.setOnClickListener(v -> addSlotRow(-1, "", ""));
+
+        TextWatcher updateInfoWatcher = new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void onTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void afterTextChanged(Editable s) { updateInfo(); }
+        };
+        txtMinutesForMatch.addTextChangedListener(updateInfoWatcher);
+        txtNBrackets.addTextChangedListener(updateInfoWatcher);
+        txtMatchesPerTeam.addTextChangedListener(updateInfoWatcher);
+        chkHomeAndAway.setOnCheckedChangeListener((buttonView, isChecked) -> updateInfo());
+
+        addSlotRow(-1, "", "");
+        setFormat(ScheduleOptions.Format.ITALIAN);
 
         Button btnConfirm = findViewById(R.id.btnConfirm);
-        Button btnAddTimes = findViewById(R.id.btnAddTimes);
-        btnAddTimes.setOnClickListener(v -> {
-            count ++;
-            LayoutInflater inflater = LayoutInflater.from(this);
-
-            View viewDay = inflater.inflate(R.layout.layout_time, llTimes, false);
-            TextView txtDay = viewDay.findViewById(R.id.txtDescription);
-            txtDay.setText(getResources().getText(R.string.day_number));
-            EditText txtInputDay = viewDay.findViewById(R.id.txtInput);
-            txtInputDay.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
-            txtInputDay.setHint(getResources().getText(R.string.n));
-            llTimes.addView(viewDay);
-
-            View viewStart = inflater.inflate(R.layout.layout_time, llTimes, false);
-            TextView txtStart = viewStart.findViewById(R.id.txtDescription);
-            txtStart.setText(getResources().getText(R.string.start_time_section) + " " + count);
-            EditText txtInputStart = viewStart.findViewById(R.id.txtInput);
-            llTimes.addView(viewStart);
-
-            View viewEnd = inflater.inflate(R.layout.layout_time, llTimes, false);
-            TextView txtEnd = viewEnd.findViewById(R.id.txtDescription);
-            txtEnd.setText(getResources().getText(R.string.end_time_section) + " " + count);
-            EditText txtInputEnd = viewEnd.findViewById(R.id.txtInput);
-            llTimes.addView(viewEnd);
-
-            txtTimeSections.add(txtInputDay);
-            txtTimeSections.add(txtInputStart);
-            txtTimeSections.add(txtInputEnd);
-        });
-
-        TextWatcher updateTimeWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                txtTimeNeed.setText(getNeedTime(tournamentKey, type, txtNBrackets, txtMinutesForMatch));
-            }
-        };
-
-        txtMinutesForMatch.addTextChangedListener(updateTimeWatcher);
-        txtNBrackets.addTextChangedListener(updateTimeWatcher);
-
-        switch (type) {
-            case "MULTIPLE_BRACKET": {
-                txtTitle.setText(R.string.generate_multiple_brackets);
-
-                btnConfirm.setOnClickListener(v -> {
-                    ArrayList<String> stringsInput = new ArrayList<>();
-
-                    for (int i = 0; i < txtTimeSections.size(); i++) {
-                        stringsInput.add(String.valueOf(txtTimeSections.get(i).getText()));
-                    }
-
-                    try {
-                        int minutesForMatch = Integer.parseInt(String.valueOf(txtMinutesForMatch.getText()));
-                        int nBrackets = Integer.parseInt(String.valueOf(txtNBrackets.getText()));
-
-                        if (Integer.parseInt(txtNBrackets.getText().toString()) > (TournamentUtility.getTournamentByKey(tournamentKey).teams.size() / 2)) {
-                            Toast.makeText(this, R.string.too_many_brackets, Toast.LENGTH_SHORT).show();
-                        } else if (TimeUtility.checkInputTime(stringsInput, minutesForMatch, TournamentScheduleUtility.nMatchesMultipleBracket(tournamentKey, nBrackets))) {
-                            createMultipleBracket(tournament.key, stringsInput, String.valueOf(txtMinutesForMatch.getText()), Integer.parseInt(String.valueOf(txtNBrackets.getText())));
-                            txtTimeSections.clear();
-                        } else {
-                            Toast.makeText(this, R.string.need_more_time, Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (Exception ignored) { }
-                });
-                break;
-            }
-            case "ITALIAN_BRACKET": {
-                txtTitle.setText(R.string.generate_italian_bracket);
-
-                findViewById(R.id.llNBrackets).setVisibility(View.GONE);
-
-                btnConfirm.setOnClickListener(v -> {
-                    ArrayList<String> stringsInput = new ArrayList<>();
-
-                    for (int i = 0; i < txtTimeSections.size(); i++) {
-                        stringsInput.add(String.valueOf(txtTimeSections.get(i).getText()));
-                    }
-
-                    try {
-                        int minutesForMatch = Integer.parseInt(String.valueOf(txtMinutesForMatch.getText()));
-
-                        if (TimeUtility.checkInputTime(stringsInput, minutesForMatch, TournamentScheduleUtility.nMatchesItalianBracket(tournamentKey))) {
-                            createItalianBracket(tournament.key, stringsInput, String.valueOf(txtMinutesForMatch.getText()));
-                            txtTimeSections.clear();
-                        } else {
-                            Toast.makeText(this, R.string.need_more_time, Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (Exception ignored) {
-                    }
-                });
-                break;
-            }
-        }
+        btnConfirm.setOnClickListener(v -> confirm());
 
         Button btnCancel = findViewById(R.id.btnCancel);
         btnCancel.setOnClickListener(v -> finish());
     }
 
-    private void createMultipleBracket(String tournamentKey, ArrayList<String> stringsInput, String txtMinutesForMatch, int txtNBrackets) {
-        Toast.makeText(this, R.string.generating, Toast.LENGTH_LONG).show();
-        TournamentScheduleUtility.generateMultipleBracket(tournamentKey, stringsInput, txtMinutesForMatch, txtNBrackets);
-        finish();
+    /** Cambia formato: aggiorna toggle, campi extra e info. */
+    private void setFormat(ScheduleOptions.Format newFormat) {
+        format = newFormat;
+
+        styleSegment(btnFormatItalian, format == ScheduleOptions.Format.ITALIAN);
+        styleSegment(btnFormatGroups, format == ScheduleOptions.Format.GROUPS);
+        styleSegment(btnFormatChampions, format == ScheduleOptions.Format.CHAMPIONS);
+
+        llNBrackets.setVisibility(format == ScheduleOptions.Format.GROUPS ? View.VISIBLE : View.GONE);
+        llMatchesPerTeam.setVisibility(format == ScheduleOptions.Format.CHAMPIONS ? View.VISIBLE : View.GONE);
+        llHomeAndAway.setVisibility(format == ScheduleOptions.Format.CHAMPIONS ? View.GONE : View.VISIBLE);
+
+        updateInfo();
     }
 
-    private void createItalianBracket(String tournamentKey, ArrayList<String> stringsInput, String txtMinutesForMatch) {
-        Toast.makeText(this, R.string.generating, Toast.LENGTH_LONG).show();
-        TournamentScheduleUtility.generateItalianBracket(tournamentKey, stringsInput, txtMinutesForMatch);
-        finish();
+    private void styleSegment(TextView segment, boolean selected) {
+        segment.setBackground(selected ? ContextCompat.getDrawable(this, R.drawable.bg_segment_selected) : null);
+        segment.setTextColor(ContextCompat.getColor(this, selected ? R.color.white : R.color.list_text_muted));
     }
 
-    @SuppressLint("DefaultLocale")
-    private String getNeedTime(String tournamentKey, String type, TextView txtNBrackets, TextView txtMinutesForMatch) {
-        try {
-            int minutesPerMatch = Integer.parseInt(txtMinutesForMatch.getText().toString());
+    /** Aggiunge una riga fascia (giorno negativo / orari vuoti = campo vuoto). */
+    private void addSlotRow(int day, String start, String end) {
+        View row = LayoutInflater.from(this).inflate(R.layout.layout_time_row, llTimes, false);
+        EditText etDay = row.findViewById(R.id.etDay);
+        EditText etStart = row.findViewById(R.id.etStart);
+        EditText etEnd = row.findViewById(R.id.etEnd);
+        if (day >= 0) etDay.setText(String.valueOf(day));
+        if (!start.isEmpty()) etStart.setText(start);
+        if (!end.isEmpty()) etEnd.setText(end);
 
-            if (type.equals("MULTIPLE_BRACKET") && minutesPerMatch > 0) {
-                int nBrackets = Integer.parseInt(txtNBrackets.getText().toString());
-                int time = TournamentScheduleUtility.nMatchesMultipleBracket(tournamentKey, nBrackets) * minutesPerMatch;
+        TextWatcher watcher = new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void onTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void afterTextChanged(Editable s) { updateInfo(); }
+        };
+        etDay.addTextChangedListener(watcher);
+        etStart.addTextChangedListener(watcher);
+        etEnd.addTextChangedListener(watcher);
 
-                if (nBrackets > 0) {
-                    return getString(R.string.time_need) + " " + time / 60 + ":" + String.format("%02d", time % 60);
-                }
+        row.findViewById(R.id.btnRemoveSlot).setOnClickListener(v -> {
+            llTimes.removeView(row);
+            updateInfo();
+        });
 
-            } else if (type.equals("ITALIAN_BRACKET") && minutesPerMatch > 0) {
-                int time = TournamentScheduleUtility.nMatchesItalianBracket(tournamentKey) * minutesPerMatch;
-                return getString(R.string.time_need) + " " + time / 60 + ":" + String.format("%02d", time % 60);
+        llTimes.addView(row);
+        updateInfo();
+    }
+
+    /** Legge le fasce come lista piatta [giorno, inizio, fine, ...], saltando le righe vuote. */
+    private ArrayList<String> readSlots() {
+        ArrayList<String> slots = new ArrayList<>();
+        for (int i = 0; i < llTimes.getChildCount(); i++) {
+            View row = llTimes.getChildAt(i);
+            String day = text(row, R.id.etDay);
+            String start = text(row, R.id.etStart);
+            String end = text(row, R.id.etEnd);
+            if (day.isEmpty() && start.isEmpty() && end.isEmpty()) continue;
+            slots.add(day);
+            slots.add(start);
+            slots.add(end);
+        }
+        return slots;
+    }
+
+    /** Partite da generare secondo il formato scelto (0 se i parametri non sono validi). */
+    private int computeMatches() {
+        int nTeams = TournamentUtility.getTournamentByKey(tournamentKey).teams.size();
+        boolean homeAndAway = chkHomeAndAway.isChecked();
+
+        switch (format) {
+            case GROUPS: {
+                int nBrackets = parseIntOrZero(String.valueOf(txtNBrackets.getText()));
+                if (nBrackets <= 0) return 0;
+                return TournamentScheduleUtility.nMatchesMultipleBracket(tournamentKey, nBrackets) * (homeAndAway ? 2 : 1);
             }
+            case CHAMPIONS: {
+                int k = parseIntOrZero(String.valueOf(txtMatchesPerTeam.getText()));
+                if (!TournamentScheduleUtility.isValidChampions(nTeams, k)) return 0;
+                return TournamentScheduleUtility.nMatchesChampions(nTeams, k);
+            }
+            default:
+                return TournamentScheduleUtility.nMatchesItalianBracket(tournamentKey) * (homeAndAway ? 2 : 1);
+        }
+    }
 
-        } catch (Exception ignored) {
-            return getString(R.string.time_need);
+    /** Aggiorna l'info: "N PARTITE DA GENERARE PER H ORE E M MIN" + indicatore basta/non basta. */
+    @SuppressLint("SetTextI18n")
+    private void updateInfo() {
+        int minutes = parseIntOrZero(String.valueOf(txtMinutesForMatch.getText()));
+        int nMatches = computeMatches();
+        int capacity = TimeUtility.capacityMatches(readSlots(), minutes);
+
+        String line = nMatches + " " + getString(R.string.matches_to_generate);
+        if (nMatches > 0 && minutes > 0) {
+            line += " " + getString(R.string.for_time) + " " + timeText(nMatches * minutes);
+        }
+        txtMatchCount.setText(line);
+
+        if (nMatches > 0 && minutes > 0) {
+            boolean enough = capacity >= nMatches;
+            txtNotHosted.setText(enough ? " ✓" : " !");
+            txtNotHosted.setTextColor(ContextCompat.getColor(this,
+                    enough ? R.color.button_confirm : R.color.button_danger));
+            txtNotHosted.setVisibility(View.VISIBLE);
+        } else {
+            txtNotHosted.setVisibility(View.GONE);
+        }
+    }
+
+    /** Tempo totale in testo esteso, es. "22 ORE E 45 MIN" (o "45 MIN" / "2 ORE"). */
+    private String timeText(int totalMinutes) {
+        int h = totalMinutes / 60;
+        int m = totalMinutes % 60;
+
+        if (h == 0) {
+            return m + " " + getString(R.string.minutes_short);
+        }
+        String hh = h + " " + getString(h == 1 ? R.string.hour : R.string.hours);
+        return m == 0 ? hh : hh + " " + getString(R.string.and_word) + " " + m + " " + getString(R.string.minutes_short);
+    }
+
+    private void confirm() {
+        ArrayList<String> slots = readSlots();
+        int minutes = parseIntOrZero(String.valueOf(txtMinutesForMatch.getText()));
+        if (minutes <= 0) {
+            Toast.makeText(this, R.string.missing_data, Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        return getString(R.string.time_need);
+        int nTeams = TournamentUtility.getTournamentByKey(tournamentKey).teams.size();
+        boolean homeAndAway = chkHomeAndAway.isChecked();
+
+        switch (format) {
+            case GROUPS: {
+                int nBrackets = parseIntOrZero(String.valueOf(txtNBrackets.getText()));
+                if (nBrackets <= 0) {
+                    Toast.makeText(this, R.string.missing_data, Toast.LENGTH_SHORT).show();
+                } else if (nBrackets > (nTeams / 2)) {
+                    Toast.makeText(this, R.string.too_many_brackets, Toast.LENGTH_SHORT).show();
+                } else if (TimeUtility.checkInputTime(slots, minutes,
+                        TournamentScheduleUtility.nMatchesMultipleBracket(tournamentKey, nBrackets) * (homeAndAway ? 2 : 1))) {
+                    createMultipleBracket(slots, String.valueOf(txtMinutesForMatch.getText()), nBrackets, homeAndAway);
+                } else {
+                    Toast.makeText(this, R.string.need_more_time, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+            case CHAMPIONS: {
+                int k = parseIntOrZero(String.valueOf(txtMatchesPerTeam.getText()));
+                if (!TournamentScheduleUtility.isValidChampions(nTeams, k)) {
+                    Toast.makeText(this, R.string.invalid_champions_config, Toast.LENGTH_SHORT).show();
+                } else if (TimeUtility.checkInputTime(slots, minutes, TournamentScheduleUtility.nMatchesChampions(nTeams, k))) {
+                    createChampions(slots, String.valueOf(txtMinutesForMatch.getText()), k);
+                } else {
+                    Toast.makeText(this, R.string.need_more_time, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+            default: {
+                if (TimeUtility.checkInputTime(slots, minutes,
+                        TournamentScheduleUtility.nMatchesItalianBracket(tournamentKey) * (homeAndAway ? 2 : 1))) {
+                    createItalianBracket(slots, String.valueOf(txtMinutesForMatch.getText()), homeAndAway);
+                } else {
+                    Toast.makeText(this, R.string.need_more_time, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+        }
+    }
+
+    private void createMultipleBracket(ArrayList<String> stringsInput, String txtMinutesForMatch, int nBrackets, boolean homeAndAway) {
+        Toast.makeText(this, R.string.generating, Toast.LENGTH_LONG).show();
+        TournamentScheduleUtility.generateMultipleBracket(tournamentKey, stringsInput, txtMinutesForMatch, nBrackets, homeAndAway);
+        finish();
+    }
+
+    private void createItalianBracket(ArrayList<String> stringsInput, String txtMinutesForMatch, boolean homeAndAway) {
+        Toast.makeText(this, R.string.generating, Toast.LENGTH_LONG).show();
+        TournamentScheduleUtility.generateItalianBracket(tournamentKey, stringsInput, txtMinutesForMatch, homeAndAway);
+        finish();
+    }
+
+    private void createChampions(ArrayList<String> stringsInput, String txtMinutesForMatch, int k) {
+        Toast.makeText(this, R.string.generating, Toast.LENGTH_LONG).show();
+        TournamentScheduleUtility.generateChampions(tournamentKey, stringsInput, txtMinutesForMatch, k);
+        finish();
+    }
+
+    private String text(View row, int id) {
+        return ((EditText) row.findViewById(id)).getText().toString().trim();
+    }
+
+    private int parseIntOrZero(String value) {
+        if (value == null || value.isEmpty()) return 0;
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 }

@@ -65,14 +65,23 @@ public class ActivityLiveMatch extends AppCompatActivity {
 
             liveIndicator.setVisibility(View.VISIBLE);
 
-            txtTeam1Name.setText(getStringValue(snapshot, "team1_name"));
-            txtTeam2Name.setText(getStringValue(snapshot, "team2_name"));
-            txtTeam1Players.setText(getStringValue(snapshot, "team1_players"));
-            txtTeam2Players.setText(getStringValue(snapshot, "team2_players"));
-            txtPoints1.setText(String.valueOf(getIntValue(snapshot, "points1")));
-            txtPoints2.setText(String.valueOf(getIntValue(snapshot, "points2")));
-            txtSets1.setText(String.valueOf(getIntValue(snapshot, "sets1")));
-            txtSets2.setText(String.valueOf(getIntValue(snapshot, "sets2")));
+            boolean swapped = getBoolValue(snapshot, "swapped");
+
+            String[] names = { getStringValue(snapshot, "team1_name"), getStringValue(snapshot, "team2_name") };
+            String[] players = { getStringValue(snapshot, "team1_players"), getStringValue(snapshot, "team2_players") };
+            int[] points = { getIntValue(snapshot, "points1"), getIntValue(snapshot, "points2") };
+            int[] sets = { getIntValue(snapshot, "sets1"), getIntValue(snapshot, "sets2") };
+            int[] colors = { ContextCompat.getColor(this, R.color.scorecard_team_a),
+                    ContextCompat.getColor(this, R.color.scorecard_team_b) };
+
+            // Lato fisico 1 (sopra) = squadra A, oppure B dopo il cambio campo
+            int side1Team = swapped ? 1 : 0;
+            int side2Team = swapped ? 0 : 1;
+
+            fillSide(side1Team, names, players, points, sets, colors,
+                    txtTeam1Name, txtTeam1Players, txtPoints1, txtSets1, panelPoints1);
+            fillSide(side2Team, names, players, points, sets, colors,
+                    txtTeam2Name, txtTeam2Players, txtPoints2, txtSets2, panelPoints2);
         });
 
         findViewById(R.id.btnGoBack).setOnClickListener(v -> finish());
@@ -82,6 +91,26 @@ public class ActivityLiveMatch extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         LiveMatchUtility.stopListening();
+    }
+
+    /** Riempie un lato fisico con i dati della squadra indicata (0=A, 1=B): il colore la segue. */
+    private void fillSide(int team, String[] names, String[] players, int[] points, int[] sets, int[] colors,
+                          TextView name, TextView playersTv, TextView pointsTv, TextView setsTv, View panel) {
+        name.setText(names[team]);
+        playersTv.setText(players[team]);
+        pointsTv.setText(String.valueOf(points[team]));
+        setsTv.setText(String.valueOf(sets[team]));
+
+        int color = colors[team];
+        name.setTextColor(color);
+        pointsTv.setTextColor(color);
+        setsTv.setTextColor(color);
+        applyPanelColor(panel, color);
+    }
+
+    private boolean getBoolValue(DataSnapshot s, String key) {
+        Boolean v = s.child(key).getValue(Boolean.class);
+        return v != null && v;
     }
 
     private void applyPanelColor(View panel, int color) {

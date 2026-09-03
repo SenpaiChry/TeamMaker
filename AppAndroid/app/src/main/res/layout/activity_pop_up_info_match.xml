@@ -340,6 +340,19 @@
             android:textSize="30sp" />
     </LinearLayout>
 
+    <!-- Dettaglio punti dei set (es. 25-20 · 23-25 · 15-12) -->
+    <TextView
+        android:id="@+id/txtSetDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="italic"
+        android:textColor="@color/list_text_secondary"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone" />
+
     <!-- txtPoints1/2 conservati per compatibilita' col Java, non mostrati -->
     <LinearLayout
         android:layout_width="match_parent"

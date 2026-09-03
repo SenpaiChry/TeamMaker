@@ -5,6 +5,7 @@ import com.example.myapplication.Team;
 import com.example.myapplication.Tournament;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -59,7 +60,7 @@ public class TournamentScheduleUtility {
         return -2;
     }
 
-    public static void generateItalianBracket(String tournamentKey, ArrayList<String> stringsInput, String minutesPerMatch) {
+    public static void generateItalianBracket(String tournamentKey, ArrayList<String> stringsInput, String minutesPerMatch, boolean homeAndAway) {
         Tournament tournament = TournamentUtility.getTournamentByKey(tournamentKey);
 
         for (Team team : tournament.teams) {
@@ -67,43 +68,14 @@ public class TournamentScheduleUtility {
         }
 
         List<List<Match>> rounds = buildRoundRobinRounds(tournament.teams, "GIRONE "); // todo sistemare
+        if (homeAndAway) {
+            rounds.addAll(mirrorRounds(rounds));
+        }
         ArrayList<Match> matches = orderRoundsBySpacing(rounds);
 
-        int index = 0;
-        int day = Integer.parseInt(stringsInput.get(index));
-        int hours = Integer.parseInt(stringsInput.get(index + 1).split(":")[0]);
-        int minutes = Integer.parseInt(stringsInput.get(index + 1).split(":")[1]);
-        int minutesForMatch = Integer.parseInt(minutesPerMatch);
+        assignDayAndTime(matches, stringsInput, Integer.parseInt(minutesPerMatch));
 
-        int endHours = Integer.parseInt(stringsInput.get(index + 2).split(":")[0]);
-        int endMinutes = Integer.parseInt(stringsInput.get(index + 2).split(":")[1]);
-        int startTotalMinutes = hours * 60 + minutes;
-        int endTotalMinutes = endHours * 60 + endMinutes;
-
-        for (int i = 0; i < matches.size(); i++) {
-            matches.get(i).day = day;
-            matches.get(i).time = String.format("%d:%02d", hours, minutes);
-
-            startTotalMinutes += minutesForMatch;
-
-            if (i < matches.size() - 1) {
-                if (startTotalMinutes + minutesForMatch <= endTotalMinutes) {
-                    hours = startTotalMinutes / 60;
-                    minutes = startTotalMinutes % 60;
-                } else if (stringsInput.size() > index + 3) {
-                    index += 3;
-                    day = Integer.parseInt(stringsInput.get(index));
-                    hours = Integer.parseInt(stringsInput.get(index + 1).split(":")[0]);
-                    minutes = Integer.parseInt(stringsInput.get(index + 1).split(":")[1]);
-                    startTotalMinutes = hours * 60 + minutes;
-                    endHours = Integer.parseInt(stringsInput.get(index + 2).split(":")[0]);
-                    endMinutes = Integer.parseInt(stringsInput.get(index + 2).split(":")[1]);
-                    endTotalMinutes = endHours * 60 + endMinutes;
-                }
-            }
-
-            MatchUtility.addNewMatch(tournament.key, matches.get(i));
-        }
+        MatchUtility.saveMatches(tournament.key, matches);
 
         tournament.matches = matches;
         TournamentTeamUtility.saveBracketForTeams(tournamentKey);
@@ -147,7 +119,7 @@ public class TournamentScheduleUtility {
         return ordered;
     }
 
-    public static void generateMultipleBracket(String tournamentKey, ArrayList<String> stringsInput, String minutesPerMatch, int nBrackets) {
+    public static void generateMultipleBracket(String tournamentKey, ArrayList<String> stringsInput, String minutesPerMatch, int nBrackets, boolean homeAndAway) {
         Tournament tournament = TournamentUtility.getTournamentByKey(tournamentKey);
         ArrayList<ArrayList<Team>> brackets = new ArrayList<>();
         for (int i = 0; i < nBrackets; i++) brackets.add(new ArrayList<>());
@@ -163,6 +135,9 @@ public class TournamentScheduleUtility {
         for (int b = 0; b < nBrackets; b++) {
             List<Team> teams = brackets.get(b);
             List<List<Match>> rounds = buildRoundRobinRounds(teams, getBracketLabel(b));
+            if (homeAndAway) {
+                rounds.addAll(mirrorRounds(rounds));
+            }
 
             List<Match> ordered = new ArrayList<>();
             for (List<Match> r : rounds) ordered.addAll(r);
@@ -171,52 +146,124 @@ public class TournamentScheduleUtility {
 
         List<Match> globalOrder = interleaveOneByOne(perBracketOrderedMatches);
 
-        int idx = 0;
-        int day = Integer.parseInt(stringsInput.get(idx));
-        int hours = Integer.parseInt(stringsInput.get(idx + 1).split(":")[0]);
-        int minutes = Integer.parseInt(stringsInput.get(idx + 1).split(":")[1]);
-        int minutesForMatch = Integer.parseInt(minutesPerMatch);
+        assignDayAndTime(globalOrder, stringsInput, Integer.parseInt(minutesPerMatch));
 
-        int endHours = Integer.parseInt(stringsInput.get(idx + 2).split(":")[0]);
-        int endMinutes = Integer.parseInt(stringsInput.get(idx + 2).split(":")[1]);
-
-        int startTotalMinutes = hours * 60 + minutes;
-        int endTotalMinutes = endHours * 60 + endMinutes;
-
-        for (int i = 0; i < globalOrder.size(); i++) {
-            Match m = globalOrder.get(i);
-            m.day = day;
-            m.time = String.format("%d:%02d", hours, minutes);
-
-            startTotalMinutes += minutesForMatch;
-
-            boolean hasNext = (i < globalOrder.size() - 1);
-            if (hasNext) {
-                if (startTotalMinutes + minutesForMatch <= endTotalMinutes) {
-                    hours = startTotalMinutes / 60;
-                    minutes = startTotalMinutes % 60;
-                } else {
-                    if (stringsInput.size() > idx + 3) {
-                        idx += 3;
-                        day = Integer.parseInt(stringsInput.get(idx));
-                        hours = Integer.parseInt(stringsInput.get(idx + 1).split(":")[0]);
-                        minutes = Integer.parseInt(stringsInput.get(idx + 1).split(":")[1]);
-                        startTotalMinutes = hours * 60 + minutes;
-                        endHours = Integer.parseInt(stringsInput.get(idx + 2).split(":")[0]);
-                        endMinutes = Integer.parseInt(stringsInput.get(idx + 2).split(":")[1]);
-                        endTotalMinutes = endHours * 60 + endMinutes;
-                    } else {
-                        throw new RuntimeException("Fasce orarie esaurite: non riesco a schedulare tutti i match.");
-                    }
-                }
-            }
-
-            MatchUtility.addNewMatch(tournament.key, m);
-        }
+        MatchUtility.saveMatches(tournament.key, globalOrder);
 
         tournament.matches = new ArrayList<>(globalOrder);
         TournamentTeamUtility.saveBracketForTeams(tournamentKey);
         TournamentUtility.updateNBracketsTournament(tournamentKey, nBrackets);
+    }
+
+    public static void generateChampions(String tournamentKey, ArrayList<String> stringsInput, String minutesPerMatch, int k) {
+        Tournament tournament = TournamentUtility.getTournamentByKey(tournamentKey);
+
+        // Classifica unica, come l'Italiana
+        for (Team team : tournament.teams) {
+            team.bracket = "A";
+        }
+
+        List<List<Match>> rounds = buildChampionsRounds(tournament.teams, k);
+        ArrayList<Match> matches = orderRoundsBySpacing(rounds);
+
+        assignDayAndTime(matches, stringsInput, Integer.parseInt(minutesPerMatch));
+
+        MatchUtility.saveMatches(tournament.key, matches);
+
+        tournament.matches = matches;
+        TournamentTeamUtility.saveBracketForTeams(tournamentKey);
+        TournamentUtility.updateNBracketsTournament(tournamentKey, 1);
+    }
+
+    /**
+     * Champions: ogni squadra gioca K partite contro K avversari diversi. Le
+     * squadre sono viste su un cerchio e ognuna incontra le K più vicine (K/2 per
+     * lato); se K è dispari si aggiunge l'abbinamento diametrale (richiede numero
+     * pari di squadre). Garantisce K partite a testa, nessun doppione, nessuna
+     * auto-sfida. Presuppone opzioni valide (vedi isValidChampions).
+     */
+    private static List<List<Match>> buildChampionsRounds(List<Team> originalTeams, int k) {
+        List<Team> teams = new ArrayList<>(originalTeams);
+        Collections.shuffle(teams); // varietà negli accoppiamenti
+        int n = teams.size();
+
+        List<List<Match>> rounds = new ArrayList<>();
+
+        // K/2 "anelli" di vicinanza: ogni anello dà 2 partite a testa
+        for (int d = 1; d <= k / 2; d++) {
+            List<Match> round = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                Team t1 = teams.get(i);
+                Team t2 = teams.get((i + d) % n);
+                round.add(new Match(t1.key, t2.key, 0, "0:00", 0, 0, "GIRONE "));
+            }
+            rounds.add(round);
+        }
+
+        // K dispari: abbinamento diametrale (n pari garantito dalla validazione)
+        if (k % 2 == 1) {
+            List<Match> round = new ArrayList<>();
+            for (int i = 0; i < n / 2; i++) {
+                Team t1 = teams.get(i);
+                Team t2 = teams.get(i + n / 2);
+                round.add(new Match(t1.key, t2.key, 0, "0:00", 0, 0, "GIRONE "));
+            }
+            rounds.add(round);
+        }
+
+        return rounds;
+    }
+
+    /** Un calendario Champions è possibile solo se K < nSquadre e nSquadre*K è pari. */
+    public static boolean isValidChampions(int nTeams, int k) {
+        return k >= 1 && k < nTeams && (nTeams * k) % 2 == 0;
+    }
+
+    public static int nMatchesChampions(int nTeams, int k) {
+        return nTeams * k / 2;
+    }
+
+    /**
+     * Assegna giorno e orario ai match già ordinati, consumando le fasce di
+     * stringsInput (terne: giorno, ora inizio, ora fine). Estratto dalla logica
+     * prima duplicata nei generatori. Non salva su Firebase: imposta solo
+     * day/time. Se le fasce non bastano lancia una RuntimeException.
+     */
+    private static void assignDayAndTime(List<Match> matches, ArrayList<String> stringsInput, int minutesForMatch) {
+        int index = 0;
+        int day = Integer.parseInt(stringsInput.get(index));
+        int hours = Integer.parseInt(stringsInput.get(index + 1).split(":")[0]);
+        int minutes = Integer.parseInt(stringsInput.get(index + 1).split(":")[1]);
+
+        int endHours = Integer.parseInt(stringsInput.get(index + 2).split(":")[0]);
+        int endMinutes = Integer.parseInt(stringsInput.get(index + 2).split(":")[1]);
+        int startTotalMinutes = hours * 60 + minutes;
+        int endTotalMinutes = endHours * 60 + endMinutes;
+
+        for (int i = 0; i < matches.size(); i++) {
+            matches.get(i).day = day;
+            matches.get(i).time = String.format("%d:%02d", hours, minutes);
+
+            startTotalMinutes += minutesForMatch;
+
+            if (i < matches.size() - 1) {
+                if (startTotalMinutes + minutesForMatch <= endTotalMinutes) {
+                    hours = startTotalMinutes / 60;
+                    minutes = startTotalMinutes % 60;
+                } else if (stringsInput.size() > index + 3) {
+                    index += 3;
+                    day = Integer.parseInt(stringsInput.get(index));
+                    hours = Integer.parseInt(stringsInput.get(index + 1).split(":")[0]);
+                    minutes = Integer.parseInt(stringsInput.get(index + 1).split(":")[1]);
+                    startTotalMinutes = hours * 60 + minutes;
+                    endHours = Integer.parseInt(stringsInput.get(index + 2).split(":")[0]);
+                    endMinutes = Integer.parseInt(stringsInput.get(index + 2).split(":")[1]);
+                    endTotalMinutes = endHours * 60 + endMinutes;
+                } else {
+                    throw new RuntimeException("Fasce orarie esaurite: non riesco a schedulare tutti i match.");
+                }
+            }
+        }
     }
 
     private static List<List<Match>> buildRoundRobinRounds(List<Team> originalTeams, String bracketLabel) {
@@ -253,6 +300,23 @@ public class TournamentScheduleUtility {
         }
 
         return rounds;
+    }
+
+    /**
+     * Genera i round di ritorno a partire dall'andata, invertendo team1/team2
+     * (stessa etichetta/tipo). Il ritorno nasce dall'andata, non da una seconda
+     * generazione indipendente.
+     */
+    private static List<List<Match>> mirrorRounds(List<List<Match>> rounds) {
+        List<List<Match>> mirrored = new ArrayList<>();
+        for (List<Match> round : rounds) {
+            List<Match> mRound = new ArrayList<>();
+            for (Match m : round) {
+                mRound.add(new Match(m.keyTeam2, m.keyTeam1, 0, "0:00", 0, 0, m.type));
+            }
+            mirrored.add(mRound);
+        }
+        return mirrored;
     }
 
     private static boolean isBye(Team t) {

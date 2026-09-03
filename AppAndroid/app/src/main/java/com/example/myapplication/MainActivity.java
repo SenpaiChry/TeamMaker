@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.TopToast.TopToast;
+import com.example.myapplication.Utility.AdminUtility;
 import com.example.myapplication.Utility.LiveMatchUtility;
 import com.example.myapplication.Utility.PlayerUtility;
 import com.example.myapplication.Utility.TournamentUtility;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         mainActivity = this;
 
         PlayerUtility.downloadPlayers();
+        AdminUtility.startListening();
 
         if (dbRoot.equals("teammakerStaging/")) {
             findViewById(R.id.txtDB).setVisibility(View.VISIBLE);
@@ -124,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         LiveMatchUtility.stopListening();
+        AdminUtility.stopListening();
         PlayerUtility.removePlayersListener();
         TournamentUtility.removeTournamentsListener();
     }

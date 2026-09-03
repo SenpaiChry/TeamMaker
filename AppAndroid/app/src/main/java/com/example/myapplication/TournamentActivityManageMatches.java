@@ -33,20 +33,16 @@ public class TournamentActivityManageMatches extends AppCompatActivity {
         Button btnNewMatch = findViewById(R.id.btnNewMatch);
         btnNewMatch.setOnClickListener(v -> openActivityNewMatch(tournamentKey));
 
-        Button btnCreateItalianBracket = findViewById(R.id.btnCreateItalianBracket);
-        Button btnCreateBaseBracket = findViewById(R.id.btnCreateBaseBracket);
+        Button btnGenerateCalendar = findViewById(R.id.btnGenerateCalendar);
         Button btnDeleteEveryMatch = findViewById(R.id.btnDeleteEveryMatch);
 
         if (tournament.nBracket == 0) {
-            btnCreateItalianBracket.setVisibility(View.VISIBLE);
-            btnCreateBaseBracket.setVisibility(View.VISIBLE);
+            btnGenerateCalendar.setVisibility(View.VISIBLE);
             btnDeleteEveryMatch.setVisibility(View.GONE);
 
-            btnCreateItalianBracket.setOnClickListener(v -> openPopUpBracket(tournamentKey, "ITALIAN_BRACKET"));
-            btnCreateBaseBracket.setOnClickListener(v -> openPopUpBracket(tournamentKey, "MULTIPLE_BRACKET"));
+            btnGenerateCalendar.setOnClickListener(v -> openPopUpBracket(tournamentKey));
         } else {
-            btnCreateItalianBracket.setVisibility(View.GONE);
-            btnCreateBaseBracket.setVisibility(View.GONE);
+            btnGenerateCalendar.setVisibility(View.GONE);
             btnDeleteEveryMatch.setVisibility(View.VISIBLE);
 
             btnDeleteEveryMatch.setOnClickListener(v -> openPopUp(tournamentKey));
@@ -71,10 +67,9 @@ public class TournamentActivityManageMatches extends AppCompatActivity {
         tournamentActivityManageMatches.startActivity(intent);
     }
 
-    private void openPopUpBracket(String tournamentKey, String type) {
+    private void openPopUpBracket(String tournamentKey) {
         Intent intent = new Intent(tournamentActivityManageMatches.getApplicationContext(), ActivityPopUpGenerateBracket.class);
         intent.putExtra("tournament_key", tournamentKey);
-        intent.putExtra("bracket_type", type);
         tournamentActivityManageMatches.startActivity(intent);
     }
 }

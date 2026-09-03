@@ -32,7 +32,8 @@ public class LiveMatchUtility {
                                       String team1Name, String team2Name,
                                       String team1Players, String team2Players,
                                       int points1, int points2,
-                                      int sets1, int sets2) {
+                                      int sets1, int sets2,
+                                      boolean swapped) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(LIVE_NODE);
 
         Map<String, Object> data = new HashMap<>();
@@ -47,14 +48,26 @@ public class LiveMatchUtility {
         data.put("points2", points2);
         data.put("sets1", sets1);
         data.put("sets2", sets2);
+        data.put("swapped", swapped); // cambio campo: la diretta inverte i lati
         data.put("timestamp", System.currentTimeMillis());
 
         ref.updateChildren(data);
     }
 
+    /**
+     * Chiede a Firebase di rimettere "active" a false in automatico quando il
+     * client si disconnette (crash, kill del processo, rete persa): onDestroy()
+     * non è garantito, così si evita una diretta fantasma sempre attiva.
+     */
+    public static void registerOnDisconnect() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(LIVE_NODE);
+        ref.child("active").onDisconnect().setValue(false);
+    }
+
     /** Segna la partita come non più live (quando il segnapunti si chiude). */
     public static void clearLiveMatch() {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(LIVE_NODE);
+        ref.child("active").onDisconnect().cancel();
         ref.child("active").setValue(false);
     }
 

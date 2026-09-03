@@ -30,6 +30,18 @@ public class TournamentUtility {
     private static ValueEventListener tournamentsListener;
     private static DatabaseReference tournamentsRef;
 
+    /** Parsing difensivo: un valore nullo o non numerico vale 0 invece di far crashare il download. */
+    private static int parseIntOrZero(String value) {
+        if (value == null) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
     /**
      * Ascolta i tornei in TEMPO REALE: ogni modifica su Firebase
      * (da qualsiasi dispositivo) aggiorna automaticamente la lista locale.
@@ -49,6 +61,7 @@ public class TournamentUtility {
                 }
 
                 for (DataSnapshot tournamentSnapshot : snapshot.getChildren()) {
+                    try {
                     Tournament tournament = new Tournament();
                     tournament.setValid(tournamentSnapshot.child("is_valid").getValue(String.class));
                     tournament.name = tournamentSnapshot.child("name").getValue(String.class);
@@ -78,21 +91,32 @@ public class TournamentUtility {
                     }
 
                     for (DataSnapshot matchSnapshot : tournamentSnapshot.child("matches").getChildren()) {
-                        Match match = new Match(
-                                matchSnapshot.child("team1").getValue(String.class),
-                                matchSnapshot.child("team2").getValue(String.class),
-                                Integer.parseInt(matchSnapshot.child("day").getValue(String.class)),
-                                matchSnapshot.child("time").getValue(String.class),
-                                Integer.parseInt(matchSnapshot.child("points1").getValue(String.class)),
-                                Integer.parseInt(matchSnapshot.child("points2").getValue(String.class))
-                        );
+                        try {
+                            Match match = new Match(
+                                    matchSnapshot.child("team1").getValue(String.class),
+                                    matchSnapshot.child("team2").getValue(String.class),
+                                    parseIntOrZero(matchSnapshot.child("day").getValue(String.class)),
+                                    matchSnapshot.child("time").getValue(String.class),
+                                    parseIntOrZero(matchSnapshot.child("points1").getValue(String.class)),
+                                    parseIntOrZero(matchSnapshot.child("points2").getValue(String.class))
+                            );
 
-                        if (matchSnapshot.hasChild("type")) {
-                            match.type = String.valueOf(matchSnapshot.child("type").getValue(String.class));
+                            if (matchSnapshot.hasChild("type")) {
+                                match.type = String.valueOf(matchSnapshot.child("type").getValue(String.class));
+                            }
+
+                            for (DataSnapshot setSnap : matchSnapshot.child("detail").getChildren()) {
+                                match.detail.add(new int[]{
+                                        parseIntOrZero(setSnap.child("points1").getValue(String.class)),
+                                        parseIntOrZero(setSnap.child("points2").getValue(String.class))
+                                });
+                            }
+
+                            match.key = matchSnapshot.getKey();
+                            tournament.matches.add(match);
+                        } catch (Exception e) {
+                            Log.e("TournamentUtility", "Partita malformata ignorata: " + matchSnapshot.getKey(), e);
                         }
-
-                        match.key = matchSnapshot.getKey();
-                        tournament.matches.add(match);
                     }
 
                     for (DataSnapshot teamSnapshot : tournamentSnapshot.child("teams").getChildren()) {
@@ -109,6 +133,9 @@ public class TournamentUtility {
 
                     Collections.sort(tournament.matches);
                     Constants.tournaments.add(tournament);
+                    } catch (Exception e) {
+                        Log.e("TournamentUtility", "Torneo malformato ignorato: " + tournamentSnapshot.getKey(), e);
+                    }
                 }
 
                 Constants.downloadEnd = true;

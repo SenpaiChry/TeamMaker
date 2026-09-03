@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.Utility.TimeUtility;
 import com.example.myapplication.Utility.TournamentUtility;
 
 import java.text.SimpleDateFormat;
@@ -120,7 +121,7 @@ public class ActivityPopUpManageTournament extends AppCompatActivity {
 
             Collections.sort(matches, (m1, m2) -> {
                 if (m1.day != m2.day) return Integer.compare(m1.day, m2.day);
-                return m1.time.compareTo(m2.time);
+                return Integer.compare(TimeUtility.toMinutes(m1.time), TimeUtility.toMinutes(m2.time));
             });
 
             StringBuilder textToCopy = new StringBuilder();

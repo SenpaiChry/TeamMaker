@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="4dp">
+
+    <TextView
+        android:id="@+id/txtSetLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="52dp"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/list_text_secondary"
+        android:text="@string/set_short"
+        android:textSize="15sp" />
+
+    <EditText
+        android:id="@+id/etSetPoints1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="6dp"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/scorecard_team_a"
+        android:textColorHint="@color/search_hint"
+        android:hint="@string/zero"
+        android:gravity="center"
+        android:inputType="number"
+        android:maxLength="2"
+        android:textSize="18sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dash"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold"
+        android:textColor="@color/list_text_secondary"
+        android:paddingHorizontal="6dp"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/etSetPoints2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/scorecard_team_b"
+        android:textColorHint="@color/search_hint"
+        android:hint="@string/zero"
+        android:gravity="center"
+        android:inputType="number"
+        android:maxLength="2"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/btnRemoveSet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="4dp"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold"
+        android:textColor="@color/button_danger"
+        android:text="✕"
+        android:textSize="18sp" />
+</LinearLayout>

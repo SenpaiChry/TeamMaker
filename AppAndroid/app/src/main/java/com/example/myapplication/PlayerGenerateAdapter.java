@@ -12,8 +12,9 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
-import com.example.myapplication.Utility.PlayerUtility;
 import com.example.myapplication.Model.Constants;
+import com.example.myapplication.Utility.PlayerUtility;
+import com.example.myapplication.Utility.Utility;
 
 import java.util.ArrayList;
 
@@ -58,18 +59,8 @@ public class PlayerGenerateAdapter extends BaseAdapter {
         txtName.setText(player.name);
         txtSurname.setText(player.surname);
 
-        View viewImage = convertView.findViewById(R.id.icon_background);
-        ImageView imageView = convertView.findViewById(R.id.imgCategory);
-
+        // Colori per genere (senza icona)
         boolean isF = "F".equals(player.gender);
-        if (isF) {
-            imageView.setImageResource(R.drawable.women_icon);
-            viewImage.setBackground(ContextCompat.getDrawable(context, R.drawable.women_icon_background));
-        } else {
-            imageView.setImageResource(R.drawable.men_icon);
-            viewImage.setBackground(ContextCompat.getDrawable(context, R.drawable.men_icon_background));
-        }
-
         int nameColor = ContextCompat.getColor(context,
                 isF ? R.color.women_color_name_dark : R.color.men_color_name_dark);
         txtName.setTextColor(nameColor);

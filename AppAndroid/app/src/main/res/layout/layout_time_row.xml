@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layout_marginTop="6dp"
+    android:paddingHorizontal="10dp"
+    android:paddingVertical="4dp"
+    android:background="@drawable/bg_field_secondary">
+
+    <EditText
+        android:id="@+id/etDay"
+        android:layout_width="42dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/list_text_primary"
+        android:textColorHint="@color/list_text_muted"
+        android:hint="@string/n"
+        android:gravity="center"
+        android:inputType="number"
+        android:maxLength="2"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/etStart"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="6dp"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/list_text_primary"
+        android:textColorHint="@color/list_text_muted"
+        android:hint="@string/hh_mm"
+        android:gravity="center"
+        android:inputType="time"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/arrow_right"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold"
+        android:textColor="@color/list_text_secondary"
+        android:paddingHorizontal="6dp"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/etEnd"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/list_text_primary"
+        android:textColorHint="@color/list_text_muted"
+        android:hint="@string/hh_mm"
+        android:gravity="center"
+        android:inputType="time"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/btnRemoveSlot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="4dp"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold"
+        android:textColor="@color/button_danger"
+        android:text="✕"
+        android:textSize="18sp" />
+</LinearLayout>

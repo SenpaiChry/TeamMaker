@@ -12,9 +12,10 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 
-import com.example.myapplication.Utility.Utility;
+import com.example.myapplication.Utility.StandingsUtility;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -38,32 +39,36 @@ public class TournamentTableAdapter extends BaseAdapter {
         this.items = new ArrayList<>();
         this.positions = new ArrayList<>();
 
-        for (Team team : tournament.teams) {
-            team.points = 0;
+        // Raggruppa per girone (ordine alfabetico) e ordina ogni girone con i criteri completi
+        List<String> brackets = new ArrayList<>();
+        for (Team t : tournament.teams) {
+            String bracket = t.bracket == null ? "" : t.bracket;
+            if (!brackets.contains(bracket)) brackets.add(bracket);
         }
+        Collections.sort(brackets);
 
-        Utility.generateTable(tournament.key);
-
-        // Ordina le squadre per girone, poi per punti decrescenti
-        List<Team> sortedTeams = new ArrayList<>(tournament.teams);
-        sortedTeams.sort((t1, t2) -> {
-            int bracketCompare = t1.bracket.compareTo(t2.bracket);
-            if (bracketCompare != 0) return bracketCompare;
-            return Integer.compare(t2.points, t1.points);
-        });
+        List<StandingsUtility.TeamStanding> standings = new ArrayList<>();
+        for (String bracket : brackets) {
+            List<Team> inBracket = new ArrayList<>();
+            for (Team t : tournament.teams) {
+                if (bracket.equals(t.bracket == null ? "" : t.bracket)) inBracket.add(t);
+            }
+            standings.addAll(StandingsUtility.computeStandings(inBracket, tournament.matches));
+        }
 
         // Aggiunge le intestazioni quando cambia il girone e numera le posizioni
         String lastBracket = null;
         int positionInBracket = 0;
-        for (Team team : sortedTeams) {
-            if (!team.bracket.equals(lastBracket)) {
-                lastBracket = team.bracket;
+        for (StandingsUtility.TeamStanding ts : standings) {
+            String bracket = ts.team.bracket == null ? "" : ts.team.bracket;
+            if (!bracket.equals(lastBracket)) {
+                lastBracket = bracket;
                 positionInBracket = 0;
                 items.add(lastBracket);
                 positions.add(0);
             }
             positionInBracket++;
-            items.add(team);
+            items.add(ts);
             positions.add(positionInBracket);
         }
     }
@@ -96,7 +101,7 @@ public class TournamentTableAdapter extends BaseAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        return (items.get(position) instanceof Team) ? VIEW_TYPE_TEAM : VIEW_TYPE_BRACKET_HEADER;
+        return (items.get(position) instanceof StandingsUtility.TeamStanding) ? VIEW_TYPE_TEAM : VIEW_TYPE_BRACKET_HEADER;
     }
 
     @SuppressLint("SetTextI18n")
@@ -120,10 +125,14 @@ public class TournamentTableAdapter extends BaseAdapter {
                     .inflate(R.layout.tournament_layout_table, parent, false);
         }
 
-        Team team = (Team) items.get(position);
+        StandingsUtility.TeamStanding standing = (StandingsUtility.TeamStanding) items.get(position);
+        Team team = standing.team;
         TextView txtPosition = convertView.findViewById(R.id.txtPosition);
         TextView txtTeam = convertView.findViewById(R.id.txtTeam);
         TextView txtTeamPlayers = convertView.findViewById(R.id.txtTeamPlayers);
+        TextView txtWins = convertView.findViewById(R.id.txtWins);
+        TextView txtSetQuotient = convertView.findViewById(R.id.txtSetQuotient);
+        TextView txtPointsQuotient = convertView.findViewById(R.id.txtPointsQuotient);
         TextView txtPoints = convertView.findViewById(R.id.txtPoints);
 
         // txtPosition puo' non esistere se si usa un layout riga senza la posizione
@@ -134,11 +143,28 @@ public class TournamentTableAdapter extends BaseAdapter {
         if (txtTeamPlayers != null) {
             txtTeamPlayers.setText(team.toStringNameAndSurname());
         }
-        txtPoints.setText(String.valueOf(team.points));
+        if (txtWins != null) {
+            txtWins.setText(String.valueOf(standing.wins));
+        }
+        if (txtSetQuotient != null) {
+            txtSetQuotient.setText(formatQuotient(standing.setsWon, standing.setsLost));
+        }
+        if (txtPointsQuotient != null) {
+            txtPointsQuotient.setText(formatQuotient(standing.pointsFor, standing.pointsAgainst));
+        }
+        txtPoints.setText(String.valueOf(standing.classificaPoints));
 
         applyHighlight(convertView, txtPosition, txtTeam, txtTeamPlayers, txtPoints, matchesQuery(team));
 
         return convertView;
+    }
+
+    /** Quoziente vinti/persi come decimale; "∞" se non ha mai perso, "–" se nessun dato. */
+    private String formatQuotient(long won, long lost) {
+        if (lost == 0) {
+            return won == 0 ? "–" : "∞";
+        }
+        return String.format(Locale.getDefault(), "%.2f", (double) won / lost);
     }
 
     /** True se un giocatore della squadra corrisponde al testo cercato. */

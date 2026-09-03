@@ -53,11 +53,18 @@ public class PlayerInfoAdapter extends BaseAdapter {
         LinearLayout llImagesContainer = convertView.findViewById(R.id.llImages);
         TextView txtHeight = convertView.findViewById(R.id.txtHeight);
 
+        // ★ FIX: pulisci le stelle vecchie PRIMA di aggiungerne di nuove
+        llImagesContainer.removeAllViews();
+        // Riaggiungi txtHeight perché era dentro llImages e removeAllViews lo ha tolto
+        llImagesContainer.addView(txtHeight);
+
         if (Constants.statsDescription[position].equalsIgnoreCase("ALTEZZA")) {
             txtHeight.setVisibility(View.VISIBLE);
             txtHeight.setText(Constants.valueHeight[getItem(position).intValue()]);
-        } else  {
-            for (int i = 0; i <= Constants.statsMax[position] / Constants.statsStep[position]; i ++) {
+        } else {
+            txtHeight.setVisibility(View.GONE);
+
+            for (int i = 0; i <= Constants.statsMax[position] / Constants.statsStep[position]; i++) {
                 ImageView image = new ImageView(context);
 
                 if (getItem(position) / Constants.statsStep[position] >= i) {
@@ -66,7 +73,9 @@ public class PlayerInfoAdapter extends BaseAdapter {
                     image.setImageResource(R.drawable.star_empty);
                 }
 
-                image.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                image.setLayoutParams(new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
                 llImagesContainer.addView(image);
             }
         }

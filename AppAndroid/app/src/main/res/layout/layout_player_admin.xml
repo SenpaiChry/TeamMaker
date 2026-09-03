@@ -10,30 +10,17 @@
     android:background="@drawable/bg_player_card"
     android:gravity="center_vertical">
 
-    <!-- Icona categoria -->
-    <RelativeLayout
-        android:id="@+id/iconContainer"
-        android:layout_width="wrap_content"
+    <!-- Posizione in classifica -->
+    <TextView
+        android:id="@+id/txtRank"
+        android:layout_width="32dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginVertical="2.5dp">
-
-        <View
-            android:id="@+id/icon_background"
-            android:background="@drawable/men_icon_background"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:elevation="2dp" />
-
-        <ImageView
-            android:id="@+id/imgCategory"
-            android:src="@drawable/men_icon"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:elevation="10dp"
-            android:layout_centerInParent="true"
-            android:contentDescription="@string/category" />
-    </RelativeLayout>
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/list_text_muted"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:layout_marginEnd="8dp" />
 
     <!-- Nome e cognome -->
     <LinearLayout

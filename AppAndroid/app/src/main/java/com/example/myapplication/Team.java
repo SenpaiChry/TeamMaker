@@ -7,7 +7,6 @@ import java.util.ArrayList;
 public class Team {
     public String key;
     public float totalVote = 0;
-    public int points = 0;
     public String bracket = "";
 //    float average = 0;
     public ArrayList<Player> players = new ArrayList<>();
