@@ -41,7 +41,7 @@ public class ActivityPopUp extends AppCompatActivity {
                 txtSubtitle2.setText(player.getSurnameOrNickname());
                 if (player.getSurnameOrNickname().isEmpty()) txtSubtitle2.setVisibility(View.GONE);
                 txtTitle.setText(R.string.delete_player);
-                btnConfirm.setTextColor(ContextCompat.getColor(this, R.color.button_danger));
+                btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.button_danger));
                 btnConfirm.setOnClickListener(view -> { PlayerUtility.deletePlayer(player.key); finish(); });
                 break;
             }
@@ -51,7 +51,7 @@ public class ActivityPopUp extends AppCompatActivity {
                 txtSubtitle2.setText(player.getSurnameOrNickname());
                 if (player.getSurnameOrNickname().isEmpty()) txtSubtitle2.setVisibility(View.GONE);
                 txtTitle.setText(R.string.archive_player);
-                btnConfirm.setTextColor(ContextCompat.getColor(this, R.color.button_warning));
+                btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.button_warning));
                 btnConfirm.setOnClickListener(view -> { PlayerUtility.archivePlayer(player.key); finish(); });
                 break;
             }
@@ -61,7 +61,7 @@ public class ActivityPopUp extends AppCompatActivity {
                 txtSubtitle2.setText(player.getSurnameOrNickname());
                 if (player.getSurnameOrNickname().isEmpty()) txtSubtitle2.setVisibility(View.GONE);
                 txtTitle.setText(R.string.unarchive_player);
-                btnConfirm.setTextColor(ContextCompat.getColor(this, R.color.button_warning));
+                btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.button_warning));
                 btnConfirm.setOnClickListener(view -> { PlayerUtility.unarchivePlayer(player.key); finish(); });
                 break;
             }
@@ -72,7 +72,7 @@ public class ActivityPopUp extends AppCompatActivity {
                 txtSubtitle2.setVisibility(View.GONE);
                 if (tournament.name.isEmpty()) txtSubtitle1.setVisibility(View.GONE);
                 txtTitle.setText(R.string.delete_tournament);
-                btnConfirm.setTextColor(ContextCompat.getColor(this, R.color.button_danger));
+                btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.button_danger));
                 btnConfirm.setOnClickListener(view -> {
                     TournamentUtility.deleteTournament(tournamentKey);
                     TournamentAdapter.tournamentAdapter.notifyDataSetChanged();
@@ -87,7 +87,7 @@ public class ActivityPopUp extends AppCompatActivity {
                 txtSubtitle2.setVisibility(View.GONE);
                 if (tournament.name.isEmpty()) txtSubtitle1.setVisibility(View.GONE);
                 txtTitle.setText(R.string.activate_tournament);
-                btnConfirm.setTextColor(ContextCompat.getColor(this, R.color.button_confirm));
+                btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.button_confirm));
                 btnConfirm.setOnClickListener(view -> {
                     TournamentUtility.setActiveTournament(tournamentKey);
                     TournamentAdapter.tournamentAdapter.notifyDataSetChanged();
@@ -103,7 +103,7 @@ public class ActivityPopUp extends AppCompatActivity {
                 txtSubtitle2.setVisibility(View.GONE);
                 if (tournament.name.isEmpty()) txtSubtitle1.setVisibility(View.GONE);
                 txtTitle.setText(R.string.deactivate_tournament);
-                btnConfirm.setTextColor(ContextCompat.getColor(this, R.color.button_warning));
+                btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.button_warning));
                 btnConfirm.setOnClickListener(view -> {
                     TournamentUtility.deactivateAllTournaments();
                     TournamentAdapter.tournamentAdapter.notifyDataSetChanged();
@@ -119,7 +119,7 @@ public class ActivityPopUp extends AppCompatActivity {
                 txtSubtitle1.setText(team.toStringNameAndSurname());
                 txtSubtitle1.setTextSize(15);
                 txtSubtitle2.setVisibility(View.GONE);
-                btnConfirm.setTextColor(ContextCompat.getColor(this, R.color.button_danger));
+                btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.button_danger));
                 btnConfirm.setOnClickListener(view -> { TournamentTeamUtility.deleteTeam(teamKey); finish(); });
                 break;
             }
@@ -133,7 +133,7 @@ public class ActivityPopUp extends AppCompatActivity {
                 txtSubtitle2.setText(getString(R.string.team_2) + ": " + (match.keyTeam2.equals("TO DO") ? "TO DO" : TournamentTeamUtility.getTeamByKey(match.keyTeam2).toStringNameAndSurname()));
                 txtSubtitle1.setTextSize(15);
                 txtSubtitle2.setTextSize(15);
-                btnConfirm.setTextColor(ContextCompat.getColor(this, R.color.button_danger));
+                btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.button_danger));
                 btnConfirm.setOnClickListener(view -> { MatchUtility.deleteMatch(tournamentKey, matchKey); finish(); });
                 break;
             }
@@ -143,7 +143,7 @@ public class ActivityPopUp extends AppCompatActivity {
                 txtTitle.setText(R.string.delete_every_match);
                 txtSubtitle1.setText(tournament.name);
                 txtSubtitle2.setVisibility(View.GONE);
-                btnConfirm.setTextColor(ContextCompat.getColor(this, R.color.button_danger));
+                btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.button_danger));
                 btnConfirm.setOnClickListener(view -> { MatchUtility.deleteEveryMatch(tournamentKey); finish(); });
                 break;
             }

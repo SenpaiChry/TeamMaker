@@ -80,6 +80,16 @@
     <string name="hour">ORA</string>
     <string name="and_word">E</string>
     <string name="minutes_short">MIN</string>
+    <string name="generate_finals">GENERA FASI FINALI</string>
+    <string name="third_place_final">FINALE 3°/4° POSTO</string>
+    <string name="preview">ANTEPRIMA</string>
+    <string name="winner_abbr">VINC.</string>
+    <string name="loser_abbr">PERD.</string>
+    <string name="group_abbr">GIR.</string>
+    <string name="no_final_config">SQUADRE INSUFFICIENTI PER LE FINALI</string>
+    <string name="generate_finals_btn">GENERA FINALI</string>
+    <string name="of_size">DA</string>
+    <string name="delete_matches_short">CANCELLA TUTTE</string>
     <string name="end_time_section">"ORARIO FINE SEZIONE "</string>
     <string name="start_time_section">"ORARIO INIZIO SEZIONE "</string>
     <string name="day_number">GIORNO NUMERO</string>

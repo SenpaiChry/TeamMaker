@@ -229,7 +229,7 @@ public class TournamentScheduleUtility {
      * prima duplicata nei generatori. Non salva su Firebase: imposta solo
      * day/time. Se le fasce non bastano lancia una RuntimeException.
      */
-    private static void assignDayAndTime(List<Match> matches, ArrayList<String> stringsInput, int minutesForMatch) {
+    public static void assignDayAndTime(List<Match> matches, ArrayList<String> stringsInput, int minutesForMatch) {
         int index = 0;
         int day = Integer.parseInt(stringsInput.get(index));
         int hours = Integer.parseInt(stringsInput.get(index + 1).split(":")[0]);

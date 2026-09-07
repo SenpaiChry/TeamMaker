@@ -34,23 +34,39 @@ public class TournamentActivityManageMatches extends AppCompatActivity {
         btnNewMatch.setOnClickListener(v -> openActivityNewMatch(tournamentKey));
 
         Button btnGenerateCalendar = findViewById(R.id.btnGenerateCalendar);
+        Button btnGenerateFinals = findViewById(R.id.btnGenerateFinals);
         Button btnDeleteEveryMatch = findViewById(R.id.btnDeleteEveryMatch);
 
         if (tournament.nBracket == 0) {
             btnGenerateCalendar.setVisibility(View.VISIBLE);
+            btnGenerateFinals.setVisibility(View.GONE);
             btnDeleteEveryMatch.setVisibility(View.GONE);
 
             btnGenerateCalendar.setOnClickListener(v -> openPopUpBracket(tournamentKey));
         } else {
             btnGenerateCalendar.setVisibility(View.GONE);
+            btnGenerateFinals.setVisibility(View.VISIBLE);
             btnDeleteEveryMatch.setVisibility(View.VISIBLE);
 
+            btnGenerateFinals.setOnClickListener(v -> openPopUpFinals(tournamentKey));
             btnDeleteEveryMatch.setOnClickListener(v -> openPopUp(tournamentKey));
         }
 
         ListView listView = findViewById(R.id.listViewMatches);
         tournamentBracketAdminAdapter = new TournamentBracketAdminAdapter(tournament);
         listView.setAdapter(tournamentBracketAdminAdapter);
+    }
+
+    /** Rinfresca la schermata (se aperta) dopo un aggiornamento realtime dei dati. */
+    public static void reloadMatches() {
+        if (tournamentActivityManageMatches == null || tournamentActivityManageMatches.isDestroyed()) {
+            return;
+        }
+        tournamentActivityManageMatches.runOnUiThread(() -> {
+            try {
+                tournamentActivityManageMatches.recreate();
+            } catch (Exception ignored) { }
+        });
     }
 
     private void openPopUp(String tournamentKey) {
@@ -69,6 +85,12 @@ public class TournamentActivityManageMatches extends AppCompatActivity {
 
     private void openPopUpBracket(String tournamentKey) {
         Intent intent = new Intent(tournamentActivityManageMatches.getApplicationContext(), ActivityPopUpGenerateBracket.class);
+        intent.putExtra("tournament_key", tournamentKey);
+        tournamentActivityManageMatches.startActivity(intent);
+    }
+
+    private void openPopUpFinals(String tournamentKey) {
+        Intent intent = new Intent(tournamentActivityManageMatches.getApplicationContext(), ActivityPopUpGenerateFinals.class);
         intent.putExtra("tournament_key", tournamentKey);
         tournamentActivityManageMatches.startActivity(intent);
     }

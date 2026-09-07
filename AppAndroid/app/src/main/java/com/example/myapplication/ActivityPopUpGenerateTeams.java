@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,10 +51,17 @@ public class ActivityPopUpGenerateTeams extends AppCompatActivity {
         Button btnNPlayer5 = findViewById(R.id.btnNPlayer5);
         playerButtons = new Button[]{btnNPlayer2, btnNPlayer3, btnNPlayer4, btnNPlayer5};
 
-        btnNPlayer2.setOnClickListener(v -> selectPlayerCount(2));
-        btnNPlayer3.setOnClickListener(v -> selectPlayerCount(3));
-        btnNPlayer4.setOnClickListener(v -> selectPlayerCount(4));
-        btnNPlayer5.setOnClickListener(v -> selectPlayerCount(5));
+        // Abilita un numero solo se ci sono abbastanza giocatori (stessa soglia del confirm: k*2-1)
+        int selectedCount = Constants.playersSelected.size();
+        for (int i = 0; i < playerButtons.length; i++) {
+            int k = i + 2;
+            boolean enough = selectedCount >= k * 2 - 1;
+            playerButtons[i].setEnabled(enough);
+            playerButtons[i].setAlpha(enough ? 1f : 0.35f);
+            if (enough) {
+                playerButtons[i].setOnClickListener(v -> selectPlayerCount(k));
+            }
+        }
 
         Button btnConfirm = findViewById(R.id.btnConfirm);
         btnConfirm.setOnClickListener(view -> {
@@ -116,6 +124,35 @@ public class ActivityPopUpGenerateTeams extends AppCompatActivity {
             playerButtons[i].setBackground(ContextCompat.getDrawable(this,
                     selected ? R.drawable.button_main_selected : R.drawable.bg_gender_unselected));
         }
+        updateSplitPreview(count);
+    }
+
+    /** Mostra come verrebbero divise le squadre, es. "2 DA 3 E 2 DA 2". */
+    @SuppressLint("SetTextI18n")
+    private void updateSplitPreview(int playersPerTeam) {
+        TextView txtSplitPreview = findViewById(R.id.txtSplitPreview);
+        int n = Constants.playersSelected.size();
+        int nTeams = (int) Math.ceil((float) n / playersPerTeam);
+        if (nTeams <= 0) {
+            txtSplitPreview.setVisibility(View.GONE);
+            return;
+        }
+
+        int base = n / nTeams;      // dimensione minima delle squadre
+        int rem = n % nTeams;       // quante squadre hanno una persona in più
+        String from = getString(R.string.of_size);
+
+        String text;
+        if (rem == 0) {
+            text = nTeams + " " + getString(R.string.teams) + " " + from + " " + base;
+        } else {
+            text = rem + " " + from + " " + (base + 1)
+                    + " " + getString(R.string.and_word) + " "
+                    + (nTeams - rem) + " " + from + " " + base;
+        }
+
+        txtSplitPreview.setText(text);
+        txtSplitPreview.setVisibility(View.VISIBLE);
     }
 
     private void setEnabledAllChildren(View view, boolean enabled) {

@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.Utility.MatchLabelUtility;
 import com.example.myapplication.Utility.TournamentTeamUtility;
 import com.example.myapplication.Utility.TournamentUtility;
 
@@ -60,8 +61,8 @@ public class ActivityPopUpInfoMatch extends AppCompatActivity {
             txtPoints1.setVisibility(View.GONE);
             txtPoints2.setVisibility(View.GONE);
 
-            txtTeam1.setText(TournamentUtility.getActiveTournament().toStringNTeamByKey(match.keyTeam1));
-            txtTeam2.setText(TournamentUtility.getActiveTournament().toStringNTeamByKey(match.keyTeam2));
+            txtTeam1.setText(MatchLabelUtility.teamOrPlaceholder(this, TournamentUtility.getActiveTournament(), match, 1));
+            txtTeam2.setText(MatchLabelUtility.teamOrPlaceholder(this, TournamentUtility.getActiveTournament(), match, 2));
 
             int[] team1PlayerIds = {R.id.txtTeam1Player1, R.id.txtTeam1Player2,
                 R.id.txtTeam1Player3, R.id.txtTeam1Player4, R.id.txtTeam1Player5};

@@ -56,6 +56,19 @@
             android:text="@string/generate_calendar" />
 
         <Button
+            android:id="@+id/btnGenerateFinals"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/buttons_main"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:text="@string/generate_finals_btn" />
+
+        <Button
             android:id="@+id/btnDeleteEveryMatch"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -65,7 +78,7 @@
             android:textStyle="bold|italic"
             android:textColor="@color/white"
             android:textSize="15sp"
-            android:text="@string/delete_every_match" />
+            android:text="@string/delete_matches_short" />
     </LinearLayout>
 
     <ListView

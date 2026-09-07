@@ -109,6 +109,17 @@
     <string name="and_word">AND</string>
     <string name="minutes_short">MIN</string>
     <string name="arrow_right" translatable="false">→</string>
+    <string name="generate_finals">GENERATE FINALS</string>
+    <string name="third_place_final">3RD/4TH PLACE FINAL</string>
+    <string name="preview">PREVIEW</string>
+    <string name="winner_abbr">W.</string>
+    <string name="loser_abbr">L.</string>
+    <string name="group_abbr">GR.</string>
+    <string name="ordinal_a" translatable="false">ª</string>
+    <string name="no_final_config">NOT ENOUGH TEAMS FOR FINALS</string>
+    <string name="generate_finals_btn">GENERATE FINALS</string>
+    <string name="of_size">OF</string>
+    <string name="delete_matches_short">DELETE ALL</string>
     <string name="type" translatable="false">TYPE</string>
     <string name="match">"MATCH"</string>
     <string name="team" translatable="false">TEAM </string>

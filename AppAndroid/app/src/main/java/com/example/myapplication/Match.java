@@ -19,6 +19,16 @@ public class Match implements Comparable<Match> {
     public String type = "";
 
     /**
+     * Sorgente dello slot per le fasi finali (vuoto = squadra gia' nota in team1/team2).
+     * type: "" | STANDING | GROUP_STANDING | WINNER | LOSER.
+     * ref: posizione ("1"), girone+posizione ("A1"), oppure key della partita sorgente.
+     */
+    public String source1Type = "";
+    public String source1Ref = "";
+    public String source2Type = "";
+    public String source2Ref = "";
+
+    /**
      * Dettaglio dei periodi (nel volley: i punti di ogni set), ogni elemento è
      * {puntiTeam1, puntiTeam2}. Vuoto per le partite legacy (solo points1/points2).
      */
@@ -42,6 +52,9 @@ public class Match implements Comparable<Match> {
         this.points2 = points2;
         this.type = type;
     }
+
+    public boolean hasSource1() { return source1Type != null && !source1Type.isEmpty(); }
+    public boolean hasSource2() { return source2Type != null && !source2Type.isEmpty(); }
 
     /** Punti dei set formattati, es. "25-20 · 23-25 · 15-12". Stringa vuota se non c'è dettaglio. */
     public String detailString() {

@@ -41,7 +41,9 @@ public class MatchUtility {
 
         Map<String, Object> updates = new HashMap<>();
         for (Match match : matches) {
-            String key = dbRef.push().getKey();
+            // Riusa la key se gia' assegnata (fasi finali: i WINNER/LOSER puntano a
+            // partite di questo stesso batch), altrimenti ne genera una nuova.
+            String key = (match.key != null && !match.key.isEmpty()) ? match.key : dbRef.push().getKey();
             match.key = key;
 
             Map<String, Object> matchData = new HashMap<>();
@@ -53,6 +55,14 @@ public class MatchUtility {
             matchData.put("points2", match.points2 + "");
             matchData.put("type", match.type);
             matchData.put("detail", buildDetail(match));
+            if (match.hasSource1()) {
+                matchData.put("source1_type", match.source1Type);
+                matchData.put("source1_ref", match.source1Ref);
+            }
+            if (match.hasSource2()) {
+                matchData.put("source2_type", match.source2Type);
+                matchData.put("source2_ref", match.source2Ref);
+            }
 
             updates.put(key, matchData);
         }
@@ -120,6 +130,9 @@ public class MatchUtility {
                 });
 
                 TournamentActivityManageMatches.tournamentBracketAdminAdapter.refresh();
+
+                // Propaga il vincente/perdente alle fasi finali che dipendono da questa partita
+                FinalStageResolver.resolveAll(tournamentKey);
 
                 return;
             }

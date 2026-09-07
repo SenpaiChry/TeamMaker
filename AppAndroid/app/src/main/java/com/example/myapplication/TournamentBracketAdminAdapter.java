@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.myapplication.Utility.MatchLabelUtility;
 import com.example.myapplication.Utility.TournamentUtility;
 
 public class TournamentBracketAdminAdapter extends BaseAdapter {
@@ -59,8 +60,8 @@ public class TournamentBracketAdminAdapter extends BaseAdapter {
 
         TextView txtTeam1 = convertView.findViewById(R.id.txtTeam1);
         TextView txtTeam2 = convertView.findViewById(R.id.txtTeam2);
-        txtTeam1.setText(tournament.toStringNTeamByKey(match.keyTeam1));
-        txtTeam2.setText(tournament.toStringNTeamByKey(match.keyTeam2));
+        txtTeam1.setText(MatchLabelUtility.teamOrPlaceholder(parent.getContext(), tournament, match, 1));
+        txtTeam2.setText(MatchLabelUtility.teamOrPlaceholder(parent.getContext(), tournament, match, 2));
 
         TextView txtPoints1 = convertView.findViewById(R.id.txtPoints1);
         TextView txtPoints2 = convertView.findViewById(R.id.txtPoints2);

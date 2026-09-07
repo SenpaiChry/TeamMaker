@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
+import com.example.myapplication.Utility.MatchLabelUtility;
 import com.example.myapplication.Utility.TournamentTeamUtility;
 import com.example.myapplication.Utility.TournamentUtility;
 import com.example.myapplication.Utility.Utility;
@@ -91,8 +92,9 @@ public class TournamentBracketAdapter extends BaseAdapter {
         TextView txtPoints2 = convertView.findViewById(R.id.txtPoints2);
 
         txtTime.setText(match.time);
-        txtTeam1.setText(TournamentUtility.getActiveTournament().toStringNTeamByKey(match.keyTeam1));
-        txtTeam2.setText(TournamentUtility.getActiveTournament().toStringNTeamByKey(match.keyTeam2));
+        Tournament activeTournament = TournamentUtility.getActiveTournament();
+        txtTeam1.setText(MatchLabelUtility.teamOrPlaceholder(context, activeTournament, match, 1));
+        txtTeam2.setText(MatchLabelUtility.teamOrPlaceholder(context, activeTournament, match, 2));
         txtPoints1.setText(String.valueOf(match.points1));
         txtPoints2.setText(String.valueOf(match.points2));
 

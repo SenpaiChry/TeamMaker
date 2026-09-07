@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import com.example.myapplication.Match;
 import com.example.myapplication.Team;
 import com.example.myapplication.Tournament;
+import com.example.myapplication.TournamentActivityManageMatches;
 import com.example.myapplication.TournamentActivityManageTournaments;
 import com.example.myapplication.Model.Constants;
 import com.google.firebase.database.DataSnapshot;
@@ -105,6 +106,19 @@ public class TournamentUtility {
                                 match.type = String.valueOf(matchSnapshot.child("type").getValue(String.class));
                             }
 
+                            String s1t = matchSnapshot.child("source1_type").getValue(String.class);
+                            if (s1t != null && !s1t.isEmpty()) {
+                                match.source1Type = s1t;
+                                String s1r = matchSnapshot.child("source1_ref").getValue(String.class);
+                                match.source1Ref = s1r != null ? s1r : "";
+                            }
+                            String s2t = matchSnapshot.child("source2_type").getValue(String.class);
+                            if (s2t != null && !s2t.isEmpty()) {
+                                match.source2Type = s2t;
+                                String s2r = matchSnapshot.child("source2_ref").getValue(String.class);
+                                match.source2Ref = s2r != null ? s2r : "";
+                            }
+
                             for (DataSnapshot setSnap : matchSnapshot.child("detail").getChildren()) {
                                 match.detail.add(new int[]{
                                         parseIntOrZero(setSnap.child("points1").getValue(String.class)),
@@ -143,6 +157,11 @@ public class TournamentUtility {
                 // Aggiorna la lista tornei se la schermata e' aperta
                 try {
                     TournamentActivityManageTournaments.reloadTournaments();
+                } catch (Exception ignored) { }
+
+                // Aggiorna la lista partite se la schermata e' aperta
+                try {
+                    TournamentActivityManageMatches.reloadMatches();
                 } catch (Exception ignored) { }
 
                 Log.d("Firebase", "Tournaments aggiornati in tempo reale: " + Constants.tournaments.size());

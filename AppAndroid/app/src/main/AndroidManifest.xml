@@ -131,5 +131,10 @@
                 android:name=".ActivityPopUpInfoMatch"
                 android:screenOrientation="portrait"
                 android:theme="@style/NoTitleDialog" />
+
+            <activity
+                android:name=".ActivityPopUpGenerateFinals"
+                android:screenOrientation="portrait"
+                android:theme="@style/NoTitleDialog" />
         </application>
     </manifest>
