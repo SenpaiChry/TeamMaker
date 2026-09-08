@@ -13,18 +13,26 @@ import { serializeMatch } from './mappers'
 
 /**
  * Salva il risultato di una partita.
- * Tocca solo i punti, così un salvataggio non può alterare per sbaglio orario,
- * giornata, squadre o tipo.
+ *
+ * Tocca solo punti e dettaglio dei set, così un salvataggio non può alterare
+ * per sbaglio orario, giornata, squadre o tipo. Il `detail` viene scritto
+ * sempre — anche se vuoto — per non lasciare i punti di un risultato precedente
+ * quando questo viene sovrascritto (es. si è sbagliato a inserirlo).
  */
 export async function saveMatchResult(
   tournamentKey: string,
   matchKey: string,
   points1: number,
   points2: number,
+  detail: number[][] = [],
 ): Promise<void> {
   await update(dbRef(`tournaments/${tournamentKey}/matches/${matchKey}`), {
     points1: String(points1),
     points2: String(points2),
+    detail: detail.map((set) => ({
+      points1: String(set[0] ?? 0),
+      points2: String(set[1] ?? 0),
+    })),
   })
 }
 

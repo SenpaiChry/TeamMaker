@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/Button'
 import type { Match, Tournament } from '@/domain/models'
 import { getTeamNumber } from '@/domain/team'
 import { formatFullNames } from '@/domain/team'
-import { availablePhases, formatPhase } from '@/domain/phases'
+import { availablePhases, label as phaseLabel, normalize as normalizePhase } from '@/domain/phases'
 import { isValidTime } from '@/domain/time'
 import { addMatch, updateMatch } from '@/data/matchesRepo'
 
@@ -43,7 +43,7 @@ export function MatchEditModal({
     setTime(match?.time ?? '9:00')
     setTeam1(match?.keyTeam1 ?? '')
     setTeam2(match?.keyTeam2 ?? '')
-    setPhase(match?.type ?? '')
+    setPhase(normalizePhase(match?.type ?? ''))
     setPoints1(match?.points1 ?? 0)
     setPoints2(match?.points2 ?? 0)
     setError(null)
@@ -64,6 +64,10 @@ export function MatchEditModal({
         time,
         points1,
         points2,
+        // Il dettaglio dei punti per set lo scrive solo il segnapunti;
+        // dall'editor conserviamo quello che c'era, oppure vuoto per una
+        // partita nuova.
+        detail: match?.detail ?? [],
         type: phase,
       }
 
@@ -119,7 +123,7 @@ export function MatchEditModal({
           <option value="">— scegli —</option>
           {phases.map((p) => (
             <option key={p} value={p}>
-              {formatPhase(p)}
+              {phaseLabel(p)}
             </option>
           ))}
         </select>

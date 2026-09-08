@@ -1,5 +1,6 @@
 import { BYE_KEY } from './constants'
 import type { Match, Team } from './models'
+import { GROUP, GROUP_PREFIX } from './phases'
 import { formatTime, parseTime, type TimeSlot } from './time'
 
 /**
@@ -56,17 +57,22 @@ export function getBracketLetter(index: number): string {
   return label
 }
 
-/** Etichetta completa usata nel campo `type` delle partite. Porta `getBracketLabel`. */
+/**
+ * Codice canonico del girone per il campo `type` delle partite.
+ * Porta `getBracketLabel`. Da 618fe36 l'app Android scrive codici (GROUP_A,
+ * GROUP_B…) invece delle vecchie stringhe localizzate (BRACKET A, GIRONE…);
+ * `phases.normalize()` li riconosce entrambi in lettura.
+ */
 export function getBracketLabel(index: number): string {
-  return `BRACKET ${getBracketLetter(index)}`
+  return GROUP_PREFIX + getBracketLetter(index)
 }
 
 /**
- * Etichetta del girone all'italiana.
- * ⚠️ Lo spazio finale è intenzionale: è quello che scrive l'app Android e la
- * classifica filtra le partite con `type.includes('GIRONE')`.
+ * Codice canonico del girone all'italiana.
+ * L'app Android scrive "GROUP" dal commit 618fe36; i dati vecchi ("GIRONE ")
+ * vengono normalizzati da `phases.normalize()`.
  */
-export const ITALIAN_BRACKET_LABEL = 'GIRONE '
+export const ITALIAN_BRACKET_LABEL = GROUP
 
 // ---------------------------------------------------------------------------
 // Round robin
@@ -95,7 +101,14 @@ export function buildRoundRobinRounds(teams: Team[], typeLabel: string): Planned
       const key1 = rotation[i]!
       const key2 = rotation[n - 1 - i]!
       if (key1 !== BYE_KEY && key2 !== BYE_KEY) {
-        round.push({ keyTeam1: key1, keyTeam2: key2, points1: 0, points2: 0, type: typeLabel })
+        round.push({
+          keyTeam1: key1,
+          keyTeam2: key2,
+          points1: 0,
+          points2: 0,
+          detail: [],
+          type: typeLabel,
+        })
       }
     }
     rounds.push(round)

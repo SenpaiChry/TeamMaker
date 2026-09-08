@@ -1,6 +1,6 @@
 import type { Match, Team } from '@/domain/models'
 import { getTeamNumber } from '@/domain/team'
-import { formatPhase } from '@/domain/phases'
+import { label as phaseLabel } from '@/domain/phases'
 
 /**
  * Riga partita della gestione, portata da tournament_layout_manage_matches.xml:
@@ -31,7 +31,7 @@ export function MatchManageRow({
       <div className="flex items-center gap-2">
         <div className="min-w-0 grow">
           <div className="app-title truncate text-[13px] text-match-meta">
-            {formatPhase(match.type)}
+            {phaseLabel(match.type)}
           </div>
           <div className="app-title flex gap-2 text-[13px] text-match-meta">
             <span>Giorno {match.day}</span>

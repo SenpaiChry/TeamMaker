@@ -14,6 +14,7 @@ import {
   type Side,
 } from '@/domain/scorecard'
 import { getNameAndSurname } from '@/domain/player'
+import { label as phaseLabel } from '@/domain/phases'
 import { getTeamNumber } from '@/domain/team'
 import {
   cancelLiveShutdown,
@@ -191,7 +192,7 @@ export function ScorecardScreen() {
             {match.type.trim().length > 0 && (
               <>
                 {' · '}
-                <b className="text-list-text">{match.type.trim()}</b>
+                <b className="text-list-text">{phaseLabel(match.type)}</b>
               </>
             )}
           </span>

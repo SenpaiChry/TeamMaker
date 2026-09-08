@@ -131,6 +131,26 @@ export function serializePlayer(player: Player): RawNode {
 // Partite
 // ---------------------------------------------------------------------------
 
+/**
+ * Punti dei singoli set dal nodo `detail`.
+ *
+ * Firebase può restituire un array o un oggetto con chiavi numeriche a seconda
+ * di come è stato scritto: `Object.entries` normalizza entrambe le forme, poi
+ * si ordina per chiave numerica per rispettare l'ordine dei set.
+ */
+function parseDetail(raw: unknown): number[][] {
+  if (raw === null || raw === undefined) return []
+  const node = raw as RawNode
+
+  return Object.entries(node)
+    .map(([key, value]): [number, number[]] => {
+      const set = (value ?? {}) as RawNode
+      return [Number(key), [toNumber(set['points1']), toNumber(set['points2'])]]
+    })
+    .sort((a, b) => a[0] - b[0])
+    .map(([, set]) => set)
+}
+
 export function parseMatch(key: string, raw: unknown): Match {
   const node = (raw ?? {}) as RawNode
 
@@ -142,11 +162,17 @@ export function parseMatch(key: string, raw: unknown): Match {
     time: toString(node['time'], '0:00'),
     points1: toNumber(node['points1']),
     points2: toNumber(node['points2']),
+    detail: parseDetail(node['detail']),
     type: toString(node['type']),
   }
 }
 
-/** ⚠️ `day`, `points1` e `points2` tornano stringhe: è ciò che l'app Android legge. */
+/**
+ * ⚠️ `day`, `points1`, `points2` e i punti dei set nel `detail` tornano
+ * stringhe: è ciò che l'app Android legge. Il nodo `detail` viene sempre scritto
+ * — se vuoto, come `[]` — per non lasciare in giro dettagli di una versione
+ * precedente della partita.
+ */
 export function serializeMatch(match: Omit<Match, 'key'>): RawNode {
   return {
     day: String(match.day),
@@ -155,6 +181,10 @@ export function serializeMatch(match: Omit<Match, 'key'>): RawNode {
     team2: match.keyTeam2,
     points1: String(match.points1),
     points2: String(match.points2),
+    detail: match.detail.map((set) => ({
+      points1: String(set[0] ?? 0),
+      points2: String(set[1] ?? 0),
+    })),
     type: match.type,
   }
 }

@@ -4,6 +4,7 @@ import { getTeamNumber } from '@/domain/team'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { PlayerName } from '@/components/ui/PlayerName'
+import { label as phaseLabel } from '@/domain/phases'
 import { pointsForMatch } from '@/domain/standings'
 
 /**
@@ -35,7 +36,7 @@ export function MatchDetailModal({
           <div>
             <div className="text-sm text-list-text-muted">
               Giorno {match.day} · ore {match.time}
-              {match.type.trim().length > 0 && <> · {match.type.trim()}</>}
+              {match.type.trim().length > 0 && <> · {phaseLabel(match.type)}</>}
             </div>
             <div className="mt-1 flex items-baseline justify-center gap-3 text-3xl font-black tabular-nums">
               <span className="text-score-team-a">{match.points1}</span>

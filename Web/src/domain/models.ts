@@ -37,9 +37,24 @@ export interface Match {
   day: number
   /** Formato "H:mm" — l'ora NON è zero-padded, per compatibilità con l'app Android. */
   time: string
+  /**
+   * Set vinti dalla squadra 1 (quando la partita è a set) o punti del set unico
+   * (formato legacy). L'interpretazione dipende da `detail`: se pieno → set,
+   * altrimenti euristica per grandezza (`points ≤ 5` = set).
+   */
   points1: number
+  /** Come `points1`, per la squadra 2. */
   points2: number
-  /** "GIRONE " per il girone all'italiana, "BRACKET A" ecc. per i gironi multipli. */
+  /**
+   * Punti dei singoli set, ciascuno come `[puntiT1, puntiT2]`.
+   * Vuoto per le partite salvate prima del formato set + detail.
+   */
+  detail: number[][]
+  /**
+   * Fase della partita, come codice canonico: GROUP, GROUP_A, QUARTER, SEMIFINAL,
+   * FINAL, THIRD. I dati legacy (GIRONE, BRACKET A, FINALE…) vengono normalizzati
+   * in lettura da `phases.normalize()`.
+   */
   type: string
 }
 

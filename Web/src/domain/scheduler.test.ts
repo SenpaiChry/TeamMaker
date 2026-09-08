@@ -25,8 +25,8 @@ describe('getBracketLetter', () => {
     expect(getBracketLetter(27)).toBe('AB')
   })
 
-  it('compone l’etichetta usata nel campo type', () => {
-    expect(getBracketLabel(1)).toBe('BRACKET B')
+  it('compone il codice canonico usato nel campo type', () => {
+    expect(getBracketLabel(1)).toBe('GROUP_B')
   })
 })
 
@@ -118,6 +118,7 @@ describe('assignSlots', () => {
     keyTeam2: `b${i}`,
     points1: 0,
     points2: 0,
+    detail: [] as number[][],
     type: 'GIRONE ',
   }))
 
@@ -186,9 +187,9 @@ describe('generateItalianBracket', () => {
     expect(schedule.matches).toHaveLength(countItalianBracketMatches(6))
   })
 
-  it('etichetta le partite come GIRONE, così entrano in classifica', () => {
+  it('etichetta le partite come GROUP, così entrano in classifica', () => {
     const schedule = generateItalianBracket(makeTeams(4), wholeDay, 30)
-    expect(schedule.matches.every((m) => m.type.includes('GIRONE'))).toBe(true)
+    expect(schedule.matches.every((m) => m.type === 'GROUP')).toBe(true)
   })
 
   it('programma le partite in orari crescenti', () => {

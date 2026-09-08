@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { Match, Team } from '@/domain/models'
+import { label as phaseLabel } from '@/domain/phases'
 import { getTeamNumber, teamMatchesQuery } from '@/domain/team'
 import { MatchDetailModal } from './MatchDetailModal'
 
@@ -66,7 +67,7 @@ export function MatchesTab({
                     <div className="min-w-0 grow">
                       {match.type.trim().length > 0 && (
                         <div className="app-title truncate text-[13px] text-match-meta">
-                          {match.type.trim()}
+                          {phaseLabel(match.type)}
                         </div>
                       )}
                       <div className="app-title flex gap-2 text-[13px] text-match-meta">

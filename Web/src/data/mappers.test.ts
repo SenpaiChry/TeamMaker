@@ -132,6 +132,45 @@ describe('parseMatch', () => {
   it('sopporta il campo type assente', () => {
     expect(parseMatch('m1', { day: '1' }).type).toBe('')
   })
+
+  it('senza detail restituisce un array vuoto', () => {
+    expect(parseMatch('m1', { day: '1' }).detail).toEqual([])
+  })
+
+  it('legge il detail come array (formato Firebase array)', () => {
+    const match = parseMatch('m1', {
+      points1: '2',
+      points2: '1',
+      detail: [
+        { points1: '25', points2: '20' },
+        { points1: '22', points2: '25' },
+        { points1: '15', points2: '10' },
+      ],
+    })
+
+    expect(match.detail).toEqual([
+      [25, 20],
+      [22, 25],
+      [15, 10],
+    ])
+  })
+
+  it("legge il detail come oggetto a chiavi numeriche (l'altra forma Firebase)", () => {
+    // Firebase può salvare un array come oggetto {"0": ..., "1": ...} se ha buchi
+    const match = parseMatch('m1', {
+      points1: '2',
+      points2: '0',
+      detail: {
+        '0': { points1: '25', points2: '20' },
+        '1': { points1: '25', points2: '23' },
+      },
+    })
+
+    expect(match.detail).toEqual([
+      [25, 20],
+      [25, 23],
+    ])
+  })
 })
 
 describe('serializeMatch', () => {
@@ -143,6 +182,7 @@ describe('serializeMatch', () => {
       time: '9:30',
       points1: 15,
       points2: 9,
+      detail: [],
       type: 'GIRONE ',
     })
 
@@ -151,6 +191,43 @@ describe('serializeMatch', () => {
     expect(raw['points2']).toBe('9')
     expect(raw['time']).toBe('9:30')
     expect(raw['team1']).toBe('t1')
+  })
+
+  it('scrive il detail come array di {points1, points2} come stringhe', () => {
+    const raw = serializeMatch({
+      keyTeam1: 't1',
+      keyTeam2: 't2',
+      day: 1,
+      time: '9:00',
+      points1: 2,
+      points2: 1,
+      detail: [
+        [25, 20],
+        [22, 25],
+        [15, 10],
+      ],
+      type: 'GROUP',
+    })
+
+    expect(raw['detail']).toEqual([
+      { points1: '25', points2: '20' },
+      { points1: '22', points2: '25' },
+      { points1: '15', points2: '10' },
+    ])
+  })
+
+  it('senza detail scrive un array vuoto (non lo omette)', () => {
+    const raw = serializeMatch({
+      keyTeam1: 't1',
+      keyTeam2: 't2',
+      day: 1,
+      time: '9:00',
+      points1: 15,
+      points2: 9,
+      detail: [],
+      type: 'GROUP',
+    })
+    expect(raw['detail']).toEqual([])
   })
 
   it('fa il giro completo senza perdere nulla', () => {
