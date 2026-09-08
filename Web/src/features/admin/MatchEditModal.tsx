@@ -9,10 +9,25 @@ import { isValidTime } from '@/domain/time'
 import { addMatch, resolveFinalStages, updateMatch } from '@/data/matchesRepo'
 
 /**
- * Creazione e modifica di una partita.
- * Porta TournamentActivityEditMatch: giornata, orario, le due squadre, la
- * fase e — solo in modifica — il punteggio.
+ * Creazione e modifica di una partita — porta TournamentActivityEditMatch.
+ *
+ * Il risultato si compila un set alla volta: le righe con entrambi i punti
+ * lasciati vuoti vengono ignorate al salvataggio, quelle senza vincitore
+ * (`p1 === p2`) invalidano il form. Il "punteggio" della partita
+ * (`points1`/`points2`) è il conteggio dei set vinti, calcolato dal dettaglio;
+ * il dettaglio viene scritto sul database esattamente come lo scrive il
+ * segnapunti, così classifica e app Android leggono lo stesso formato.
+ *
+ * Retrocompat legacy: se apri una partita salvata senza `detail` ma con
+ * `points1`/`points2` diversi da zero (formato vecchio a set unico), il
+ * conteggio parte da quei valori. Se non aggiungi righe, il salvataggio li
+ * lascia intatti — così NON perdi il vecchio risultato solo per aver aperto
+ * l'editor.
  */
+
+/** Riga dell'editor: `null` = campo vuoto (differente da 0). */
+type SetRow = { p1: number | null; p2: number | null }
+
 export function MatchEditModal({
   tournament,
   match,
@@ -30,8 +45,7 @@ export function MatchEditModal({
   const [team1, setTeam1] = useState('')
   const [team2, setTeam2] = useState('')
   const [phase, setPhase] = useState('')
-  const [points1, setPoints1] = useState(0)
-  const [points2, setPoints2] = useState(0)
+  const [sets, setSets] = useState<SetRow[]>([])
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -44,19 +58,58 @@ export function MatchEditModal({
     setTeam1(match?.keyTeam1 ?? '')
     setTeam2(match?.keyTeam2 ?? '')
     setPhase(normalizePhase(match?.type ?? ''))
-    setPoints1(match?.points1 ?? 0)
-    setPoints2(match?.points2 ?? 0)
+    setSets((match?.detail ?? []).map(([p1, p2]) => ({ p1: p1 ?? 0, p2: p2 ?? 0 })))
     setError(null)
   }, [open, match])
 
   const sameTeam = team1 !== '' && team1 === team2
+
+  // Righe considerate "in gioco": entrambe vuote → riga scartata; almeno una
+  // riempita → richiede un vincitore. Nell'Android il controllo è lo stesso.
+  const activeRows = sets.filter((s) => s.p1 !== null || s.p2 !== null)
+  const invalidSet = activeRows.some((s) => (s.p1 ?? 0) === (s.p2 ?? 0))
+
   const valid =
-    isValidTime(time) && team1 !== '' && team2 !== '' && !sameTeam && phase !== '' && day >= 1
+    isValidTime(time) &&
+    team1 !== '' &&
+    team2 !== '' &&
+    !sameTeam &&
+    phase !== '' &&
+    day >= 1 &&
+    !invalidSet
+
+  // Conteggio live "2 - 1" mostrato accanto al titolo dell'elenco set.
+  const liveSets1 = activeRows.reduce((n, s) => ((s.p1 ?? 0) > (s.p2 ?? 0) ? n + 1 : n), 0)
+  const liveSets2 = activeRows.reduce((n, s) => ((s.p2 ?? 0) > (s.p1 ?? 0) ? n + 1 : n), 0)
+
+  const addSet = () => setSets([...sets, { p1: null, p2: null }])
+  const removeSet = (i: number) => setSets(sets.filter((_, k) => k !== i))
+  const patchSet = (i: number, patch: Partial<SetRow>) =>
+    setSets(sets.map((s, k) => (k === i ? { ...s, ...patch } : s)))
 
   const save = async () => {
     setBusy(true)
     setError(null)
     try {
+      // Costruisce il detail dai set validi (righe entrambe vuote scartate).
+      const detail = activeRows.map((s) => [s.p1 ?? 0, s.p2 ?? 0])
+
+      // Regole `points1`/`points2` (identiche a Android):
+      //  - se ci sono set validi → conteggio dei set vinti
+      //  - se non ci sono set validi ma la partita originale ne aveva → azzera
+      //  - se legacy senza detail → mantieni i vecchi points1/points2
+      let points1 = 0
+      let points2 = 0
+      if (detail.length > 0) {
+        for (const set of detail) {
+          if (set[0]! > set[1]!) points1++
+          else points2++
+        }
+      } else if (match !== null && match.detail.length === 0) {
+        points1 = match.points1
+        points2 = match.points2
+      }
+
       const payload = {
         keyTeam1: team1,
         keyTeam2: team2,
@@ -64,13 +117,10 @@ export function MatchEditModal({
         time,
         points1,
         points2,
-        // Il dettaglio dei punti per set lo scrive solo il segnapunti;
-        // dall'editor conserviamo quello che c'era, oppure vuoto per una
-        // partita nuova.
-        detail: match?.detail ?? [],
+        detail,
         type: phase,
-        // Le sorgenti delle fasi finali si preservano come sono: l'editor non
-        // le tocca (le assegna solo il generatore di finali).
+        // Le sorgenti delle fasi finali si preservano: l'editor non le tocca
+        // (le assegna solo il generatore di finali).
         source1Type: match?.source1Type ?? '',
         source1Ref: match?.source1Ref ?? '',
         source2Type: match?.source2Type ?? '',
@@ -82,8 +132,7 @@ export function MatchEditModal({
       } else {
         const updated = { ...payload, key: match.key }
         await updateMatch(tournament.key, updated)
-        // Se il risultato è cambiato, propaga la modifica alle fasi finali
-        // che dipendono da questa partita.
+        // Propaga la modifica alle fasi finali che dipendono da questa partita.
         const updatedTournament = {
           ...tournament,
           matches: tournament.matches.map((m) => (m.key === match.key ? updated : m)),
@@ -98,6 +147,15 @@ export function MatchEditModal({
       setBusy(false)
     }
   }
+
+  // Se apro una partita legacy senza detail ma con un risultato salvato,
+  // mostro il conteggio ereditato invece di "0 - 0", così l'utente vede
+  // subito da dove parte e non si spaventa se non aggiunge righe.
+  const showsLegacyScore =
+    match !== null &&
+    match.detail.length === 0 &&
+    (match.points1 !== 0 || match.points2 !== 0) &&
+    activeRows.length === 0
 
   return (
     <Modal
@@ -155,25 +213,62 @@ export function MatchEditModal({
       </Field>
 
       {match !== null && (
-        <div className="grid grid-cols-2 gap-2">
-          <Field label="Punti 1">
-            <input
-              type="number"
-              min={0}
-              value={points1}
-              onChange={(e) => setPoints1(Math.max(Number(e.target.value) || 0, 0))}
-              className="w-full rounded-lg border border-list-card-border bg-list-card px-3 py-2"
-            />
-          </Field>
-          <Field label="Punti 2">
-            <input
-              type="number"
-              min={0}
-              value={points2}
-              onChange={(e) => setPoints2(Math.max(Number(e.target.value) || 0, 0))}
-              className="w-full rounded-lg border border-list-card-border bg-list-card px-3 py-2"
-            />
-          </Field>
+        <div className="mt-3">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-xs uppercase tracking-wide text-list-text-muted">Risultato</span>
+            <span className="text-sm tabular-nums text-list-text">
+              <b className="text-list-text">{showsLegacyScore ? match.points1 : liveSets1}</b>
+              {' - '}
+              <b className="text-list-text">{showsLegacyScore ? match.points2 : liveSets2}</b>
+              {showsLegacyScore && (
+                <span className="ml-2 text-xs text-list-text-muted">(punti, formato vecchio)</span>
+              )}
+            </span>
+          </div>
+
+          <ul className="flex flex-col gap-1.5">
+            {sets.map((s, i) => (
+              <li key={i} className="flex items-center gap-2">
+                <span className="w-[46px] shrink-0 text-xs uppercase tracking-wide text-list-text-muted">
+                  Set {i + 1}
+                </span>
+                <SetInput
+                  value={s.p1}
+                  ariaLabel={`Punti squadra 1, set ${i + 1}`}
+                  onChange={(p1) => patchSet(i, { p1 })}
+                />
+                <span className="text-list-text-muted">-</span>
+                <SetInput
+                  value={s.p2}
+                  ariaLabel={`Punti squadra 2, set ${i + 1}`}
+                  onChange={(p2) => patchSet(i, { p2 })}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeSet(i)}
+                  aria-label={`Rimuovi set ${i + 1}`}
+                  className="grid size-8 shrink-0 place-items-center rounded-lg bg-icon-action
+                             text-action-delete hover:brightness-150"
+                >
+                  ✕
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          <button
+            type="button"
+            onClick={addSet}
+            className="mt-2 rounded-lg bg-icon-action px-3 py-1.5 text-sm text-list-text hover:brightness-150"
+          >
+            + Aggiungi set
+          </button>
+
+          {invalidSet && (
+            <p className="mt-2 text-xs text-action-danger">
+              Un set non può finire in pareggio: correggi i punteggi.
+            </p>
+          )}
         </div>
       )}
 
@@ -203,6 +298,38 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <span className="text-xs uppercase tracking-wide text-list-text-muted">{label}</span>
       {children}
     </label>
+  )
+}
+
+/**
+ * Input numerico per un punteggio di set. Il valore `null` corrisponde al
+ * campo vuoto: distinguerlo da `0` è essenziale, perché una riga con entrambi
+ * vuoti viene scartata mentre una con `0-25` è un set valido.
+ */
+function SetInput({
+  value,
+  ariaLabel,
+  onChange,
+}: {
+  value: number | null
+  ariaLabel: string
+  onChange: (value: number | null) => void
+}) {
+  return (
+    <input
+      type="number"
+      min={0}
+      inputMode="numeric"
+      aria-label={ariaLabel}
+      value={value === null ? '' : String(value)}
+      onChange={(e) => {
+        const raw = e.target.value
+        if (raw === '') onChange(null)
+        else onChange(Math.max(Number(raw) || 0, 0))
+      }}
+      className="w-16 rounded-lg border border-list-card-border bg-list-card px-2 py-1.5 text-center
+                 tabular-nums focus:border-brand-blue focus:outline-none"
+    />
   )
 }
 

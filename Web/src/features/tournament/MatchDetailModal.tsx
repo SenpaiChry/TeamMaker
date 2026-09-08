@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { PlayerName } from '@/components/ui/PlayerName'
 import { label as phaseLabel } from '@/domain/phases'
 import { slotLabel, TO_DO_KEY } from '@/domain/finalStages'
+import { formatSetDetail } from '@/domain/matchScore'
 import { pointsForMatch } from '@/domain/standings'
 
 /**
@@ -43,6 +44,11 @@ export function MatchDetailModal({
               <span className="text-lg text-list-text-muted">–</span>
               <span className="text-score-team-b">{match.points2}</span>
             </div>
+            {formatSetDetail(match) !== null && (
+              <div className="mt-1 text-center text-[12px] tabular-nums text-list-text-muted">
+                {formatSetDetail(match)}
+              </div>
+            )}
           </div>
         )
       }

@@ -2,6 +2,7 @@ import type { Match, Tournament } from '@/domain/models'
 import { getTeamNumber } from '@/domain/team'
 import { label as phaseLabel } from '@/domain/phases'
 import { slotLabel, TO_DO_KEY } from '@/domain/finalStages'
+import { formatSetDetail } from '@/domain/matchScore'
 
 /**
  * Riga partita della gestione, portata da tournament_layout_manage_matches.xml:
@@ -68,6 +69,12 @@ export function MatchManageRow({
           {label2}
         </span>
       </div>
+
+      {formatSetDetail(match) !== null && (
+        <div className="mt-1 text-center text-[11px] tabular-nums text-list-text-muted">
+          {formatSetDetail(match)}
+        </div>
+      )}
     </div>
   )
 }
