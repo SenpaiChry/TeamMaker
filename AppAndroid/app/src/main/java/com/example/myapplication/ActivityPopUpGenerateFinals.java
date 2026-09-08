@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import com.example.myapplication.Utility.FinalStageGenerator;
 import com.example.myapplication.Utility.FinalStageResolver;
 import com.example.myapplication.Utility.MatchUtility;
+import com.example.myapplication.Utility.PhaseUtility;
 import com.example.myapplication.Utility.TimeUtility;
 import com.example.myapplication.Utility.TournamentScheduleUtility;
 import com.example.myapplication.Utility.TournamentUtility;
@@ -33,8 +34,6 @@ public class ActivityPopUpGenerateFinals extends AppCompatActivity {
 
     private String tournamentKey;
     private Tournament tournament;
-
-    private String quarterLabel, semiLabel, finalLabel, thirdLabel;
 
     private int bracketSize = 0;
     private int lastMatchCount = 0;
@@ -64,11 +63,6 @@ public class ActivityPopUpGenerateFinals extends AppCompatActivity {
 
         tournamentKey = getIntent().getExtras().getString("tournament_key");
         tournament = TournamentUtility.getTournamentByKey(tournamentKey);
-
-        quarterLabel = getString(R.string.quarter);
-        semiLabel = getString(R.string.semifinal);
-        finalLabel = getString(R.string.finalString);
-        thirdLabel = getString(R.string.finalina);
 
         llTimes = findViewById(R.id.llTimes);
         btnPhaseQuarter = findViewById(R.id.btnPhaseQuarter);
@@ -147,16 +141,15 @@ public class ActivityPopUpGenerateFinals extends AppCompatActivity {
     /** Ricostruisce l'anteprima del tabellone con i placeholder leggibili. */
     @SuppressLint("SetTextI18n")
     private void updatePreview() {
-        List<Match> matches = FinalStageGenerator.generate(tournament, bracketSize, chkThirdPlace.isChecked(),
-                quarterLabel, semiLabel, finalLabel, thirdLabel);
+        List<Match> matches = FinalStageGenerator.generate(tournament, bracketSize, chkThirdPlace.isChecked());
         lastMatchCount = matches.size();
 
         Map<String, String> code = new HashMap<>();
         int qi = 1, si = 1;
         for (Match m : matches) {
-            if (m.type.equals(quarterLabel)) code.put(m.key, "Q" + (qi++));
-            else if (m.type.equals(semiLabel)) code.put(m.key, "S" + (si++));
-            else if (m.type.equals(finalLabel)) code.put(m.key, "F");
+            if (m.type.equals(PhaseUtility.QUARTER)) code.put(m.key, "Q" + (qi++));
+            else if (m.type.equals(PhaseUtility.SEMIFINAL)) code.put(m.key, "S" + (si++));
+            else if (m.type.equals(PhaseUtility.FINAL)) code.put(m.key, "F");
             else code.put(m.key, "3°/4°");
         }
 
@@ -193,8 +186,7 @@ public class ActivityPopUpGenerateFinals extends AppCompatActivity {
     }
 
     private void confirm() {
-        List<Match> matches = FinalStageGenerator.generate(tournament, bracketSize, chkThirdPlace.isChecked(),
-                quarterLabel, semiLabel, finalLabel, thirdLabel);
+        List<Match> matches = FinalStageGenerator.generate(tournament, bracketSize, chkThirdPlace.isChecked());
         if (matches.isEmpty()) {
             Toast.makeText(this, R.string.missing_data, Toast.LENGTH_SHORT).show();
             return;
@@ -213,7 +205,7 @@ public class ActivityPopUpGenerateFinals extends AppCompatActivity {
 
         // La finalina si gioca prima della finale: mettila penultima per lo scheduling
         int n = matches.size();
-        if (n >= 2 && matches.get(n - 1).type.equals(thirdLabel) && matches.get(n - 2).type.equals(finalLabel)) {
+        if (n >= 2 && matches.get(n - 1).type.equals(PhaseUtility.THIRD) && matches.get(n - 2).type.equals(PhaseUtility.FINAL)) {
             Collections.swap(matches, n - 1, n - 2);
         }
 

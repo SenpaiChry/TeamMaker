@@ -3,7 +3,7 @@
     android:id="@+id/llInfo"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="52dp"
+    android:layout_height="42dp"
     android:background="@drawable/bg_stat_row"
     android:gravity="center_vertical"
     android:paddingHorizontal="12dp">
@@ -26,7 +26,10 @@
         <Spinner
             android:id="@+id/spinnerValue"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:minWidth="90dp"
+            android:background="@drawable/select"
+            android:popupBackground="@drawable/bg_spinner_popup"
             android:gravity="center" />
 
         <LinearLayout

@@ -103,7 +103,7 @@ public class TournamentUtility {
                             );
 
                             if (matchSnapshot.hasChild("type")) {
-                                match.type = String.valueOf(matchSnapshot.child("type").getValue(String.class));
+                                match.type = PhaseUtility.normalize(String.valueOf(matchSnapshot.child("type").getValue(String.class)));
                             }
 
                             String s1t = matchSnapshot.child("source1_type").getValue(String.class);

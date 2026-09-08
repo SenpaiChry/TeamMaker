@@ -58,18 +58,15 @@ public class TournamentTableAdapter extends BaseAdapter {
 
         // Aggiunge le intestazioni quando cambia il girone e numera le posizioni
         String lastBracket = null;
-        int positionInBracket = 0;
         for (StandingsUtility.TeamStanding ts : standings) {
             String bracket = ts.team.bracket == null ? "" : ts.team.bracket;
             if (!bracket.equals(lastBracket)) {
                 lastBracket = bracket;
-                positionInBracket = 0;
                 items.add(lastBracket);
                 positions.add(0);
             }
-            positionInBracket++;
             items.add(ts);
-            positions.add(positionInBracket);
+            positions.add(ts.rank); // rank condiviso: le squadre davvero pari hanno lo stesso numero
         }
     }
 
@@ -154,6 +151,11 @@ public class TournamentTableAdapter extends BaseAdapter {
         }
         txtPoints.setText(String.valueOf(standing.classificaPoints));
 
+        TextView txtDirectClash = convertView.findViewById(R.id.txtDirectClash);
+        if (txtDirectClash != null) {
+            txtDirectClash.setVisibility(standing.directClash ? View.VISIBLE : View.GONE);
+        }
+
         applyHighlight(convertView, txtPosition, txtTeam, txtTeamPlayers, txtPoints, matchesQuery(team));
 
         return convertView;
@@ -164,7 +166,7 @@ public class TournamentTableAdapter extends BaseAdapter {
         if (lost == 0) {
             return won == 0 ? "–" : "∞";
         }
-        return String.format(Locale.getDefault(), "%.2f", (double) won / lost);
+        return String.format(Locale.getDefault(), "%.3f", (double) won / lost);
     }
 
     /** True se un giocatore della squadra corrisponde al testo cercato. */

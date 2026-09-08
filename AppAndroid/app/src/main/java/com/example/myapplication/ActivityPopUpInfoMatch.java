@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.Utility.MatchLabelUtility;
+import com.example.myapplication.Utility.PhaseUtility;
 import com.example.myapplication.Utility.TournamentTeamUtility;
 import com.example.myapplication.Utility.TournamentUtility;
 
@@ -44,7 +45,7 @@ public class ActivityPopUpInfoMatch extends AppCompatActivity {
             TextView txtPoints2 = findViewById(R.id.txtPoints2);
 
             txtDay.setText(getString(R.string.day) + " " + match.day);
-            txtType.setText(match.type);
+            txtType.setText(PhaseUtility.label(this, match.type));
             txtTime.setText(match.time);
             txtFinalPoints1.setText(String.valueOf(match.points1));
             txtFinalPoints2.setText(String.valueOf(match.points2));

@@ -119,6 +119,9 @@
     <string name="no_final_config">NOT ENOUGH TEAMS FOR FINALS</string>
     <string name="generate_finals_btn">GENERATE FINALS</string>
     <string name="of_size">OF</string>
+    <string name="save_name_date">SAVE NAME AND DATE</string>
+    <string name="close">CLOSE</string>
+    <string name="head_to_head_short">H2H</string>
     <string name="delete_matches_short">DELETE ALL</string>
     <string name="type" translatable="false">TYPE</string>
     <string name="match">"MATCH"</string>

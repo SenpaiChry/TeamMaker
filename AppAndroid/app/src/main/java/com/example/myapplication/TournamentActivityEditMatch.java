@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.Utility.MatchUtility;
+import com.example.myapplication.Utility.PhaseUtility;
 import com.example.myapplication.Utility.TimeUtility;
 import com.example.myapplication.Utility.TournamentScheduleUtility;
 import com.example.myapplication.Utility.TournamentUtility;
@@ -25,7 +26,8 @@ import java.util.Arrays;
 public class TournamentActivityEditMatch extends AppCompatActivity {
 
     ArrayList<String> stringTeams = new ArrayList<>();
-    ArrayList<String> stringPhases = new ArrayList<>();
+    ArrayList<String> stringPhases = new ArrayList<>();   // etichette tradotte (display)
+    ArrayList<String> phaseCodes = new ArrayList<>();     // codici canonici (valore salvato)
 
     private LinearLayout llSets;
     private TextView txtSetCount;
@@ -68,13 +70,39 @@ public class TournamentActivityEditMatch extends AppCompatActivity {
                 getString(R.string.semifinal),
                 getString(R.string.quarter)
         ));
+        phaseCodes = new ArrayList<>(Arrays.asList("",
+                PhaseUtility.FINAL,
+                PhaseUtility.THIRD,
+                PhaseUtility.SEMIFINAL,
+                PhaseUtility.QUARTER
+        ));
 
+        // Opzioni girone: quelle previste da nBracket + quelle davvero presenti nelle partite
+        // (così un torneo con partite GROUP ma nBracket=0, o dati importati, mostra comunque il girone).
+        java.util.LinkedHashSet<String> groupCodes = new java.util.LinkedHashSet<>();
         if (tournament.nBracket == 1) {
-            stringPhases.add(getString(R.string.bracketSpace));
+            groupCodes.add(PhaseUtility.GROUP);
         } else if (tournament.nBracket > 1) {
             for (int i = 0; i < tournament.nBracket; i ++) {
-                stringPhases.add(TournamentScheduleUtility.getBracketLabel(i));
+                groupCodes.add(PhaseUtility.groupCode(TournamentScheduleUtility.getBracketLetter(i)));
             }
+        }
+        for (Match m : tournament.matches) {
+            if (PhaseUtility.isGroup(m.type)) {
+                groupCodes.add(m.type);
+            }
+        }
+        if (groupCodes.isEmpty()) {
+            // Fallback: nessun dato -> offri comunque il girone unico
+            groupCodes.add(PhaseUtility.GROUP);
+        }
+        for (String code : groupCodes) {
+            if (code.equals(PhaseUtility.GROUP)) {
+                stringPhases.add(getString(R.string.bracketSpace).trim());
+            } else {
+                stringPhases.add(getString(R.string.bracket) + " " + code.substring(PhaseUtility.GROUP_PREFIX.length()));
+            }
+            phaseCodes.add(code);
         }
 
         TextView txtTitle = findViewById(R.id.txtTitle);
@@ -115,7 +143,7 @@ public class TournamentActivityEditMatch extends AppCompatActivity {
                             Integer.parseInt(String.valueOf(txtDay.getText())),
                             String.valueOf(txtTime.getText()),
                             0 , 0,
-                            stringPhases.get(spinnerPhase.getSelectedItemPosition()));
+                            phaseCodes.get(spinnerPhase.getSelectedItemPosition()));
 
                     MatchUtility.addNewMatch(tournamentKey, match);
                     finish();
@@ -187,7 +215,7 @@ public class TournamentActivityEditMatch extends AppCompatActivity {
                         Integer.parseInt(String.valueOf(txtDay.getText())),
                         String.valueOf(txtTime.getText()),
                         sets1, sets2,
-                        stringPhases.get(spinnerPhase.getSelectedItemPosition()));
+                        phaseCodes.get(spinnerPhase.getSelectedItemPosition()));
                 match.detail = detail;
                 match.key = existing.key;
 
@@ -263,8 +291,10 @@ public class TournamentActivityEditMatch extends AppCompatActivity {
     }
 
     private int getIndexByPhase(String phase) {
-        for (int i = 0; i < stringPhases.size(); i ++) {
-            if (stringPhases.get(i).equals(phase)) {
+        // Confronto per codice canonico (indipendente dalla lingua), con normalizzazione dei dati vecchi.
+        String target = PhaseUtility.normalize(phase);
+        for (int i = 0; i < phaseCodes.size(); i ++) {
+            if (phaseCodes.get(i).equals(target)) {
                 return i;
             }
         }

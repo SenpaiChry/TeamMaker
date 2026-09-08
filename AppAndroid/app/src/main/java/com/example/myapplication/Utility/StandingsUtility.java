@@ -78,6 +78,8 @@ public class StandingsUtility {
         public int wins;
         public long setsWon, setsLost;
         public long pointsFor, pointsAgainst;
+        public int rank;               // posizione; uguale per squadre davvero pari
+        public boolean directClash;    // ordinata rispetto a una pari SOLO grazie allo scontro diretto
     }
 
     /**
@@ -101,7 +103,34 @@ public class StandingsUtility {
             ts.pointsAgainst = s.pointsAgainst;
             result.add(ts);
         }
+
+        // Rank condiviso per le squadre davvero pari; segnale se le separa lo scontro diretto
+        for (int i = 0; i < result.size(); i++) {
+            TeamStanding cur = result.get(i);
+            if (i == 0) {
+                cur.rank = 1;
+                continue;
+            }
+            TeamStanding prev = result.get(i - 1);
+            boolean tiedMainCriteria = compareByChain(stats.get(prev.team.key), stats.get(cur.team.key)) == 0;
+            boolean headToHeadSeparates = tiedMainCriteria && !headToHeadEqual(prev.team, cur.team, matches);
+            // Pari su tutti i criteri (scontro diretto incluso) -> stesso numero; altrimenti la posizione
+            cur.rank = (tiedMainCriteria && !headToHeadSeparates) ? prev.rank : (i + 1);
+            if (headToHeadSeparates) {
+                prev.directClash = true;
+                cur.directClash = true;
+            }
+        }
         return result;
+    }
+
+    /** True se lo scontro diretto fra le due squadre non le separa (non si sono affrontate o hanno pari). */
+    private static boolean headToHeadEqual(Team a, Team b, List<Match> matches) {
+        List<Team> pair = new ArrayList<>();
+        pair.add(a);
+        pair.add(b);
+        Map<String, TeamStats> mini = computeStats(pair, matches);
+        return compareByChain(mini.get(a.key), mini.get(b.key)) == 0;
     }
 
     private static Map<String, TeamStats> computeStats(List<Team> teams, List<Match> matches) {
@@ -113,7 +142,7 @@ public class StandingsUtility {
         }
 
         for (Match m : matches) {
-            if (m.type == null || !(m.type.contains("BRACKET") || m.type.contains("GIRONE"))) {
+            if (!PhaseUtility.isGroup(m.type)) {
                 continue;
             }
             // solo gli scontri fra le squadre passate (per la mini-classifica)

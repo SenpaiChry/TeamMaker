@@ -50,8 +50,7 @@ public class FinalStageGenerator {
      * WINNER/LOSER puntano alle partite corrette; vanno salvate con MatchUtility.saveMatches.
      * Le etichette di fase arrivano dalla UI (stringhe localizzate usate come type).
      */
-    public static List<Match> generate(Tournament tournament, int bracketSize, boolean thirdPlace,
-                                       String quarterLabel, String semiLabel, String finalLabel, String thirdLabel) {
+    public static List<Match> generate(Tournament tournament, int bracketSize, boolean thirdPlace) {
         List<Match> all = new ArrayList<>();
         if (!availableSizes(tournament).contains(bracketSize)) {
             return all;
@@ -65,7 +64,7 @@ public class FinalStageGenerator {
         // Primo turno: coppie dall'ordine standard del tabellone
         List<Integer> order = seedOrder(bracketSize);
         List<Match> round = new ArrayList<>();
-        String firstType = labelForCount(bracketSize / 2, quarterLabel, semiLabel, finalLabel);
+        String firstType = labelForCount(bracketSize / 2);
         for (int i = 0; i < bracketSize; i += 2) {
             Match m = new Match("TO DO", "TO DO", 0, "0:00", 0, 0, firstType);
             setSeedSource(m, 1, order.get(i), gironi, g);
@@ -82,7 +81,7 @@ public class FinalStageGenerator {
                 semis = round; // livello che alimenta la finale = semifinali
             }
             List<Match> next = new ArrayList<>();
-            String type = labelForCount(round.size() / 2, quarterLabel, semiLabel, finalLabel);
+            String type = labelForCount(round.size() / 2);
             for (int i = 0; i < round.size(); i += 2) {
                 Match m = new Match("TO DO", "TO DO", 0, "0:00", 0, 0, type);
                 m.source1Type = "WINNER"; m.source1Ref = round.get(i).key;
@@ -99,12 +98,12 @@ public class FinalStageGenerator {
             Match m = null;
             if (semis != null) {
                 // Partenza da quarti/semi: perdenti delle semifinali
-                m = new Match("TO DO", "TO DO", 0, "0:00", 0, 0, thirdLabel);
+                m = new Match("TO DO", "TO DO", 0, "0:00", 0, 0, PhaseUtility.THIRD);
                 m.source1Type = "LOSER"; m.source1Ref = semis.get(0).key;
                 m.source2Type = "LOSER"; m.source2Ref = semis.get(1).key;
             } else if (bracketSize == FINAL && availableSizes(tournament).contains(SEMI)) {
                 // Partenza dalla finale: 3a e 4a della classifica (seed 3 e 4)
-                m = new Match("TO DO", "TO DO", 0, "0:00", 0, 0, thirdLabel);
+                m = new Match("TO DO", "TO DO", 0, "0:00", 0, 0, PhaseUtility.THIRD);
                 setSeedSource(m, 1, 3, gironi, g);
                 setSeedSource(m, 2, 4, gironi, g);
             }
@@ -152,10 +151,10 @@ public class FinalStageGenerator {
         return order;
     }
 
-    private static String labelForCount(int matchCount, String quarterLabel, String semiLabel, String finalLabel) {
-        if (matchCount >= 4) return quarterLabel;
-        if (matchCount == 2) return semiLabel;
-        return finalLabel;
+    private static String labelForCount(int matchCount) {
+        if (matchCount >= 4) return PhaseUtility.QUARTER;
+        if (matchCount == 2) return PhaseUtility.SEMIFINAL;
+        return PhaseUtility.FINAL;
     }
 
     private static int minGironeSize(Tournament tournament) {

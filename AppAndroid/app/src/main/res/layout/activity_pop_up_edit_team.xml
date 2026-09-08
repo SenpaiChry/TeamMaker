@@ -3,226 +3,215 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="5dp"
-    android:gravity="center"
-    android:layout_margin="20dp"
+    android:padding="14dp"
+    android:layout_margin="12dp"
     android:background="@drawable/bg_modal_dark">
 
     <TextView
         android:id="@+id/txtTitle"
-        android:layout_width="400dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/helvetica_black"
         android:textStyle="bold|italic"
-        android:lineSpacingMultiplier="1.1"
         android:textColor="@color/white"
         android:text="@string/title"
         android:textAlignment="center"
-        android:textSize="30sp"
-        android:layout_marginBottom="5dp"/>
+        android:textSize="24sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_marginBottom="10dp" />
 
-    <LinearLayout
+    <com.example.myapplication.MaxHeightScrollView
+        android:id="@+id/scrollContent"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_margin="5dp"
-        android:padding="7dp"
-        android:background="@drawable/player_style">
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
 
-        <TextView
-            android:layout_width="0dp"
-            android:fontFamily="@font/helvetica_black"
-            android:textStyle="bold|italic"
-            android:lineSpacingMultiplier="1.1"
-            android:textColor="@color/black"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/player_1"
-            android:textSize="18sp"
-            android:textAlignment="center"
-            android:layout_marginEnd="5dp"
-            android:layout_weight="1" />
+            android:orientation="vertical">
 
-        <Spinner
-            android:id="@+id/spinnerPlayer1"
-            android:fontFamily="@font/helvetica_black"
-            android:background="@drawable/select"
-            android:textStyle="bold|italic"
-            android:textColor="@color/white"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:layout_weight="1.5"/>
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:background="@drawable/bg_field_secondary">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_margin="5dp"
-        android:padding="7dp"
-        android:background="@drawable/player_style">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/list_text_secondary"
+                    android:text="@string/player_1"
+                    android:textSize="15sp" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:fontFamily="@font/helvetica_black"
-            android:textStyle="bold|italic"
-            android:lineSpacingMultiplier="1.1"
-            android:textColor="@color/black"
-            android:layout_height="wrap_content"
-            android:text="@string/player_2"
-            android:textSize="18sp"
-            android:textAlignment="center"
-            android:layout_marginEnd="5dp"
-            android:layout_weight="1" />
+                <Spinner
+                    android:id="@+id/spinnerPlayer1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2.6"
+                    android:popupBackground="@drawable/bg_spinner_popup"
+                    android:background="@drawable/select" />
+            </LinearLayout>
 
-        <Spinner
-            android:id="@+id/spinnerPlayer2"
-            android:fontFamily="@font/helvetica_black"
-            android:background="@drawable/select"
-            android:textStyle="bold|italic"
-            android:textColor="@color/white"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:layout_weight="1.5" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:background="@drawable/bg_field_secondary">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_margin="5dp"
-        android:padding="7dp"
-        android:background="@drawable/player_style">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/list_text_secondary"
+                    android:text="@string/player_2"
+                    android:textSize="15sp" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:fontFamily="@font/helvetica_black"
-            android:textStyle="bold|italic"
-            android:lineSpacingMultiplier="1.1"
-            android:textColor="@color/black"
-            android:layout_height="wrap_content"
-            android:text="@string/player_3"
-            android:textSize="18sp"
-            android:textAlignment="center"
-            android:layout_marginEnd="5dp"
-            android:layout_weight="1" />
+                <Spinner
+                    android:id="@+id/spinnerPlayer2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2.6"
+                    android:popupBackground="@drawable/bg_spinner_popup"
+                    android:background="@drawable/select" />
+            </LinearLayout>
 
-        <Spinner
-            android:id="@+id/spinnerPlayer3"
-            android:fontFamily="@font/helvetica_black"
-            android:background="@drawable/select"
-            android:textStyle="bold|italic"
-            android:textColor="@color/white"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:layout_weight="1.5" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:background="@drawable/bg_field_secondary">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_margin="5dp"
-        android:padding="7dp"
-        android:background="@drawable/player_style">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/list_text_secondary"
+                    android:text="@string/player_3"
+                    android:textSize="15sp" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:fontFamily="@font/helvetica_black"
-            android:textStyle="bold|italic"
-            android:lineSpacingMultiplier="1.1"
-            android:textColor="@color/black"
-            android:layout_height="wrap_content"
-            android:text="@string/player_4"
-            android:textSize="18sp"
-            android:textAlignment="center"
-            android:layout_marginEnd="5dp"
-            android:layout_weight="1" />
+                <Spinner
+                    android:id="@+id/spinnerPlayer3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2.6"
+                    android:popupBackground="@drawable/bg_spinner_popup"
+                    android:background="@drawable/select" />
+            </LinearLayout>
 
-        <Spinner
-            android:id="@+id/spinnerPlayer4"
-            android:fontFamily="@font/helvetica_black"
-            android:background="@drawable/select"
-            android:textStyle="bold|italic"
-            android:textColor="@color/white"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:layout_weight="1.5" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:background="@drawable/bg_field_secondary">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_margin="5dp"
-        android:padding="7dp"
-        android:background="@drawable/player_style">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/list_text_secondary"
+                    android:text="@string/player_4"
+                    android:textSize="15sp" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:fontFamily="@font/helvetica_black"
-            android:textStyle="bold|italic"
-            android:lineSpacingMultiplier="1.1"
-            android:textColor="@color/black"
-            android:layout_height="wrap_content"
-            android:text="@string/player_5"
-            android:textSize="18sp"
-            android:textAlignment="center"
-            android:layout_marginEnd="5dp"
-            android:layout_weight="1" />
+                <Spinner
+                    android:id="@+id/spinnerPlayer4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2.6"
+                    android:popupBackground="@drawable/bg_spinner_popup"
+                    android:background="@drawable/select" />
+            </LinearLayout>
 
-        <Spinner
-            android:id="@+id/spinnerPlayer5"
-            android:fontFamily="@font/helvetica_black"
-            android:background="@drawable/select"
-            android:textStyle="bold|italic"
-            android:textColor="@color/white"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:layout_weight="1.5" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:background="@drawable/bg_field_secondary">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/list_text_secondary"
+                    android:text="@string/player_5"
+                    android:textSize="15sp" />
+
+                <Spinner
+                    android:id="@+id/spinnerPlayer5"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2.6"
+                    android:popupBackground="@drawable/bg_spinner_popup"
+                    android:background="@drawable/select" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.example.myapplication.MaxHeightScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginVertical="5dp">
+        android:layout_marginTop="12dp"
+        android:gravity="center">
 
         <Button
             android:id="@+id/btnCancel"
-            android:background="@drawable/button_generate"
+            android:background="@drawable/bg_modal_button_ghost"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/helvetica_black"
             android:textStyle="bold|italic"
-            android:textColor="@color/button_danger"
+            android:textColor="@color/list_text_secondary"
             android:text="@string/cancel"
             android:textSize="18sp"
             android:layout_weight="1"
-            android:layout_marginHorizontal="5dp"/>
+            android:paddingVertical="10dp"
+            android:layout_marginHorizontal="5dp" />
 
         <Button
             android:id="@+id/btnConfirm"
-            android:background="@drawable/button_generate"
+            android:background="@drawable/bg_modal_button_filled"
+            android:backgroundTint="@color/button_confirm"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/helvetica_black"
             android:textStyle="bold|italic"
-            android:backgroundTint="@color/white"
-            android:textColor="@color/button_confirm"
+            android:textColor="@color/white"
             android:text="@string/save"
             android:textSize="18sp"
             android:layout_weight="1"
-            android:layout_marginHorizontal="5dp"/>
+            android:paddingVertical="10dp"
+            android:layout_marginHorizontal="5dp" />
     </LinearLayout>
 </LinearLayout>

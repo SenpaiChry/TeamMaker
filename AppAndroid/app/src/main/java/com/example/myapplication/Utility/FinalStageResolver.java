@@ -92,8 +92,7 @@ public class FinalStageResolver {
     private static boolean isInitialPhaseComplete(Tournament tournament) {
         boolean hasGroupMatch = false;
         for (Match m : tournament.matches) {
-            if (m.type == null) continue;
-            if (m.type.contains("GIRONE") || m.type.contains("BRACKET")) {
+            if (PhaseUtility.isGroup(m.type)) {
                 hasGroupMatch = true;
                 if (m.points1 == m.points2) {
                     return false; // una partita di girone ancora senza esito

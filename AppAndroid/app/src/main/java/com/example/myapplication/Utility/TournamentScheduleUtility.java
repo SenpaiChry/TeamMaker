@@ -67,7 +67,7 @@ public class TournamentScheduleUtility {
             team.bracket = "A";
         }
 
-        List<List<Match>> rounds = buildRoundRobinRounds(tournament.teams, "GIRONE "); // todo sistemare
+        List<List<Match>> rounds = buildRoundRobinRounds(tournament.teams, PhaseUtility.GROUP);
         if (homeAndAway) {
             rounds.addAll(mirrorRounds(rounds));
         }
@@ -134,7 +134,7 @@ public class TournamentScheduleUtility {
         ArrayList<List<Match>> perBracketOrderedMatches = new ArrayList<>();
         for (int b = 0; b < nBrackets; b++) {
             List<Team> teams = brackets.get(b);
-            List<List<Match>> rounds = buildRoundRobinRounds(teams, getBracketLabel(b));
+            List<List<Match>> rounds = buildRoundRobinRounds(teams, PhaseUtility.groupCode(getBracketLetter(b)));
             if (homeAndAway) {
                 rounds.addAll(mirrorRounds(rounds));
             }
@@ -195,7 +195,7 @@ public class TournamentScheduleUtility {
             for (int i = 0; i < n; i++) {
                 Team t1 = teams.get(i);
                 Team t2 = teams.get((i + d) % n);
-                round.add(new Match(t1.key, t2.key, 0, "0:00", 0, 0, "GIRONE "));
+                round.add(new Match(t1.key, t2.key, 0, "0:00", 0, 0, PhaseUtility.GROUP));
             }
             rounds.add(round);
         }
@@ -206,7 +206,7 @@ public class TournamentScheduleUtility {
             for (int i = 0; i < n / 2; i++) {
                 Team t1 = teams.get(i);
                 Team t2 = teams.get(i + n / 2);
-                round.add(new Match(t1.key, t2.key, 0, "0:00", 0, 0, "GIRONE "));
+                round.add(new Match(t1.key, t2.key, 0, "0:00", 0, 0, PhaseUtility.GROUP));
             }
             rounds.add(round);
         }

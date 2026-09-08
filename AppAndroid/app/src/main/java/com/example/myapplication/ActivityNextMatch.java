@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.Utility.PhaseUtility;
 import com.example.myapplication.Utility.TournamentUtility;
 
 import java.util.ArrayList;
@@ -39,8 +40,9 @@ public class ActivityNextMatch extends AppCompatActivity {
 
         // Tipo
         TextView txtType = findViewById(R.id.txtType);
-        if (match.type != null && !match.type.isEmpty()) {
-            txtType.setText(match.type);
+        String phaseLabel = PhaseUtility.label(this, match.type);
+        if (!phaseLabel.isEmpty()) {
+            txtType.setText(phaseLabel);
             txtType.setVisibility(View.VISIBLE);
         } else {
             txtType.setVisibility(View.GONE);

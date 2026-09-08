@@ -26,6 +26,15 @@ public class TournamentActivityPopUpEditTeam extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pop_up_edit_team);
 
+        if (getWindow() != null) {
+            getWindow().setLayout(
+                    (int) (getResources().getDisplayMetrics().widthPixels * 0.92),
+                    android.view.WindowManager.LayoutParams.WRAP_CONTENT);
+        }
+        MaxHeightScrollView scrollContent = findViewById(R.id.scrollContent);
+        float density = getResources().getDisplayMetrics().density;
+        scrollContent.setMaxHeight(getResources().getDisplayMetrics().heightPixels - (int) (200 * density));
+
         Tournament tournament = TournamentUtility.getTournamentByKey(getIntent().getExtras().getString("tournament_key"));
 
         TextView txtTitle = findViewById(R.id.txtTitle);
@@ -42,12 +51,11 @@ public class TournamentActivityPopUpEditTeam extends AppCompatActivity {
 
             txtTitle.setText(R.string.new_squad);
 
-            TournamentSpinnerTeamAdapter adapterTeam = new TournamentSpinnerTeamAdapter(this, playersString);
-            spinnerPlayer1.setAdapter(adapterTeam);
-            spinnerPlayer2.setAdapter(adapterTeam);
-            spinnerPlayer3.setAdapter(adapterTeam);
-            spinnerPlayer4.setAdapter(adapterTeam);
-            spinnerPlayer5.setAdapter(adapterTeam);
+            bindSpinner(spinnerPlayer1);
+            bindSpinner(spinnerPlayer2);
+            bindSpinner(spinnerPlayer3);
+            bindSpinner(spinnerPlayer4);
+            bindSpinner(spinnerPlayer5);
 
             btnConfirm.setOnClickListener(view -> {
                 Team team = new Team();
@@ -76,12 +84,11 @@ public class TournamentActivityPopUpEditTeam extends AppCompatActivity {
 
             txtTitle.setText(R.string.edit_squad);
 
-            TournamentSpinnerTeamAdapter adapterTeam = new TournamentSpinnerTeamAdapter(this, playersString);
-            spinnerPlayer1.setAdapter(adapterTeam);
-            spinnerPlayer2.setAdapter(adapterTeam);
-            spinnerPlayer3.setAdapter(adapterTeam);
-            spinnerPlayer4.setAdapter(adapterTeam);
-            spinnerPlayer5.setAdapter(adapterTeam);
+            bindSpinner(spinnerPlayer1);
+            bindSpinner(spinnerPlayer2);
+            bindSpinner(spinnerPlayer3);
+            bindSpinner(spinnerPlayer4);
+            bindSpinner(spinnerPlayer5);
 
             Team teamOriginal = TournamentTeamUtility.getTeamByKey(getIntent().getExtras().getString("team_key"));
 
@@ -116,6 +123,13 @@ public class TournamentActivityPopUpEditTeam extends AppCompatActivity {
 
         Button btnCancel = findViewById(R.id.btnCancel);
         btnCancel.setOnClickListener(view -> finish());
+    }
+
+    /** Un adapter per spinner, così la tendina evidenzia il giocatore scelto di QUELLO spinner. */
+    private void bindSpinner(Spinner spinner) {
+        TournamentSpinnerTeamAdapter adapter = new TournamentSpinnerTeamAdapter(this, playersString);
+        spinner.setAdapter(adapter);
+        adapter.setSpinner(spinner);
     }
 
     private void prepareArraysEdit(Tournament tournament) {

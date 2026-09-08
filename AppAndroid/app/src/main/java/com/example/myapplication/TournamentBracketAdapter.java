@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 
 import com.example.myapplication.Utility.MatchLabelUtility;
+import com.example.myapplication.Utility.PhaseUtility;
 import com.example.myapplication.Utility.TournamentTeamUtility;
 import com.example.myapplication.Utility.TournamentUtility;
 import com.example.myapplication.Utility.Utility;
@@ -78,8 +79,9 @@ public class TournamentBracketAdapter extends BaseAdapter {
         txtDay.setText(context.getString(R.string.day) + " " + match.day);
 
         TextView txtType = convertView.findViewById(R.id.txtType);
-        if (match.type != null && !match.type.isEmpty()) {
-            txtType.setText(match.type);
+        String phaseLabel = PhaseUtility.label(context, match.type);
+        if (!phaseLabel.isEmpty()) {
+            txtType.setText(phaseLabel);
             txtType.setVisibility(View.VISIBLE);
         } else {
             txtType.setVisibility(View.GONE);

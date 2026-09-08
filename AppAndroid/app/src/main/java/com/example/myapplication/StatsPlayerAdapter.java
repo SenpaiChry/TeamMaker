@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.example.myapplication.Model.Constants;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class StatsPlayerAdapter extends BaseAdapter {
@@ -58,9 +60,11 @@ public class StatsPlayerAdapter extends BaseAdapter {
             spinnerValue.setVisibility(View.VISIBLE);
             llImagesContainer.setVisibility(View.GONE);
 
-            SpinnerAdapterStats adapterValueHeight = new SpinnerAdapterStats(context, Constants.valueHeight);
+            ArrayList<String> heights = new ArrayList<>(Arrays.asList(Constants.valueHeight));
+            TournamentSpinnerTeamAdapter adapterValueHeight = new TournamentSpinnerTeamAdapter(context, heights);
 
             spinnerValue.setAdapter(adapterValueHeight);
+            adapterValueHeight.setSpinner(spinnerValue);
             spinnerValue.setSelection(Integer.parseInt(String.valueOf(stats.get(Constants.statsDescriptionEng[position]) == null ? 0 : stats.get(Constants.statsDescriptionEng[position])).replace(".0", "")));
 
             spinnerValue.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -85,10 +89,10 @@ public class StatsPlayerAdapter extends BaseAdapter {
                 ImageView image = new ImageView(context);
                 image.setImageResource(i <= currentLevel ? R.drawable.star_full : R.drawable.star_empty);
 
-                image.setLayoutParams(new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                ));
+                int starSize = Math.round(context.getResources().getDisplayMetrics().density * 28);
+                LinearLayout.LayoutParams starParams = new LinearLayout.LayoutParams(starSize, starSize);
+                starParams.setMarginStart(Math.round(context.getResources().getDisplayMetrics().density * 2));
+                image.setLayoutParams(starParams);
 
                 final int index = i;
                 image.setOnClickListener(v -> {

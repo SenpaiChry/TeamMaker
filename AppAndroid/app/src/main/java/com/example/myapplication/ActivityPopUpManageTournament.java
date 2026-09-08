@@ -6,6 +6,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.Utility.PhaseUtility;
 import com.example.myapplication.Utility.TimeUtility;
 import com.example.myapplication.Utility.TournamentUtility;
 
@@ -67,6 +70,23 @@ public class ActivityPopUpManageTournament extends AppCompatActivity {
 
             datePickerDialog.show();
         });
+
+        // Il SALVA compare solo se Nome o Data vengono modificati rispetto all'originale
+        String originalName = tournament.name != null ? tournament.name : "";
+        String originalDate = tournament.date != null ? sdf.format(tournament.date.getTime()) : "";
+        Button btnSave = findViewById(R.id.btnConfirm);
+        btnSave.setVisibility(View.GONE);
+        TextWatcher changeWatcher = new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void onTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void afterTextChanged(Editable s) {
+                boolean changed = !txtName.getText().toString().equals(originalName)
+                        || !txtDate.getText().toString().equals(originalDate);
+                btnSave.setVisibility(changed ? View.VISIBLE : View.GONE);
+            }
+        };
+        txtName.addTextChangedListener(changeWatcher);
+        txtDate.addTextChangedListener(changeWatcher);
 
         Button btnManageMatches = findViewById(R.id.btnManageMatches);
         btnManageMatches.setOnClickListener(v -> openActivityManageMatches(tournamentKey));
@@ -128,7 +148,7 @@ public class ActivityPopUpManageTournament extends AppCompatActivity {
             for (Match match : matches) {
                 textToCopy.append(getString(R.string.match)).append(" ").append(tournament.getNMatchByKey(match.key))
                         .append(" - ").append(match.time)
-                        .append(" (").append(match.type.trim()).append("): ")
+                        .append(" (").append(PhaseUtility.label(this, match.type)).append("): ")
                         .append(getString(R.string.team)).append(" ").append(tournament.getNTeamByKey(match.keyTeam1))
                         .append(" VS ").append(getString(R.string.team)).append(" ").append(tournament.getNTeamByKey(match.keyTeam2))
                         .append("\n");

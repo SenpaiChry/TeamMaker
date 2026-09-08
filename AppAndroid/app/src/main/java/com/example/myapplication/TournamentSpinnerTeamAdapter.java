@@ -1,7 +1,6 @@
 package com.example.myapplication;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,10 +60,13 @@ public class TournamentSpinnerTeamAdapter extends ArrayAdapter<String> {
             txtSub.setVisibility(View.GONE);
         }
 
+        // Evidenzia lo scelto con una pillola rientrata (non tocca gli angoli della tendina)
         boolean selected = spinner != null && spinner.getSelectedItemPosition() == position;
-        view.setBackgroundColor(selected
-                ? ContextCompat.getColor(context, R.color.spinner_selected_bg)
-                : Color.TRANSPARENT);
+        int pl = view.getPaddingLeft(), pt = view.getPaddingTop(), pr = view.getPaddingRight(), pb = view.getPaddingBottom();
+        view.setBackground(selected
+                ? ContextCompat.getDrawable(context, R.drawable.bg_spinner_item_selected)
+                : null);
+        view.setPadding(pl, pt, pr, pb);
 
         return view;
     }

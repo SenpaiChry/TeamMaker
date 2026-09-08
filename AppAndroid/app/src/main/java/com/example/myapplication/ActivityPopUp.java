@@ -149,6 +149,13 @@ public class ActivityPopUp extends AppCompatActivity {
             }
         }
 
+        // Niente riquadro vuoto se non c'è alcun sottotitolo
+        boolean hasSub1 = txtSubtitle1.getVisibility() == View.VISIBLE && txtSubtitle1.getText().length() > 0;
+        boolean hasSub2 = txtSubtitle2.getVisibility() == View.VISIBLE && txtSubtitle2.getText().length() > 0;
+        if (!hasSub1 && !hasSub2) {
+            findViewById(R.id.llSubtitleBox).setVisibility(View.GONE);
+        }
+
         Button btnCancel = findViewById(R.id.btnCancel);
         btnCancel.setOnClickListener(view -> finish());
     }

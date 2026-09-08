@@ -27,18 +27,38 @@
         android:orientation="vertical"
         android:layout_marginHorizontal="10dp">
 
-        <TextView
-            android:id="@+id/txtTeam"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/team_n"
-            android:fontFamily="@font/helvetica_black"
-            android:textStyle="bold|italic"
-            android:textColor="@color/list_text_primary"
-            android:textAllCaps="true"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textSize="16sp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/txtTeam"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/team_n"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:textAllCaps="true"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="16sp" />
+
+            <!-- Segnale: ordinata rispetto a una pari grazie allo scontro diretto -->
+            <TextView
+                android:id="@+id/txtDirectClash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:visibility="gone"
+                android:text="@string/head_to_head_short"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_highlight_text"
+                android:textSize="11sp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/txtTeamPlayers"
@@ -106,7 +126,7 @@
             android:fontFamily="@font/helvetica_black"
             android:textStyle="bold"
             android:textColor="@color/list_text_secondary"
-            android:textSize="15sp" />
+            android:textSize="14sp" />
     </LinearLayout>
 
     <!-- Quoziente punti -->
@@ -133,7 +153,7 @@
             android:fontFamily="@font/helvetica_black"
             android:textStyle="bold"
             android:textColor="@color/list_text_secondary"
-            android:textSize="15sp" />
+            android:textSize="14sp" />
     </LinearLayout>
 
     <TextView

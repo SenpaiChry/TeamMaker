@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.myapplication.Utility.MatchLabelUtility;
+import com.example.myapplication.Utility.PhaseUtility;
 import com.example.myapplication.Utility.TournamentUtility;
 
 public class TournamentBracketAdminAdapter extends BaseAdapter {
@@ -48,8 +49,9 @@ public class TournamentBracketAdminAdapter extends BaseAdapter {
         txtDay.setText(parent.getContext().getString(R.string.day) + " " + match.day);
 
         TextView txtType = convertView.findViewById(R.id.txtType);
-        if (match.type != null && !match.type.isEmpty()) {
-            txtType.setText(match.type);
+        String phaseLabel = PhaseUtility.label(parent.getContext(), match.type);
+        if (!phaseLabel.isEmpty()) {
+            txtType.setText(phaseLabel);
             txtType.setVisibility(View.VISIBLE);
         } else {
             txtType.setVisibility(View.GONE);

@@ -51,18 +51,14 @@ public class MatchLabelUtility {
 
     /** Codice breve (Q1..Q4, S1..S2, F) della partita finale, per i placeholder WINNER/LOSER. */
     private static String codeOf(Context ctx, Tournament tournament, String matchKey) {
-        String quarter = ctx.getString(R.string.quarter);
-        String semi = ctx.getString(R.string.semifinal);
-        String finalLabel = ctx.getString(R.string.finalString);
-
         List<Match> quarters = new ArrayList<>();
         List<Match> semis = new ArrayList<>();
         Match finalMatch = null;
         for (Match m : tournament.matches) {
             if (m.type == null) continue;
-            if (m.type.equals(quarter)) quarters.add(m);
-            else if (m.type.equals(semi)) semis.add(m);
-            else if (m.type.equals(finalLabel)) finalMatch = m;
+            if (m.type.equals(PhaseUtility.QUARTER)) quarters.add(m);
+            else if (m.type.equals(PhaseUtility.SEMIFINAL)) semis.add(m);
+            else if (m.type.equals(PhaseUtility.FINAL)) finalMatch = m;
         }
         sortByDayTime(quarters);
         sortByDayTime(semis);
