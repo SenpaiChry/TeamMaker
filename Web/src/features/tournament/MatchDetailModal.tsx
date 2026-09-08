@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom'
-import type { Match, Team } from '@/domain/models'
+import type { Match, Team, Tournament } from '@/domain/models'
 import { getTeamNumber } from '@/domain/team'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { PlayerName } from '@/components/ui/PlayerName'
 import { label as phaseLabel } from '@/domain/phases'
+import { slotLabel, TO_DO_KEY } from '@/domain/finalStages'
 import { pointsForMatch } from '@/domain/standings'
 
 /**
@@ -13,16 +14,15 @@ import { pointsForMatch } from '@/domain/standings'
  */
 export function MatchDetailModal({
   match,
-  teams,
-  tournamentKey,
+  tournament,
   onClose,
 }: {
   match: Match | null
-  teams: Team[]
-  tournamentKey: string
+  tournament: Tournament
   onClose: () => void
 }) {
   const navigate = useNavigate()
+  const teams = tournament.teams
   const team1 = teams.find((t) => t.key === match?.keyTeam1)
   const team2 = teams.find((t) => t.key === match?.keyTeam2)
   const [awarded1, awarded2] = match === null ? [0, 0] : pointsForMatch(match)
@@ -51,13 +51,13 @@ export function MatchDetailModal({
         <>
           <div className="grid grid-cols-2 gap-3">
             <TeamColumn
-              label={`TEAM ${getTeamNumber(teams, match.keyTeam1)}`}
+              label={teamOrPlaceholder(tournament, match, 1)}
               team={team1}
               awarded={awarded1}
               accent="text-score-team-a"
             />
             <TeamColumn
-              label={`TEAM ${getTeamNumber(teams, match.keyTeam2)}`}
+              label={teamOrPlaceholder(tournament, match, 2)}
               team={team2}
               awarded={awarded2}
               accent="text-score-team-b"
@@ -69,7 +69,7 @@ export function MatchDetailModal({
               CHIUDI
             </Button>
             <Button
-              onClick={() => navigate(`/segnapunti?torneo=${tournamentKey}&partita=${match.key}`)}
+              onClick={() => navigate(`/segnapunti?torneo=${tournament.key}&partita=${match.key}`)}
               className="grow"
             >
               SEGNAPUNTI
@@ -79,6 +79,14 @@ export function MatchDetailModal({
       )}
     </Modal>
   )
+}
+
+function teamOrPlaceholder(tournament: Tournament, match: Match, slot: 1 | 2): string {
+  return slotLabel(tournament, match, slot, (key) => {
+    if (key.length === 0 || key === TO_DO_KEY) return 'TEAM ?'
+    const n = getTeamNumber(tournament.teams, key)
+    return n > 0 ? `TEAM ${n}` : 'TEAM ?'
+  })
 }
 
 function TeamColumn({

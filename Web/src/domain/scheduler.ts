@@ -108,6 +108,10 @@ export function buildRoundRobinRounds(teams: Team[], typeLabel: string): Planned
           points2: 0,
           detail: [],
           type: typeLabel,
+          source1Type: '',
+          source1Ref: '',
+          source2Type: '',
+          source2Ref: '',
         })
       }
     }

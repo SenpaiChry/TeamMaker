@@ -13,18 +13,10 @@ import {
 } from './phases'
 import { countsForStandings } from './standings'
 
+import { makeMatch } from './testing'
+
 function match(type: string) {
-  return {
-    key: 'm',
-    keyTeam1: 'a',
-    keyTeam2: 'b',
-    day: 1,
-    time: '9:00',
-    points1: 0,
-    points2: 0,
-    detail: [],
-    type,
-  }
+  return makeMatch({ type })
 }
 
 describe('normalize', () => {

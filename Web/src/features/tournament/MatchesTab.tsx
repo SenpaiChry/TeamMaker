@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
-import type { Match, Team } from '@/domain/models'
+import type { Match, Tournament } from '@/domain/models'
 import { label as phaseLabel } from '@/domain/phases'
+import { slotLabel, TO_DO_KEY } from '@/domain/finalStages'
 import { getTeamNumber, teamMatchesQuery } from '@/domain/team'
 import { MatchDetailModal } from './MatchDetailModal'
 
@@ -14,17 +15,16 @@ import { MatchDetailModal } from './MatchDetailModal'
  */
 export function MatchesTab({
   matches,
-  teams,
-  tournamentKey,
+  tournament,
   query,
 }: {
   matches: Match[]
-  teams: Team[]
-  tournamentKey: string
+  tournament: Tournament
   query: string
 }) {
   const [detail, setDetail] = useState<Match | null>(null)
 
+  const teams = tournament.teams
   const teamsByKey = useMemo(() => new Map(teams.map((t) => [t.key, t])), [teams])
 
   const byDay = useMemo(() => {
@@ -80,8 +80,8 @@ export function MatchesTab({
                       type="button"
                       onClick={() => setDetail(match)}
                       aria-label={
-                        `Dettaglio partita delle ${match.time}: Team ${getTeamNumber(teams, match.keyTeam1)} ` +
-                        `${match.points1} a ${match.points2} Team ${getTeamNumber(teams, match.keyTeam2)}`
+                        `Dettaglio partita delle ${match.time}: ${teamOrPlaceholder(tournament, match, 1)} ` +
+                        `${match.points1} a ${match.points2} ${teamOrPlaceholder(tournament, match, 2)}`
                       }
                       className="app-title h-[34px] shrink-0 rounded-[11px] bg-brand-blue px-3.5
                                  text-sm text-white transition hover:bg-brand-blue-pressed"
@@ -95,7 +95,7 @@ export function MatchesTab({
                   <div className="flex items-center">
                     <span className="min-w-0 grow">
                       <TeamChip
-                        label={`Team ${getTeamNumber(teams, match.keyTeam1)}`}
+                        label={teamOrPlaceholder(tournament, match, 1)}
                         highlighted={teamMatchesQuery(teamsByKey.get(match.keyTeam1), query)}
                       />
                     </span>
@@ -112,7 +112,7 @@ export function MatchesTab({
 
                     <span className="flex min-w-0 grow justify-end">
                       <TeamChip
-                        label={`Team ${getTeamNumber(teams, match.keyTeam2)}`}
+                        label={teamOrPlaceholder(tournament, match, 2)}
                         highlighted={teamMatchesQuery(teamsByKey.get(match.keyTeam2), query)}
                       />
                     </span>
@@ -126,12 +126,23 @@ export function MatchesTab({
 
       <MatchDetailModal
         match={detail}
-        teams={teams}
-        tournamentKey={tournamentKey}
+        tournament={tournament}
         onClose={() => setDetail(null)}
       />
     </>
   )
+}
+
+/**
+ * Etichetta della squadra: "TEAM n" se nota, altrimenti il placeholder della
+ * sorgente ("1ª GIR. A", "VINC. Q1", ...).
+ */
+function teamOrPlaceholder(tournament: Tournament, match: Match, slot: 1 | 2): string {
+  return slotLabel(tournament, match, slot, (key) => {
+    if (key.length === 0 || key === TO_DO_KEY) return 'TEAM ?'
+    const n = getTeamNumber(tournament.teams, key)
+    return n > 0 ? `TEAM ${n}` : 'TEAM ?'
+  })
 }
 
 /**

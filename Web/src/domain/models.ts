@@ -56,6 +56,24 @@ export interface Match {
    * in lettura da `phases.normalize()`.
    */
   type: string
+  /**
+   * Sorgente dello slot squadra 1 per le fasi finali (stringa vuota = squadra
+   * già nota in `keyTeam1`). Valori: `STANDING` (posizione classifica generale),
+   * `GROUP_STANDING` (posizione nel girone), `WINNER`/`LOSER` (esito di una
+   * partita sorgente).
+   */
+  source1Type: string
+  /**
+   * Riferimento della sorgente 1. Contenuto dipendente da `source1Type`:
+   * - `STANDING`: la posizione ("1", "2"…)
+   * - `GROUP_STANDING`: girone + posizione ("A1", "B2"…)
+   * - `WINNER`/`LOSER`: la key della partita sorgente
+   */
+  source1Ref: string
+  /** Come `source1Type`, per lo slot squadra 2. */
+  source2Type: string
+  /** Come `source1Ref`, per lo slot squadra 2. */
+  source2Ref: string
 }
 
 export interface Tournament {

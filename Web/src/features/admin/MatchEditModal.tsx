@@ -6,7 +6,7 @@ import { getTeamNumber } from '@/domain/team'
 import { formatFullNames } from '@/domain/team'
 import { availablePhases, label as phaseLabel, normalize as normalizePhase } from '@/domain/phases'
 import { isValidTime } from '@/domain/time'
-import { addMatch, updateMatch } from '@/data/matchesRepo'
+import { addMatch, resolveFinalStages, updateMatch } from '@/data/matchesRepo'
 
 /**
  * Creazione e modifica di una partita.
@@ -69,10 +69,27 @@ export function MatchEditModal({
         // partita nuova.
         detail: match?.detail ?? [],
         type: phase,
+        // Le sorgenti delle fasi finali si preservano come sono: l'editor non
+        // le tocca (le assegna solo il generatore di finali).
+        source1Type: match?.source1Type ?? '',
+        source1Ref: match?.source1Ref ?? '',
+        source2Type: match?.source2Type ?? '',
+        source2Ref: match?.source2Ref ?? '',
       }
 
-      if (match === null) await addMatch(tournament.key, payload)
-      else await updateMatch(tournament.key, { ...payload, key: match.key })
+      if (match === null) {
+        await addMatch(tournament.key, payload)
+      } else {
+        const updated = { ...payload, key: match.key }
+        await updateMatch(tournament.key, updated)
+        // Se il risultato è cambiato, propaga la modifica alle fasi finali
+        // che dipendono da questa partita.
+        const updatedTournament = {
+          ...tournament,
+          matches: tournament.matches.map((m) => (m.key === match.key ? updated : m)),
+        }
+        await resolveFinalStages(updatedTournament)
+      }
 
       onClose()
     } catch (e) {

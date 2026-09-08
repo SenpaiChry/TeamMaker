@@ -1,5 +1,11 @@
 import { push, remove, set, update } from 'firebase/database'
-import type { Match } from '@/domain/models'
+import type { Match, Tournament } from '@/domain/models'
+import {
+  isPendingRef,
+  pendingRefIndex,
+  resolveAllFinalStages,
+  type FinalStageMatch,
+} from '@/domain/finalStages'
 import { dbRef } from './firebase'
 import { serializeMatch } from './mappers'
 
@@ -36,7 +42,14 @@ export async function saveMatchResult(
   })
 }
 
-/** Sostituisce interamente una partita. Porta editMatch. */
+/**
+ * Sostituisce interamente una partita. Porta editMatch.
+ *
+ * Non chiama `resolveFinalStages` da sé: il chiamante che ha in mano il
+ * torneo aggiornato lo fa esplicitamente, così la risoluzione tiene conto
+ * dei nuovi valori appena scritti senza dover attendere il round trip col
+ * listener Firebase.
+ */
 export async function updateMatch(tournamentKey: string, match: Match): Promise<void> {
   await update(dbRef(`tournaments/${tournamentKey}/matches/${match.key}`), serializeMatch(match))
 }
@@ -93,4 +106,58 @@ export async function deleteAllMatches(
   await Promise.all(
     teamKeys.map((key) => set(dbRef(`tournaments/${tournamentKey}/teams/${key}/bracket`), '')),
   )
+}
+
+/**
+ * Aggiunge le partite di una fase finale in un'unica scrittura, risolvendo i
+ * ref pendenti `pending:<n>` con le key push() vere.
+ *
+ * Porta `MatchUtility.saveMatches` + parte di `ActivityPopUpGenerateFinals`.
+ */
+export async function addFinalStageMatches(
+  tournamentKey: string,
+  matches: FinalStageMatch[],
+): Promise<void> {
+  if (matches.length === 0) return
+
+  // Prima assegno una key vera a ogni partita del batch: è quella che va nei
+  // WINNER/LOSER dei turni successivi.
+  const keys = matches.map(() => {
+    const ref = push(dbRef(`tournaments/${tournamentKey}/matches`))
+    if (ref.key === null) throw new Error('Firebase non ha restituito una chiave per la partita.')
+    return ref.key
+  })
+
+  // Rimpiazzo i ref pendenti con le key vere
+  const resolved = matches.map((m) => ({
+    ...m,
+    source1Ref: isPendingRef(m.source1Ref) ? keys[pendingRefIndex(m.source1Ref)]! : m.source1Ref,
+    source2Ref: isPendingRef(m.source2Ref) ? keys[pendingRefIndex(m.source2Ref)]! : m.source2Ref,
+  }))
+
+  const updates: Record<string, unknown> = {}
+  for (let i = 0; i < resolved.length; i++) {
+    updates[keys[i]!] = serializeMatch(resolved[i]!)
+  }
+  await update(dbRef(`tournaments/${tournamentKey}/matches`), updates)
+}
+
+/**
+ * Risolve i placeholder delle fasi finali sullo stato attuale del torneo e
+ * scrive gli aggiornamenti in una singola operazione.
+ *
+ * Va chiamato dopo qualunque scrittura che possa cambiare l'esito di una
+ * partita (salvataggio punteggio, modifica partita) o rendere la fase iniziale
+ * completa: propaga vincenti/perdenti alle partite che ne dipendono.
+ */
+export async function resolveFinalStages(tournament: Tournament): Promise<void> {
+  const { updates } = resolveAllFinalStages(tournament)
+  if (updates.size === 0) return
+
+  const flat: Record<string, unknown> = {}
+  for (const [matchKey, fields] of updates) {
+    if (fields.keyTeam1 !== undefined) flat[`${matchKey}/team1`] = fields.keyTeam1
+    if (fields.keyTeam2 !== undefined) flat[`${matchKey}/team2`] = fields.keyTeam2
+  }
+  await update(dbRef(`tournaments/${tournament.key}/matches`), flat)
 }

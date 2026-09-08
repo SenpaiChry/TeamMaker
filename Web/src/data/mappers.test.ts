@@ -184,6 +184,10 @@ describe('serializeMatch', () => {
       points2: 9,
       detail: [],
       type: 'GIRONE ',
+      source1Type: '',
+      source1Ref: '',
+      source2Type: '',
+      source2Ref: '',
     })
 
     expect(raw['day']).toBe('2')
@@ -207,6 +211,10 @@ describe('serializeMatch', () => {
         [15, 10],
       ],
       type: 'GROUP',
+      source1Type: '',
+      source1Ref: '',
+      source2Type: '',
+      source2Ref: '',
     })
 
     expect(raw['detail']).toEqual([
@@ -226,8 +234,50 @@ describe('serializeMatch', () => {
       points2: 9,
       detail: [],
       type: 'GROUP',
+      source1Type: '',
+      source1Ref: '',
+      source2Type: '',
+      source2Ref: '',
     })
     expect(raw['detail']).toEqual([])
+  })
+
+  it('scrive le sorgenti solo se davvero usate', () => {
+    const withSource = serializeMatch({
+      keyTeam1: 'TO DO',
+      keyTeam2: 'TO DO',
+      day: 0,
+      time: '0:00',
+      points1: 0,
+      points2: 0,
+      detail: [],
+      type: 'FINAL',
+      source1Type: 'WINNER',
+      source1Ref: 'match_key_A',
+      source2Type: 'WINNER',
+      source2Ref: 'match_key_B',
+    })
+    expect(withSource['source1_type']).toBe('WINNER')
+    expect(withSource['source1_ref']).toBe('match_key_A')
+    expect(withSource['source2_type']).toBe('WINNER')
+    expect(withSource['source2_ref']).toBe('match_key_B')
+
+    const withoutSource = serializeMatch({
+      keyTeam1: 't1',
+      keyTeam2: 't2',
+      day: 1,
+      time: '9:00',
+      points1: 0,
+      points2: 0,
+      detail: [],
+      type: 'GROUP',
+      source1Type: '',
+      source1Ref: '',
+      source2Type: '',
+      source2Ref: '',
+    })
+    expect(withoutSource['source1_type']).toBeUndefined()
+    expect(withoutSource['source2_type']).toBeUndefined()
   })
 
   it('fa il giro completo senza perdere nulla', () => {

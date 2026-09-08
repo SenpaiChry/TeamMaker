@@ -164,6 +164,10 @@ export function parseMatch(key: string, raw: unknown): Match {
     points2: toNumber(node['points2']),
     detail: parseDetail(node['detail']),
     type: toString(node['type']),
+    source1Type: toString(node['source1_type']),
+    source1Ref: toString(node['source1_ref']),
+    source2Type: toString(node['source2_type']),
+    source2Ref: toString(node['source2_ref']),
   }
 }
 
@@ -174,7 +178,7 @@ export function parseMatch(key: string, raw: unknown): Match {
  * precedente della partita.
  */
 export function serializeMatch(match: Omit<Match, 'key'>): RawNode {
-  return {
+  const node: RawNode = {
     day: String(match.day),
     time: match.time,
     team1: match.keyTeam1,
@@ -187,6 +191,20 @@ export function serializeMatch(match: Omit<Match, 'key'>): RawNode {
     })),
     type: match.type,
   }
+
+  // I quattro campi delle sorgenti si scrivono solo se davvero usati. Nell'app
+  // Android sono omessi per le partite non-finali: se li scrivessimo sempre
+  // (anche a "") uno schema di partita cambierebbe silenziosamente per tutte
+  // le partite di girone.
+  if (match.source1Type.length > 0) {
+    node['source1_type'] = match.source1Type
+    node['source1_ref'] = match.source1Ref
+  }
+  if (match.source2Type.length > 0) {
+    node['source2_type'] = match.source2Type
+    node['source2_ref'] = match.source2Ref
+  }
+  return node
 }
 
 // ---------------------------------------------------------------------------

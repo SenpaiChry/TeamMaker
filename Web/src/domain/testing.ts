@@ -1,5 +1,5 @@
 import { STAT_KEYS } from './constants'
-import type { Gender, Player, Stats, Team } from './models'
+import type { Gender, Match, Player, Stats, Team } from './models'
 
 /** Aiutanti per costruire dati di prova nei test del dominio. */
 
@@ -40,4 +40,27 @@ export function makeTeam(key: string, players: Player[] = [], bracket = ''): Tea
 /** N squadre vuote con chiavi "t1", "t2", … */
 export function makeTeams(count: number): Team[] {
   return Array.from({ length: count }, (_, i) => makeTeam(`t${i + 1}`))
+}
+
+/**
+ * Partita con tutti i campi valorizzati a un default sensato, così i test
+ * possono passare solo le proprietà che li interessano.
+ */
+export function makeMatch(overrides: Partial<Match> = {}): Match {
+  return {
+    key: 'm1',
+    keyTeam1: 't1',
+    keyTeam2: 't2',
+    day: 1,
+    time: '9:00',
+    points1: 0,
+    points2: 0,
+    detail: [],
+    type: 'GROUP',
+    source1Type: '',
+    source1Ref: '',
+    source2Type: '',
+    source2Ref: '',
+    ...overrides,
+  }
 }

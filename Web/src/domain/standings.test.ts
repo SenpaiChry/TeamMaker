@@ -1,22 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Match, Tournament } from './models'
 import { computeStandings, pointsForMatch } from './standings'
-import { makeTeam } from './testing'
-
-function makeMatch(overrides: Partial<Match> = {}): Match {
-  return {
-    key: 'm1',
-    keyTeam1: 't1',
-    keyTeam2: 't2',
-    day: 1,
-    time: '9:00',
-    points1: 0,
-    points2: 0,
-    detail: [],
-    type: 'GROUP',
-    ...overrides,
-  }
-}
+import { makeMatch, makeTeam } from './testing'
 
 function makeTournament(matches: Match[], teamKeys = ['t1', 't2', 't3']): Tournament {
   return {

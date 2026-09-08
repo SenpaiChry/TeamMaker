@@ -22,7 +22,7 @@ import {
   reserveLiveShutdown,
   writeLiveMatch,
 } from '@/data/liveMatchRepo'
-import { saveMatchResult } from '@/data/matchesRepo'
+import { resolveFinalStages, saveMatchResult } from '@/data/matchesRepo'
 import { Button } from '@/components/ui/Button'
 import { ScreenHeader } from '@/components/ui/ScreenHeader'
 import { RepeatButton } from '@/components/ui/RepeatButton'
@@ -135,8 +135,19 @@ export function ScorecardScreen() {
     if (!isTournamentMatch) return
     setSaving(true)
     try {
-      const [p1, p2] = resultToSave(score)
-      await saveMatchResult(tournament.key, match.key, p1, p2)
+      const { points1, points2, detail } = resultToSave(score)
+      await saveMatchResult(tournament.key, match.key, points1, points2, detail)
+      // Propaga il vincente/perdente alle fasi finali che dipendono da questa
+      // partita, e sblocca STANDING/GROUP_STANDING se questo era l'ultimo
+      // risultato mancante della fase iniziale.
+      // Nota: `tournament` è lo snapshot di prima del salvataggio; il
+      // resolver ricalcola su questo e propaga correttamente le catene note.
+      const updatedMatch = { ...match, points1, points2, detail }
+      const updatedTournament = {
+        ...tournament,
+        matches: tournament.matches.map((m) => (m.key === match.key ? updatedMatch : m)),
+      }
+      await resolveFinalStages(updatedTournament)
       setSaved(true)
     } finally {
       setSaving(false)
@@ -243,9 +254,12 @@ export function ScorecardScreen() {
           </Button>
           <p className="mt-2 text-center text-xs text-list-text-muted">
             {(() => {
-              const [p1, p2] = resultToSave(score)
-              const bySets = score.sets1 !== 0 || score.sets2 !== 0
-              return `Verrà salvato ${p1} – ${p2} (${bySets ? 'set' : 'punti'})`
+              const { points1, points2, detail } = resultToSave(score)
+              const bySets = detail.length > 0
+              const suffix = bySets && detail.length > 0
+                ? ` · ${detail.map((s) => `${s[0]}-${s[1]}`).join(' · ')}`
+                : ''
+              return `Verrà salvato ${points1} – ${points2} (${bySets ? 'set' : 'punti'})${suffix}`
             })()}
           </p>
         </div>

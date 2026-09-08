@@ -12,6 +12,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { TeamEditModal } from './TeamEditModal'
 import { MatchEditModal } from './MatchEditModal'
 import { CalendarModal } from './CalendarModal'
+import { FinalStagesModal } from './FinalStagesModal'
 import { TeamManageCard } from './TeamManageCard'
 import { MatchManageRow } from './MatchManageRow'
 
@@ -39,6 +40,7 @@ export function TournamentDetailScreen() {
   const [editingMatch, setEditingMatch] = useState<Match | null>(null)
   const [matchModalOpen, setMatchModalOpen] = useState(false)
   const [calendarOpen, setCalendarOpen] = useState(false)
+  const [finalsOpen, setFinalsOpen] = useState(false)
   const [teamToDelete, setTeamToDelete] = useState<Team | null>(null)
   const [matchToDelete, setMatchToDelete] = useState<Match | null>(null)
   const [clearingCalendar, setClearingCalendar] = useState(false)
@@ -105,9 +107,12 @@ export function TournamentDetailScreen() {
         <>
           <div className="mb-3 flex flex-wrap gap-2">
             {hasCalendar ? (
-              <SmallButton onClick={() => setClearingCalendar(true)} danger>
-                azzera calendario
-              </SmallButton>
+              <>
+                <SmallButton onClick={() => setFinalsOpen(true)}>genera finali</SmallButton>
+                <SmallButton onClick={() => setClearingCalendar(true)} danger>
+                  azzera calendario
+                </SmallButton>
+              </>
             ) : (
               <SmallButton onClick={() => setCalendarOpen(true)}>genera calendario</SmallButton>
             )}
@@ -123,7 +128,7 @@ export function TournamentDetailScreen() {
                 <li key={match.key}>
                   <MatchManageRow
                     match={match}
-                    teams={tournament.teams}
+                    tournament={tournament}
                     onPlay={() =>
                       navigate(`/segnapunti?torneo=${tournament.key}&partita=${match.key}`)
                     }
@@ -178,6 +183,12 @@ export function TournamentDetailScreen() {
         tournament={tournament}
         open={calendarOpen}
         onClose={() => setCalendarOpen(false)}
+      />
+
+      <FinalStagesModal
+        tournament={tournament}
+        open={finalsOpen}
+        onClose={() => setFinalsOpen(false)}
       />
 
       <ConfirmDialog

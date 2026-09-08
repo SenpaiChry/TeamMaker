@@ -120,6 +120,10 @@ describe('assignSlots', () => {
     points2: 0,
     detail: [] as number[][],
     type: 'GIRONE ',
+    source1Type: '',
+    source1Ref: '',
+    source2Type: '',
+    source2Ref: '',
   }))
 
   it('incolonna le partite ogni N minuti', () => {

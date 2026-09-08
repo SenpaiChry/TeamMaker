@@ -110,12 +110,7 @@ export function TournamentScreen() {
 
       {tab === 'squadre' && <TeamsTab teams={visibleTeams} allTeams={active.teams} query={query} />}
       {tab === 'partite' && (
-        <MatchesTab
-          matches={visibleMatches}
-          teams={active.teams}
-          tournamentKey={active.key}
-          query={query}
-        />
+        <MatchesTab matches={visibleMatches} tournament={active} query={query} />
       )}
       {tab === 'classifica' && <StandingsTab tournament={active} query={query} />}
     </div>

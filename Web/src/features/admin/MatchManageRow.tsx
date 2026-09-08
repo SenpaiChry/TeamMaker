@@ -1,6 +1,7 @@
-import type { Match, Team } from '@/domain/models'
+import type { Match, Tournament } from '@/domain/models'
 import { getTeamNumber } from '@/domain/team'
 import { label as phaseLabel } from '@/domain/phases'
+import { slotLabel, TO_DO_KEY } from '@/domain/finalStages'
 
 /**
  * Riga partita della gestione, portata da tournament_layout_manage_matches.xml:
@@ -12,19 +13,19 @@ import { label as phaseLabel } from '@/domain/phases'
  */
 export function MatchManageRow({
   match,
-  teams,
+  tournament,
   onPlay,
   onEdit,
   onDelete,
 }: {
   match: Match
-  teams: Team[]
+  tournament: Tournament
   onPlay: () => void
   onEdit: () => void
   onDelete: () => void
 }) {
-  const n1 = getTeamNumber(teams, match.keyTeam1)
-  const n2 = getTeamNumber(teams, match.keyTeam2)
+  const label1 = teamOrPlaceholder(tournament, match, 1)
+  const label2 = teamOrPlaceholder(tournament, match, 2)
 
   return (
     <div className="rounded-[14px] border border-list-card-border bg-list-card p-2.5">
@@ -39,13 +40,13 @@ export function MatchManageRow({
           </div>
         </div>
 
-        <IconAction label={`Apri il segnapunti su Team ${n1} contro Team ${n2}`} onClick={onPlay}>
+        <IconAction label={`Apri il segnapunti su ${label1} contro ${label2}`} onClick={onPlay}>
           ▶
         </IconAction>
-        <IconAction label={`Modifica Team ${n1} contro Team ${n2}`} onClick={onEdit}>
+        <IconAction label={`Modifica ${label1} contro ${label2}`} onClick={onEdit}>
           ✎
         </IconAction>
-        <IconAction label={`Elimina Team ${n1} contro Team ${n2}`} onClick={onDelete}>
+        <IconAction label={`Elimina ${label1} contro ${label2}`} onClick={onDelete}>
           🗑
         </IconAction>
       </div>
@@ -53,7 +54,7 @@ export function MatchManageRow({
       <div className="my-2 h-px bg-list-divider" />
 
       <div className="flex items-center">
-        <span className="app-title min-w-0 grow truncate px-1 text-[15px]">Team {n1}</span>
+        <span className="app-title min-w-0 grow truncate px-1 text-[15px]">{label1}</span>
 
         <span className="min-w-[30px] text-center text-[19px] font-bold tabular-nums">
           {match.points1}
@@ -64,11 +65,23 @@ export function MatchManageRow({
         </span>
 
         <span className="app-title min-w-0 grow truncate px-1 text-right text-[15px]">
-          Team {n2}
+          {label2}
         </span>
       </div>
     </div>
   )
+}
+
+/**
+ * Etichetta della squadra: "TEAM n" se la squadra è nota, altrimenti il
+ * placeholder della sorgente ("1ª GIR. A", "VINC. Q1", ...).
+ */
+export function teamOrPlaceholder(tournament: Tournament, match: Match, slot: 1 | 2): string {
+  return slotLabel(tournament, match, slot, (key) => {
+    if (key.length === 0 || key === TO_DO_KEY) return 'TEAM ?'
+    const n = getTeamNumber(tournament.teams, key)
+    return n > 0 ? `TEAM ${n}` : 'TEAM ?'
+  })
 }
 
 function IconAction({
