@@ -52,7 +52,8 @@ public class ActivityPopUpSaveNewTournament extends AppCompatActivity {
                 try {
                     newDate.setTime(sdf.parse(dateStr));
                 } catch (Exception e) {
-                    Log.d("FATAL catch", e.toString());
+                    Log.e("SaveNewTournament", "Data non parseabile: " + dateStr, e);
+                    Toast.makeText(this, R.string.missing_data, Toast.LENGTH_SHORT).show();
                     return;
                 }
 

@@ -147,7 +147,8 @@ public class TeamGeneratorUtility {
         try {
             executor.awaitTermination(5, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
-            Log.d("FATAL", e.toString());
+            Log.w("TeamGenerator", "Attesa executor interrotta", e);
+            Thread.currentThread().interrupt();
         }
 
         if (solutionFound.get()) {

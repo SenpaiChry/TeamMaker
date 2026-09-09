@@ -74,7 +74,7 @@ public class TournamentUtility {
                                 tournament.date = null;
                             }
                         } catch (ParseException e) {
-                            e.printStackTrace();
+                            Log.w("TournamentUtility", "Data torneo malformata: " + dateString, e);
                             tournament.date = null;
                         }
                     } else {
@@ -107,12 +107,18 @@ public class TournamentUtility {
                 // Aggiorna la lista tornei se la schermata e' aperta
                 try {
                     TournamentActivityManageTournaments.reloadTournaments();
-                } catch (Exception ignored) { }
+                } catch (Exception e) {
+                    // Difensivo: se la schermata non e' allo stato giusto (finished / non ancora
+                    // creata) il refresh puo' fallire. Log warning, ma non blocca il download.
+                    Log.w("TournamentUtility", "reloadTournaments fallito", e);
+                }
 
                 // Aggiorna la lista partite se la schermata e' aperta
                 try {
                     TournamentActivityManageMatches.reloadMatches();
-                } catch (Exception ignored) { }
+                } catch (Exception e) {
+                    Log.w("TournamentUtility", "reloadMatches fallito", e);
+                }
 
                 Log.d("Firebase", "Tournaments aggiornati in tempo reale: " + Constants.tournaments.size());
             }

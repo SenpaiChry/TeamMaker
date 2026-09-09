@@ -65,7 +65,11 @@ public class TournamentActivityManageMatches extends AppCompatActivity {
         tournamentActivityManageMatches.runOnUiThread(() -> {
             try {
                 tournamentActivityManageMatches.recreate();
-            } catch (Exception ignored) { }
+            } catch (Exception e) {
+                // Difensivo: se l'activity e' in transizione, recreate() puo' fallire.
+                // Non e' un bug: la prossima onCreate ridisegnera' comunque i dati.
+                android.util.Log.w("ManageMatches", "reloadMatches.recreate fallito", e);
+            }
         });
     }
 

@@ -165,12 +165,13 @@ public class ActivityPopUpManageTournament extends AppCompatActivity {
                 try {
                     newDate.setTime(sdf.parse(dateStr));
                 } catch (Exception e) {
-                    Log.d("FATAL catch", e.toString());
+                    Log.e("ManageTournament", "Data non parseabile: " + dateStr, e);
+                    Toast.makeText(this, R.string.missing_data, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 TournamentUtility.updateNameAndDateTournament(tournamentKey, name, newDate);
             } else {
-                Toast.makeText(this, "MISSING DATA", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.missing_data, Toast.LENGTH_SHORT).show();
             }
             finish();
         });
