@@ -34,7 +34,11 @@ public class MainActivity extends AppCompatActivity {
         mainActivity = this;
 
         PlayerUtility.downloadPlayers();
-        AdminUtility.startListening();
+
+        // Firebase Auth persiste la sessione: se l'admin era gia' loggato in una
+        // precedente esecuzione dell'app, ripristina il flag e permetti l'accesso
+        // diretto senza riscrivere la password.
+        Constants.logged = AdminUtility.isAdmin();
 
         if (dbRoot.equals("teammakerStaging/")) {
             findViewById(R.id.txtDB).setVisibility(View.VISIBLE);
@@ -126,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         LiveMatchUtility.stopListening();
-        AdminUtility.stopListening();
         PlayerUtility.removePlayersListener();
         TournamentUtility.removeTournamentsListener();
     }

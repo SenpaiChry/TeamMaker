@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.myapplication.Model.Constants;
+import com.example.myapplication.Utility.GenerationResult;
 import com.example.myapplication.Utility.TeamGeneratorUtility;
 
 import java.util.concurrent.ExecutorService;
@@ -81,10 +82,11 @@ public class ActivityPopUpGenerateTeams extends AppCompatActivity {
                 setEnabledAllChildren(rootLayout, false);
 
                 executor.execute(() -> {
-                    boolean success = TeamGeneratorUtility.makeTeams(btnSelectedPlayer, 5, Constants.playersSelected);
+                    GenerationResult result = TeamGeneratorUtility.makeTeams(btnSelectedPlayer, 5, Constants.playersSelected);
 
                     handler.post(() -> {
-                        if (success) {
+                        if (result.success) {
+                            // Apri Teams SOLO su successo esplicito (altrimenti mostrerebbe dati vecchi)
                             Intent intent = new Intent(ActivityGenerate.activityGenerate.getApplicationContext(), ActivityTeams.class);
                             intent.putExtra("TYPE", type);
                             intent.putExtra("nPlayers", btnSelectedPlayer);
@@ -93,11 +95,12 @@ public class ActivityPopUpGenerateTeams extends AppCompatActivity {
 
                             finish();
                         } else {
-                            // Generazione fallita: non aprire Teams (mostrerebbe dati vecchi),
-                            // riabilita la popup e avvisa l'utente.
                             progressBar1.setVisibility(View.GONE);
                             setEnabledAllChildren(rootLayout, true);
-                            Toast.makeText(ActivityGenerate.activityGenerate, R.string.need_more_time, Toast.LENGTH_SHORT).show();
+                            int msg = result.reason == GenerationResult.Reason.NOT_ENOUGH_PLAYERS
+                                    ? R.string.select_more_players
+                                    : R.string.need_more_time;
+                            Toast.makeText(ActivityGenerate.activityGenerate, msg, Toast.LENGTH_SHORT).show();
                         }
                     });
                 });

@@ -23,25 +23,15 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class TournamentUtility {
 
     /** Listener persistente: si stacca con removeTournamentsListener() */
     private static ValueEventListener tournamentsListener;
     private static DatabaseReference tournamentsRef;
-
-    /** Parsing difensivo: un valore nullo o non numerico vale 0 invece di far crashare il download. */
-    private static int parseIntOrZero(String value) {
-        if (value == null) {
-            return 0;
-        }
-        try {
-            return Integer.parseInt(value.trim());
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
 
     /**
      * Ascolta i tornei in TEMPO REALE: ogni modifica su Firebase
@@ -93,56 +83,16 @@ public class TournamentUtility {
 
                     for (DataSnapshot matchSnapshot : tournamentSnapshot.child("matches").getChildren()) {
                         try {
-                            Match match = new Match(
-                                    matchSnapshot.child("team1").getValue(String.class),
-                                    matchSnapshot.child("team2").getValue(String.class),
-                                    parseIntOrZero(matchSnapshot.child("day").getValue(String.class)),
-                                    matchSnapshot.child("time").getValue(String.class),
-                                    parseIntOrZero(matchSnapshot.child("points1").getValue(String.class)),
-                                    parseIntOrZero(matchSnapshot.child("points2").getValue(String.class))
-                            );
-
-                            if (matchSnapshot.hasChild("type")) {
-                                match.type = PhaseUtility.normalize(String.valueOf(matchSnapshot.child("type").getValue(String.class)));
-                            }
-
-                            String s1t = matchSnapshot.child("source1_type").getValue(String.class);
-                            if (s1t != null && !s1t.isEmpty()) {
-                                match.source1Type = s1t;
-                                String s1r = matchSnapshot.child("source1_ref").getValue(String.class);
-                                match.source1Ref = s1r != null ? s1r : "";
-                            }
-                            String s2t = matchSnapshot.child("source2_type").getValue(String.class);
-                            if (s2t != null && !s2t.isEmpty()) {
-                                match.source2Type = s2t;
-                                String s2r = matchSnapshot.child("source2_ref").getValue(String.class);
-                                match.source2Ref = s2r != null ? s2r : "";
-                            }
-
-                            for (DataSnapshot setSnap : matchSnapshot.child("detail").getChildren()) {
-                                match.detail.add(new int[]{
-                                        parseIntOrZero(setSnap.child("points1").getValue(String.class)),
-                                        parseIntOrZero(setSnap.child("points2").getValue(String.class))
-                                });
-                            }
-
-                            match.key = matchSnapshot.getKey();
-                            tournament.matches.add(match);
+                            Match match = MatchMapper.fromSnapshot(matchSnapshot);
+                            if (match != null) tournament.matches.add(match);
                         } catch (Exception e) {
                             Log.e("TournamentUtility", "Partita malformata ignorata: " + matchSnapshot.getKey(), e);
                         }
                     }
 
                     for (DataSnapshot teamSnapshot : tournamentSnapshot.child("teams").getChildren()) {
-                        Team team = new Team();
-                        team.key = teamSnapshot.getKey();
-                        team.bracket = teamSnapshot.child("bracket").getValue(String.class);
-
-                        for (int i = 1; i < teamSnapshot.getChildrenCount() + 1; i++) {
-                            team.addPlayerByKey(teamSnapshot.child("player" + i).getValue(String.class));
-                        }
-
-                        tournament.teams.add(team);
+                        Team team = TeamMapper.fromSnapshot(teamSnapshot);
+                        if (team != null) tournament.teams.add(team);
                     }
 
                     Collections.sort(tournament.matches);
@@ -189,7 +139,7 @@ public class TournamentUtility {
             if (tournament.isValid) {
                 tournament.isValid = false;
                 DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key);
-                dbRef.child("is_valid").setValue("false");
+                FirebaseWriteHelper.attach(null, "deactivateAllTournaments", dbRef.child("is_valid").setValue("false"));
                 return;
             }
         }
@@ -256,11 +206,23 @@ public class TournamentUtility {
         return null;
     }
 
+    /**
+     * Attivazione atomica: in una sola scrittura multi-path disattiva TUTTI i tornei
+     * attivi e attiva quello passato. Prima erano due scritture separate: se la
+     * seconda falliva poteva restare NESSUN torneo attivo.
+     */
     public static void setActiveTournament(String key) {
-        deactivateAllTournaments();
+        Map<String, Object> updates = new HashMap<>();
+        for (Tournament tournament : Constants.tournaments) {
+            if (tournament.isValid && !tournament.key.equals(key)) {
+                updates.put(tournament.key + "/is_valid", "false");
+                tournament.isValid = false;
+            }
+        }
+        updates.put(key + "/is_valid", "true");
 
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + key);
-        dbRef.child("is_valid").setValue("true");
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/");
+        FirebaseWriteHelper.attach(null, "setActiveTournament", dbRef.updateChildren(updates));
     }
 
     public static Tournament getTournamentByKey(String key) {

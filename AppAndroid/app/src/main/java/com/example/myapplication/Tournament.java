@@ -1,6 +1,6 @@
 package com.example.myapplication;
 
-import com.example.myapplication.Utility.TimeUtility;
+import com.example.myapplication.Utility.MatchUtility;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -84,15 +84,7 @@ public class Tournament {
 
     public int getNMatchByKey(String key) {
         ArrayList<Match> matchesTemp = new ArrayList<>(this.matches);
-
-        Collections.sort(matchesTemp, (m1, m2) -> {
-            if (m1.day != m2.day) {
-                return Integer.compare(m1.day, m2.day);
-            } else {
-                return Integer.compare(TimeUtility.toMinutes(m2.time), TimeUtility.toMinutes(m1.time));
-            }
-        });
-        Collections.reverse(matchesTemp);
+        Collections.sort(matchesTemp, MatchUtility.BY_DAY_TIME);
 
         for (int i = 0; i < matchesTemp.size(); i++) {
             if (matchesTemp.get(i).key.equals(key)) {

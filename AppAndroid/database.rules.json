@@ -1,0 +1,38 @@
+{
+  "rules": {
+    "teammaker": {
+      "admins": {
+        ".read": "auth != null",
+        ".write": false
+      },
+      "admin-pw": {
+        ".read": false,
+        ".write": false
+      },
+      "live_match": {
+        ".read": true,
+        ".write": "auth != null && root.child('teammaker/admins').child(auth.uid).exists()"
+      },
+      "players": {
+        ".read": true,
+        ".write": "auth != null && root.child('teammaker/admins').child(auth.uid).exists()"
+      },
+      "tournaments": {
+        ".read": true,
+        ".write": "auth != null && root.child('teammaker/admins').child(auth.uid).exists()"
+      }
+    },
+    "teammakerStaging": {
+      ".read": true,
+      ".write": true
+    },
+    "dbEmpty": {
+      ".read": true,
+      ".write": true
+    },
+    "dbRizzi": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}

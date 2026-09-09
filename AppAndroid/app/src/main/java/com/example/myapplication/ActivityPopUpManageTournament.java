@@ -18,8 +18,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.Utility.MatchUtility;
 import com.example.myapplication.Utility.PhaseUtility;
-import com.example.myapplication.Utility.TimeUtility;
 import com.example.myapplication.Utility.TournamentUtility;
 
 import java.text.SimpleDateFormat;
@@ -138,11 +138,7 @@ public class ActivityPopUpManageTournament extends AppCompatActivity {
         Button btnCopyMatches = findViewById(R.id.btnCopyMatches);
         btnCopyMatches.setOnClickListener(v -> {
             ArrayList<Match> matches = new ArrayList<>(tournament.matches);
-
-            Collections.sort(matches, (m1, m2) -> {
-                if (m1.day != m2.day) return Integer.compare(m1.day, m2.day);
-                return Integer.compare(TimeUtility.toMinutes(m1.time), TimeUtility.toMinutes(m2.time));
-            });
+            Collections.sort(matches, MatchUtility.BY_DAY_TIME);
 
             StringBuilder textToCopy = new StringBuilder();
             for (Match match : matches) {

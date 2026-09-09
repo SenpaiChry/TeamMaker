@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.Model.Constants;
+import com.example.myapplication.Utility.AdminUtility;
 
 public class ActivityLogin extends AppCompatActivity {
 
@@ -30,17 +31,25 @@ public class ActivityLogin extends AppCompatActivity {
 
         Button btnAccessAdmin = findViewById(R.id.btnAccessAdmin);
         btnAccessAdmin.setOnClickListener(v -> {
-            // password null = non ancora arrivata dal DB (o nodo vuoto): rifiuta,
-            // così non c'è una finestra iniziale di «password vuota accettata».
-            if (Constants.password != null
-                    && txtPassword.getText().toString().equals(Constants.password)) {
-                Intent intent = new Intent(activityLogin.getApplicationContext(), TournamentActivityManage.class);
-                activityLogin.startActivity(intent);
-                finish();
-                Constants.logged = true;
-            } else {
-                txtWrongPassword.setText(R.string.wrong_password);
-            }
+            btnAccessAdmin.setEnabled(false);
+            String password = txtPassword.getText().toString();
+            // Login via Firebase Auth: la password si confronta lato server, non
+            // vive piu' nel DB. UX invariata: l'utente vede solo la password.
+            AdminUtility.signIn(password, new AdminUtility.AuthCallback() {
+                @Override
+                public void onSuccess() {
+                    Constants.logged = true;
+                    Intent intent = new Intent(activityLogin.getApplicationContext(), TournamentActivityManage.class);
+                    activityLogin.startActivity(intent);
+                    finish();
+                }
+
+                @Override
+                public void onFailure(String message) {
+                    btnAccessAdmin.setEnabled(true);
+                    txtWrongPassword.setText(R.string.wrong_password);
+                }
+            });
         });
     }
 }

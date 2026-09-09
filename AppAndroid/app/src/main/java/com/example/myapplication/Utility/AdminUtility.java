@@ -1,63 +1,57 @@
 package com.example.myapplication.Utility;
 
-import static com.example.myapplication.Model.Constants.dbRoot;
-
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.myapplication.Model.Constants;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 /**
- * Gestisce il nodo "admin-pw" su Firebase: la password dell'area di gestione,
- * letta in tempo reale e tenuta in {@link Constants#password}.
+ * Gate admin via Firebase Authentication.
  *
- * Sta fuori dal codice per due motivi:
- *  - la si cambia dalla console Firebase senza ripubblicare l'app;
- *  - è la stessa sorgente condivisa con la web app.
+ * Prima la password admin era un nodo in chiaro nel DB (admin-pw) e il confronto
+ * era client-side: chiunque avesse letto il DB (chiunque, dato che le regole erano
+ * aperte) vedeva la password. Ora l'admin è un utente Firebase Auth reale; il
+ * DB è protetto da regole che accettano scritture solo se auth.uid corrisponde a
+ * un admin registrato nel nodo teammaker/admins.
  *
- * ⚠️ Non è una misura di sicurezza: chi apre il traffico Firebase vede il
- * valore in chiaro. È solo un gate a un tocco per non entrare per sbaglio
- * nell'area di gestione; la protezione vera restano le regole del Realtime
- * Database.
+ * UX invariata: l'utente digita SOLO la password. L'email dell'admin è fissa
+ * (ADMIN_EMAIL) e nascosta nel codice.
  */
 public class AdminUtility {
 
-    private static final String ADMIN_PW_NODE = dbRoot + "admin-pw";
-    private static ValueEventListener adminPwListener;
-    private static DatabaseReference adminPwRef;
+    /** Email fissa dell'account admin, hardcoded perche' non deve essere digitata. */
+    public static final String ADMIN_EMAIL = "admin@teammaker.local";
 
-    /** Inizia ad ascoltare il nodo admin-pw e aggiorna Constants.password. */
-    public static void startListening() {
-        adminPwRef = FirebaseDatabase.getInstance().getReference(ADMIN_PW_NODE);
-
-        adminPwListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String value = snapshot.getValue(String.class);
-                // null finché il valore non è arrivato: il login lo rifiuta
-                Constants.password = (value != null && !value.isEmpty()) ? value : null;
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("AdminUtility", "Errore listener admin-pw", error.toException());
-            }
-        };
-
-        adminPwRef.addValueEventListener(adminPwListener);
+    /** Callback dell'esito login: onSuccess() = ok, onFailure(msg) = errore. */
+    public interface AuthCallback {
+        void onSuccess();
+        void onFailure(String message);
     }
 
-    /** Ferma l'ascolto. */
-    public static void stopListening() {
-        if (adminPwRef != null && adminPwListener != null) {
-            adminPwRef.removeEventListener(adminPwListener);
-            adminPwListener = null;
-        }
+    /** Prova a fare login come admin con la password inserita. */
+    public static void signIn(@NonNull String password, @NonNull AuthCallback cb) {
+        FirebaseAuth.getInstance()
+                .signInWithEmailAndPassword(ADMIN_EMAIL, password)
+                .addOnSuccessListener(result -> {
+                    Log.d("AdminUtility", "Login admin ok: " + result.getUser().getUid());
+                    cb.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    Log.w("AdminUtility", "Login admin fallito", e);
+                    cb.onFailure(e.getLocalizedMessage());
+                });
+    }
+
+    /** True se l'utente corrente è loggato come admin. */
+    public static boolean isAdmin() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        return user != null && ADMIN_EMAIL.equalsIgnoreCase(user.getEmail());
+    }
+
+    /** Esce dalla sessione admin. */
+    public static void signOut() {
+        FirebaseAuth.getInstance().signOut();
     }
 }

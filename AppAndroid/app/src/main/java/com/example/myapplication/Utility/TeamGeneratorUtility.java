@@ -18,20 +18,30 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TeamGeneratorUtility {
 
-    /** @return true se è stata prodotta una nuova soluzione valida, false altrimenti. */
-    public static boolean makeTeams(int nPlayerInSquad, int nAlgorithm, ArrayList<Player> playersSelected) {
+    /**
+     * @return GenerationResult con esito esplicito. Su successo Constants.teams
+     * contiene le nuove squadre e result.teams punta alle stesse istanze; su
+     * fallimento Constants.teams NON viene toccato (il chiamante decide se
+     * mostrare un errore o mantenere le squadre precedenti).
+     */
+    public static GenerationResult makeTeams(int nPlayerInSquad, int nAlgorithm, ArrayList<Player> playersSelected) {
         Constants.nCycle = 0;
+
+        // Validazione minima: servono almeno due squadre reali (una intera + una parziale)
+        if (playersSelected.size() < nPlayerInSquad * 2 - 1) {
+            return GenerationResult.fail(GenerationResult.Reason.NOT_ENOUGH_PLAYERS);
+        }
 
         if (nAlgorithm == 2) {
             initTeams(playersSelected, nPlayerInSquad);
             algorithm2(playersSelected);
-            return true;
+            return GenerationResult.ok(Constants.teams, 0);
         } else if (nAlgorithm == 5) {
-            int nThreads = Runtime.getRuntime().availableProcessors(); // o un valore dinamico, tipo
+            int nThreads = Runtime.getRuntime().availableProcessors();
             return makeTeamsThreads(nPlayerInSquad, nThreads, playersSelected);
         }
 
-        return false;
+        return GenerationResult.fail(GenerationResult.Reason.UNKNOWN_ALGORITHM);
     }
 
     public static void initTeams(ArrayList<Player> playersSelected, int nPlayerInSquad) {
@@ -56,7 +66,7 @@ public class TeamGeneratorUtility {
         }
     }
 
-    public static boolean makeTeamsThreads(int nPlayerInSquad, int nThreads, ArrayList<Player> playersSelected) {
+    public static GenerationResult makeTeamsThreads(int nPlayerInSquad, int nThreads, ArrayList<Player> playersSelected) {
         // Constants.teams NON va azzerato qui: verrebbe letto vuoto dalla UI durante
         // il reroll (race). Su successo lo sostituisce atomicamente tryCommitSolution;
         // su fallimento restano le squadre precedenti (il chiamante gestisce l'esito).
@@ -140,7 +150,10 @@ public class TeamGeneratorUtility {
             Log.d("FATAL", e.toString());
         }
 
-        return solutionFound.get();
+        if (solutionFound.get()) {
+            return GenerationResult.ok(Constants.teams, Constants.nCycle);
+        }
+        return GenerationResult.fail(GenerationResult.Reason.TIMEOUT);
     }
 
     private static int findWeakestTeam(float[] teamVotes, int[] teamSizes, int maxSize) {

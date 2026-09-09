@@ -2,7 +2,7 @@ package com.example.myapplication;
 
 import android.content.Context;
 
-import com.example.myapplication.Utility.TimeUtility;
+import com.example.myapplication.Utility.MatchUtility;
 import com.example.myapplication.Utility.TournamentTeamUtility;
 import com.example.myapplication.Utility.Utility;
 
@@ -96,14 +96,9 @@ public class Match implements Comparable<Match> {
         return toReturn;
     }
 
+    /** Delegato a MatchUtility.BY_DAY_TIME: unico posto dove vive la logica di ordinamento. */
     @Override
     public int compareTo(Match m) {
-        if (m.day > this.day || (m.day == this.day && TimeUtility.isAfter(this.time, m.time))) {
-            return - 1;
-        } else if (m.day == this.day && this.time.equals(m.time)) {
-            return 0;
-        }
-
-        return 1;
+        return MatchUtility.BY_DAY_TIME.compare(this, m);
     }
 }

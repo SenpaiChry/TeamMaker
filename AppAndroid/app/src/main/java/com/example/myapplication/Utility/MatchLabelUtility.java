@@ -74,9 +74,6 @@ public class MatchLabelUtility {
     }
 
     private static void sortByDayTime(List<Match> matches) {
-        Collections.sort(matches, (m1, m2) -> {
-            if (m1.day != m2.day) return Integer.compare(m1.day, m2.day);
-            return Integer.compare(TimeUtility.toMinutes(m1.time), TimeUtility.toMinutes(m2.time));
-        });
+        Collections.sort(matches, MatchUtility.BY_DAY_TIME);
     }
 }
