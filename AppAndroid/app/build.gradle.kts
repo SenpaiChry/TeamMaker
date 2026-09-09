@@ -35,16 +35,14 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+
+    // Firebase: il BOM allinea le versioni di tutte le librerie Firebase,
+    // quindi le singole vanno importate SENZA versione esplicita.
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth)
-    implementation(libs.translate)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-
-    implementation(libs.material)
-
-    implementation(platform(libs.firebase.bom))
-
-    implementation(libs.firebase.analytics)
 }
