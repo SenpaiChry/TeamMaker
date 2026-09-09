@@ -13,11 +13,14 @@ import { useAuthStore } from '@/store/authStore'
 export function LoginScreen() {
   const navigate = useNavigate()
   const login = useAuthStore((s) => s.login)
+  const busy = useAuthStore((s) => s.busy)
   const [password, setPassword] = useState('')
   const [wrong, setWrong] = useState(false)
 
-  const submit = () => {
-    if (login(password)) navigate('/admin', { replace: true })
+  const submit = async () => {
+    if (busy) return
+    const ok = await login(password)
+    if (ok) navigate('/admin', { replace: true })
     else setWrong(true)
   }
 
@@ -50,7 +53,7 @@ export function LoginScreen() {
       <form
         onSubmit={(e) => {
           e.preventDefault()
-          submit()
+          void submit()
         }}
         className="flex grow flex-col items-center justify-center px-6"
       >
@@ -78,10 +81,12 @@ export function LoginScreen() {
 
         <button
           type="submit"
+          disabled={busy}
           className="app-title mt-14 w-50 max-w-full rounded-[11px] bg-brand-blue py-3
-                     text-lg text-white transition hover:bg-brand-blue-pressed"
+                     text-lg text-white transition hover:bg-brand-blue-pressed
+                     disabled:opacity-60"
         >
-          Login
+          {busy ? 'Accesso…' : 'Login'}
         </button>
       </form>
     </div>

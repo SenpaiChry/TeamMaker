@@ -14,11 +14,11 @@ const root = createRoot(container)
  */
 try {
   const { default: App } = await import('./App')
-  // Attacca la password admin alla store, in tempo reale sul nodo `admin-pw`.
-  // Va fatto qui e non dentro un componente per essere pronta anche prima che
-  // qualcuno provi a fare login (la lettura è comunque asincrona).
-  const { initAdminPassword } = await import('./store/authStore')
-  initAdminPassword()
+  // Aggancia lo store al Firebase Auth: se una sessione era persistita, la
+  // recuperiamo prima del primo render, così i tasti admin appaiono già
+  // sbloccati invece di comparire dopo un flicker.
+  const { initAdminAuth } = await import('./store/authStore')
+  initAdminAuth()
   root.render(
     <StrictMode>
       <App />

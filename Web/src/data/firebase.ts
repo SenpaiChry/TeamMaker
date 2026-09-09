@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app'
+import { getAuth, type Auth } from 'firebase/auth'
 import { getDatabase, ref, type DatabaseReference } from 'firebase/database'
 
 /**
@@ -8,8 +9,11 @@ import { getDatabase, ref, type DatabaseReference } from 'firebase/database'
  * sviluppo) arriva dall'ambiente: nessun percorso è scritto a mano altrove.
  *
  * Per LEGGERE e SCRIVERE sul Realtime Database bastano `databaseURL` e
- * `projectId`. `apiKey` e `appId` servono solo all'autenticazione, che arriva
- * nella fase 6: finché mancano l'app funziona lo stesso.
+ * `projectId`; per l'AUTH (login admin via Firebase Authentication) servono
+ * anche `apiKey`, `authDomain` e `appId`. Le regole del database su
+ * `teammaker/` accettano scritture solo se `auth.uid` è registrato nel nodo
+ * `teammaker/admins`, quindi in produzione l'auth è obbligatoria per fare
+ * qualunque modifica.
  */
 
 /** Configurazione assente o incompleta: va mostrata all'utente, non ingoiata. */
@@ -44,7 +48,15 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig)
 export const database = getDatabase(app)
 
-/** `true` se l'autenticazione è configurabile; in fase 6 diventerà obbligatoria. */
+/**
+ * Auth di Firebase. Persiste da sé (localStorage): la sessione admin sopravvive
+ * alla chiusura del tab, come sull'app Android. Se `apiKey`/`appId` mancano
+ * dalla configurazione le chiamate di auth falliscono al primo tentativo, ma
+ * la parte pubblica dell'app funziona lo stesso.
+ */
+export const auth: Auth = getAuth(app)
+
+/** `true` se l'autenticazione è configurata; se no il login admin non funziona. */
 export const HAS_AUTH_CONFIG = firebaseConfig.apiKey.length > 0 && firebaseConfig.appId.length > 0
 
 /** Radice del database, con la barra finale garantita. */

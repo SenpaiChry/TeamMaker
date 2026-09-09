@@ -1,66 +1,79 @@
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { create } from 'zustand'
-import { subscribeAdminPassword } from '@/data/adminRepo'
+import { auth } from '@/data/firebase'
 
 /**
- * Stato dell'accesso all'area di gestione.
+ * Stato dell'accesso all'area di gestione — porta AdminUtility dopo il passaggio
+ * a Firebase Authentication.
  *
- * Sostituisce `Constants.logged`. Come nell'app Android l'accesso vale per
- * l'intera sessione; qui sopravvive anche a un cambio di pagina, ma non alla
- * chiusura della scheda.
+ * Prima la password admin era un nodo `admin-pw` in chiaro nel DB e il confronto
+ * avveniva client-side; ora l'admin è un utente Firebase Auth vero con email
+ * fissa (ADMIN_EMAIL) e il confronto avviene server-side. Le regole del
+ * database accettano scritture solo se `auth.uid` è registrato in
+ * `teammaker/admins`, quindi l'auth è la vera protezione.
  *
- * La password vive su Firebase al nodo `admin-pw`: cambiarla dalla console
- * ha effetto immediato senza ripubblicare il sito. Finché non è stata caricata
- * (o se manca) il login viene rifiutato.
+ * UX invariata: l'utente digita SOLO la password. L'email è nascosta.
  *
- * ⚠️ Non è una misura di sicurezza: il valore transita in chiaro nel traffico
- * Firebase, chiunque lo può leggere con gli strumenti di rete. La protezione
- * vera del database sono le sue regole (vedi database.rules.json).
+ * La sessione persiste in `localStorage` grazie alla persistenza nativa di
+ * Firebase Auth: chi era loggato prima di chiudere il tab rientra
+ * automaticamente al riapertura, esattamente come su Android.
  */
 
-const STORAGE_KEY = 'teammaker.admin'
+/** Email fissa dell'account admin, hardcoded — deve combaciare con l'Android. */
+const ADMIN_EMAIL = 'admin@teammaker.local'
 
 interface AuthState {
   logged: boolean
-  /**
-   * Password letta dal DB. `null` = non ancora caricata; stringa vuota = nodo
-   * `admin-pw` presente ma vuoto (per prudenza non concediamo l'accesso).
-   */
-  adminPassword: string | null
-  /** `true` se la password era giusta. */
-  login: (password: string) => boolean
-  logout: () => void
+  /** `true` mentre la richiesta di login è in corso. */
+  busy: boolean
+  login: (password: string) => Promise<boolean>
+  logout: () => Promise<void>
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
-  // Se in questa scheda si era già entrati, si resta dentro — la password
-  // era stata validata al momento del login e vale per la sessione.
-  logged: sessionStorage.getItem(STORAGE_KEY) === 'ok',
-  adminPassword: null,
+export const useAuthStore = create<AuthState>((set) => ({
+  // Stato iniziale: `false`. Se una sessione persistita esiste, Firebase Auth
+  // ce la rimanda tramite `onAuthStateChanged` (vedi `initAdminAuth`).
+  logged: false,
+  busy: false,
 
-  login: (password) => {
-    const current = get().adminPassword
-    // In caricamento o non impostata: rifiuta, così non si entra con una
-    // finestra momentanea di "password vuota" mentre Firebase risponde.
-    if (current === null || current.length === 0) return false
-    if (password !== current) return false
-    sessionStorage.setItem(STORAGE_KEY, 'ok')
-    set({ logged: true })
-    return true
+  login: async (password) => {
+    if (password.length === 0) return false
+    set({ busy: true })
+    try {
+      await signInWithEmailAndPassword(auth, ADMIN_EMAIL, password)
+      // onAuthStateChanged aggiornerà `logged: true`; qui bastasetare `busy`
+      // a false per riabilitare il tasto.
+      return true
+    } catch (error) {
+      console.warn('Login admin fallito:', error)
+      return false
+    } finally {
+      set({ busy: false })
+    }
   },
 
-  logout: () => {
-    sessionStorage.removeItem(STORAGE_KEY)
-    set({ logged: false })
+  logout: async () => {
+    try {
+      await signOut(auth)
+    } catch (error) {
+      console.warn('Logout admin fallito:', error)
+    }
   },
 }))
 
 /**
- * Aggancia lo store al nodo `admin-pw` in tempo reale. Da chiamare una volta
- * sola all'avvio dell'app.
+ * Aggancia lo store a Firebase Auth in tempo reale. Da chiamare una volta sola
+ * all'avvio dell'app.
+ *
+ * All'apertura del tab Firebase Auth ci notifica lo stato della sessione
+ * persistita; da lì in poi ogni login/logout aggiorna lo store.
  */
-export function initAdminPassword(): () => void {
-  return subscribeAdminPassword(
-    (password) => useAuthStore.setState({ adminPassword: password }),
-    (error) => console.error('Lettura admin-pw fallita:', error),
-  )
+export function initAdminAuth(): () => void {
+  return onAuthStateChanged(auth, (user) => {
+    // La sessione è valida solo se corrisponde davvero all'account admin: se
+    // qualcuno arriva loggato con un altro utente (improbabile — Auth non ha
+    // altri account — ma non costa nulla essere prudenti) resta fuori.
+    const isAdmin = user !== null && user.email?.toLowerCase() === ADMIN_EMAIL
+    useAuthStore.setState({ logged: isAdmin })
+  })
 }
