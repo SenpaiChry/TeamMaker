@@ -35,6 +35,19 @@
             android:textColor="@color/white"
             android:textSize="17sp"
             android:text="@string/new_player" />
+
+        <Button
+            android:id="@+id/btnExportPlayers"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:layout_marginStart="6dp"
+            android:paddingHorizontal="14dp"
+            android:background="@drawable/buttons_main"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            android:text="@string/export" />
     </LinearLayout>
 
     <!-- Ricerca -->

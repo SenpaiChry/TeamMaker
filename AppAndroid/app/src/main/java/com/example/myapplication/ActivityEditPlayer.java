@@ -55,7 +55,7 @@ public class ActivityEditPlayer extends AppCompatActivity {
                 });
 
                 ListView listStats = findViewById(R.id.listStats);
-                StatsPlayerAdapter statsPlayerAdapter = new StatsPlayerAdapter(this, player.stats);
+                StatsPlayerAdapter statsPlayerAdapter = new StatsPlayerAdapter(this, player.stats, player.bonus);
                 listStats.setAdapter(statsPlayerAdapter);
 
                 btnConfirm.setOnClickListener(view -> {
@@ -75,6 +75,7 @@ public class ActivityEditPlayer extends AppCompatActivity {
                                 player.gender,
                                 player.stats
                         );
+                        playerTemp.bonus = statsPlayerAdapter.getBonus();
 
                         PlayerUtility.addPlayer(playerTemp, success -> {
                             runOnUiThread(() -> {
@@ -119,13 +120,16 @@ public class ActivityEditPlayer extends AppCompatActivity {
                 });
 
                 ListView listStats = findViewById(R.id.listStats);
-                StatsPlayerAdapter statsPlayerAdapter = new StatsPlayerAdapter(this, (HashMap<String, Object>) player.stats.clone());
+                StatsPlayerAdapter statsPlayerAdapter = new StatsPlayerAdapter(this,
+                        (HashMap<String, Object>) player.stats.clone(),
+                        (HashMap<String, Boolean>) player.bonus.clone());
                 listStats.setAdapter(statsPlayerAdapter);
 
                 btnConfirm.setOnClickListener(view -> {
                     Player playerTemp = new Player(
                             player.key, txtName.getText().toString(), txtSurname.getText().toString(),
                             txtNickname.getText().toString(), player.gender, true, statsPlayerAdapter.getStats());
+                    playerTemp.bonus = statsPlayerAdapter.getBonus();
 
                     PlayerUtility.addEditPlayer(playerTemp, player.key);
                     finish();

@@ -147,6 +147,19 @@ public class ActivityPopUp extends AppCompatActivity {
                 btnConfirm.setOnClickListener(view -> { MatchUtility.deleteEveryMatch(tournamentKey); finish(); });
                 break;
             }
+            case DELETE_STAT: {
+                String statKey = getIntent().getExtras().getString("stat_key");
+                StatDefinition def = com.example.myapplication.Utility.StatsUtility.getByKey(statKey);
+                txtTitle.setText(R.string.delete_stat);
+                txtSubtitle1.setText(def != null ? def.label : "");
+                txtSubtitle2.setVisibility(View.GONE);
+                btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.button_danger));
+                btnConfirm.setOnClickListener(view -> {
+                    com.example.myapplication.Utility.StatsUtility.deleteStat(statKey);
+                    finish();
+                });
+                break;
+            }
         }
 
         // Niente riquadro vuoto se non c'è alcun sottotitolo

@@ -11,30 +11,41 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.myapplication.Model.Constants;
+import androidx.core.content.ContextCompat;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import com.example.myapplication.Utility.StatsUtility;
+
 import java.util.HashMap;
+import java.util.List;
 
 public class StatsPlayerAdapter extends BaseAdapter {
 
-    HashMap<String, Object> stats;
-    Context context;
+    private final HashMap<String, Object> stats;
+    private final HashMap<String, Boolean> bonus;
+    private final Context context;
 
     public StatsPlayerAdapter(Context context, HashMap<String, Object> stats) {
+        this(context, stats, new HashMap<>());
+    }
+
+    public StatsPlayerAdapter(Context context, HashMap<String, Object> stats, HashMap<String, Boolean> bonus) {
         this.context = context;
         this.stats = stats;
+        this.bonus = bonus;
+    }
+
+    private List<StatDefinition> defs() {
+        return StatsUtility.getDefinitions();
     }
 
     @Override
     public int getCount() {
-        return Constants.statsDescription.length;
+        return defs().size();
     }
 
     @Override
-    public String getItem(int position) {
-        return Constants.statsDescription[position];
+    public StatDefinition getItem(int position) {
+        return defs().get(position);
     }
 
     @Override
@@ -42,35 +53,66 @@ public class StatsPlayerAdapter extends BaseAdapter {
         return position;
     }
 
+    private float valueFor(StatDefinition def) {
+        Object v = stats.get(def.key);
+        if (v == null) return 0;
+        try {
+            return Float.parseFloat(String.valueOf(v));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         if (convertView == null) {
-            LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-            convertView = layoutInflater.inflate(R.layout.layout_player_info_spinner, parent, false);
+            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_player_info_spinner, parent, false);
         }
 
+        StatDefinition def = getItem(position);
         TextView txtStatsDescription = convertView.findViewById(R.id.txtStatsDescription);
-        txtStatsDescription.setText(getItem(position));
+        txtStatsDescription.setText(def.label);
 
         Spinner spinnerValue = convertView.findViewById(R.id.spinnerValue);
-        LinearLayout llImagesContainer = convertView.findViewById(R.id.llImages);
+        ViewGroup llImagesContainer = convertView.findViewById(R.id.llImages);
+        ImageView imgBonus = convertView.findViewById(R.id.imgBonus);
 
-        if (getItem(position).equals("Altezza")) {
+        // COL 3 (bonus): sempre presente per riservare lo spazio; visibile solo per STARS con allowBonus.
+        if (StatDefinition.TYPE_STARS.equals(def.type) && def.allowBonus) {
+            boolean active = Boolean.TRUE.equals(bonus.get(def.key));
+            imgBonus.setVisibility(View.VISIBLE);
+            imgBonus.setImageTintList(ContextCompat.getColorStateList(context,
+                    active ? R.color.main_blue : R.color.list_text_muted));
+            final String statKey = def.key;
+            imgBonus.setOnClickListener(v -> {
+                boolean newVal = !Boolean.TRUE.equals(bonus.get(statKey));
+                bonus.put(statKey, newVal);
+                notifyDataSetChanged();
+            });
+        } else {
+            imgBonus.setVisibility(View.INVISIBLE);
+            imgBonus.setOnClickListener(null);
+        }
+
+        if (StatDefinition.TYPE_RANGE.equals(def.type) && def.values != null && !def.values.isEmpty()) {
             spinnerValue.setVisibility(View.VISIBLE);
             llImagesContainer.setVisibility(View.GONE);
 
-            ArrayList<String> heights = new ArrayList<>(Arrays.asList(Constants.valueHeight));
-            TournamentSpinnerTeamAdapter adapterValueHeight = new TournamentSpinnerTeamAdapter(context, heights);
+            java.util.ArrayList<String> valuesCopy = new java.util.ArrayList<>(def.values);
+            TournamentSpinnerTeamAdapter adapterValue = new TournamentSpinnerTeamAdapter(context, valuesCopy);
+            spinnerValue.setAdapter(adapterValue);
+            adapterValue.setSpinner(spinnerValue);
+            // Il valore salvato e' indice * step; per mostrare l'indice, divide per step.
+            int idx = (int) Math.round(valueFor(def) / (def.step > 0 ? def.step : 1));
+            idx = Math.max(0, Math.min(idx, valuesCopy.size() - 1));
+            spinnerValue.setSelection(idx);
 
-            spinnerValue.setAdapter(adapterValueHeight);
-            adapterValueHeight.setSpinner(spinnerValue);
-            spinnerValue.setSelection(Integer.parseInt(String.valueOf(stats.get(Constants.statsDescriptionEng[position]) == null ? 0 : stats.get(Constants.statsDescriptionEng[position])).replace(".0", "")));
-
+            final String statKey = def.key;
+            final double statStep = def.step > 0 ? def.step : 1;
             spinnerValue.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int posValue, long id) {
-                    stats.put(Constants.statsDescriptionEng[position], posValue * 1.0);
+                    stats.put(statKey, posValue * statStep);
                 }
 
                 @Override
@@ -81,23 +123,24 @@ public class StatsPlayerAdapter extends BaseAdapter {
             llImagesContainer.setVisibility(View.VISIBLE);
             llImagesContainer.removeAllViews();
 
-            int maxLevel = (int) (Constants.statsMax[position] / Constants.statsStep[position]);
-            double currentValue = Double.parseDouble(stats.get(Constants.statsDescriptionEng[position]).toString());
-            int currentLevel = (int) (currentValue / Constants.statsStep[position]);
+            int maxLevel = (int) (def.max / def.step);
+            int currentLevel = (int) (valueFor(def) / def.step);
 
-            for (int i = 0; i <= maxLevel; i ++) {
+            int starSize = Math.round(context.getResources().getDisplayMetrics().density * 28);
+            int marginPx = Math.round(context.getResources().getDisplayMetrics().density * 2);
+            for (int i = 0; i <= maxLevel; i++) {
                 ImageView image = new ImageView(context);
                 image.setImageResource(i <= currentLevel ? R.drawable.star_full : R.drawable.star_empty);
 
-                int starSize = Math.round(context.getResources().getDisplayMetrics().density * 28);
-                LinearLayout.LayoutParams starParams = new LinearLayout.LayoutParams(starSize, starSize);
-                starParams.setMarginStart(Math.round(context.getResources().getDisplayMetrics().density * 2));
+                ViewGroup.MarginLayoutParams starParams = new ViewGroup.MarginLayoutParams(starSize, starSize);
+                starParams.setMarginStart(marginPx);
                 image.setLayoutParams(starParams);
 
                 final int index = i;
+                final String statKey = def.key;
+                final double statStep = def.step;
                 image.setOnClickListener(v -> {
-                    stats.put(Constants.statsDescriptionEng[position], index * Constants.statsStep[position]);
-
+                    stats.put(statKey, index * statStep);
                     notifyDataSetChanged();
                 });
 
@@ -110,5 +153,9 @@ public class StatsPlayerAdapter extends BaseAdapter {
 
     public HashMap<String, Object> getStats() {
         return stats;
+    }
+
+    public HashMap<String, Boolean> getBonus() {
+        return bonus;
     }
 }

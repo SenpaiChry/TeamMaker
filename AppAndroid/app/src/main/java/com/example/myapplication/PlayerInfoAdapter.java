@@ -10,27 +10,40 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.myapplication.Model.Constants;
+import androidx.core.content.ContextCompat;
+
+import com.example.myapplication.Utility.StatsUtility;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class PlayerInfoAdapter extends BaseAdapter {
-    HashMap<String, Object> stats;
-    Context context;
+    private final HashMap<String, Object> stats;
+    private final HashMap<String, Boolean> bonus;
+    private final Context context;
 
     public PlayerInfoAdapter(Context context, HashMap<String, Object> s) {
+        this(context, s, new HashMap<>());
+    }
+
+    public PlayerInfoAdapter(Context context, HashMap<String, Object> s, HashMap<String, Boolean> bonus) {
         this.context = context;
         this.stats = s;
+        this.bonus = bonus;
+    }
+
+    private List<StatDefinition> defs() {
+        return StatsUtility.getDefinitions();
     }
 
     @Override
     public int getCount() {
-        return stats.size();
+        return defs().size();
     }
 
     @Override
-    public Float getItem(int position) {
-        return Float.parseFloat(String.valueOf(stats.get(Constants.statsDescriptionEng[position])));
+    public StatDefinition getItem(int position) {
+        return defs().get(position);
     }
 
     @Override
@@ -38,44 +51,66 @@ public class PlayerInfoAdapter extends BaseAdapter {
         return position;
     }
 
+    private float valueFor(StatDefinition def) {
+        Object v = stats.get(def.key);
+        if (v == null) return 0;
+        try {
+            return Float.parseFloat(String.valueOf(v));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
     @SuppressLint("DefaultLocale")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         if (convertView == null) {
-            LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-            convertView = layoutInflater.inflate(R.layout.layout_info, parent, false);
+            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_info, parent, false);
         }
 
+        StatDefinition def = getItem(position);
         TextView txtName = convertView.findViewById(R.id.txtName);
-        txtName.setText(Constants.statsDescription[position]);
+        txtName.setText(def.label);
 
-        LinearLayout llImagesContainer = convertView.findViewById(R.id.llImages);
+        ViewGroup llImagesContainer = convertView.findViewById(R.id.llImages);
         TextView txtHeight = convertView.findViewById(R.id.txtHeight);
+        ImageView imgBonus = convertView.findViewById(R.id.imgBonus);
 
-        // ★ FIX: pulisci le stelle vecchie PRIMA di aggiungerne di nuove
+        // COL 3 (bonus): visibile solo se stat ammette bonus E il giocatore ce l'ha
+        if (StatDefinition.TYPE_STARS.equals(def.type) && def.allowBonus
+                && Boolean.TRUE.equals(bonus.get(def.key))) {
+            imgBonus.setVisibility(View.VISIBLE);
+            imgBonus.setImageTintList(ContextCompat.getColorStateList(context, R.color.main_blue));
+        } else {
+            imgBonus.setVisibility(View.INVISIBLE);
+        }
+
+        // Pulisci le stelle vecchie e reintroduci txtHeight (era dentro llImages)
         llImagesContainer.removeAllViews();
-        // Riaggiungi txtHeight perché era dentro llImages e removeAllViews lo ha tolto
         llImagesContainer.addView(txtHeight);
 
-        if (Constants.statsDescription[position].equalsIgnoreCase("ALTEZZA")) {
+        if (StatDefinition.TYPE_RANGE.equals(def.type) && def.values != null && !def.values.isEmpty()) {
             txtHeight.setVisibility(View.VISIBLE);
-            txtHeight.setText(Constants.valueHeight[getItem(position).intValue()]);
+            // Valore salvato = indice * step; per mostrare la fascia risalgo all'indice.
+            double step = def.step > 0 ? def.step : 1;
+            int idx = (int) Math.round(valueFor(def) / step);
+            idx = Math.max(0, Math.min(idx, def.values.size() - 1));
+            txtHeight.setText(def.values.get(idx));
         } else {
             txtHeight.setVisibility(View.GONE);
 
-            for (int i = 0; i <= Constants.statsMax[position] / Constants.statsStep[position]; i++) {
+            float value = valueFor(def);
+            int maxLevel = (int) (def.max / def.step);
+            float density = context.getResources().getDisplayMetrics().density;
+            int starSize = Math.round(density * 22);
+            int marginPx = Math.round(density * 2);
+
+            for (int i = 0; i <= maxLevel; i++) {
                 ImageView image = new ImageView(context);
-
-                if (getItem(position) / Constants.statsStep[position] >= i) {
-                    image.setImageResource(R.drawable.star_full);
-                } else {
-                    image.setImageResource(R.drawable.star_empty);
-                }
-
-                image.setLayoutParams(new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT));
+                image.setImageResource(value / def.step >= i ? R.drawable.star_full : R.drawable.star_empty);
+                ViewGroup.MarginLayoutParams starParams = new ViewGroup.MarginLayoutParams(starSize, starSize);
+                if (i > 0) starParams.setMarginStart(marginPx);
+                image.setLayoutParams(starParams);
                 llImagesContainer.addView(image);
             }
         }

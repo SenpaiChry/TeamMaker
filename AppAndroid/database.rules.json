@@ -1,5 +1,8 @@
 {
   "rules": {
+    ".read": false,
+    ".write": false,
+
     "teammaker": {
       "admins": {
         ".read": "auth != null",
@@ -13,6 +16,10 @@
         ".read": true,
         ".write": "auth != null && root.child('teammaker/admins').child(auth.uid).exists()"
       },
+      "stats": {
+        ".read": true,
+        ".write": "auth != null && root.child('teammaker/admins').child(auth.uid).exists()"
+      },
       "players": {
         ".read": true,
         ".write": "auth != null && root.child('teammaker/admins').child(auth.uid).exists()"
@@ -22,17 +29,37 @@
         ".write": "auth != null && root.child('teammaker/admins').child(auth.uid).exists()"
       }
     },
+
     "teammakerStaging": {
-      ".read": true,
-      ".write": true
+      "admins": {
+        ".read": "auth != null",
+        ".write": false
+      },
+      "live_match": {
+        ".read": true,
+        ".write": "auth != null && root.child('teammaker/admins').child(auth.uid).exists()"
+      },
+      "stats": {
+        ".read": true,
+        ".write": "auth != null && root.child('teammaker/admins').child(auth.uid).exists()"
+      },
+      "players": {
+        ".read": true,
+        ".write": "auth != null && root.child('teammaker/admins').child(auth.uid).exists()"
+      },
+      "tournaments": {
+        ".read": true,
+        ".write": "auth != null && root.child('teammaker/admins').child(auth.uid).exists()"
+      }
     },
+
     "dbEmpty": {
-      ".read": true,
-      ".write": true
+      ".read": false,
+      ".write": false
     },
     "dbRizzi": {
-      ".read": true,
-      ".write": true
+      ".read": false,
+      ".write": false
     }
   }
 }

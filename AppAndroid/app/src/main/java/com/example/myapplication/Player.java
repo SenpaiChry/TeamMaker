@@ -1,6 +1,6 @@
 package com.example.myapplication;
 
-import com.example.myapplication.Model.Constants;
+import com.example.myapplication.Utility.StatsUtility;
 
 import java.util.HashMap;
 
@@ -12,6 +12,8 @@ public class Player implements Comparable<Player> {
     public String gender;
     public boolean isActive;
     public HashMap<String, Object> stats = new HashMap<>();
+    /** Bonus per-stat: {statKey: true} solo se il giocatore ha il bonus attivo per quella stat. */
+    public HashMap<String, Boolean> bonus = new HashMap<>();
 
     public Player(String key, String name, String surname, String nickname, String gender, boolean isActive, HashMap<String, Object> stats) {
         this.key = key;
@@ -34,8 +36,9 @@ public class Player implements Comparable<Player> {
 
     public Player() {
         if (this.stats.isEmpty()) {
-            for (String stat : Constants.statsDescriptionEng) {
-                this.stats.put(stat, 0);
+            // Inizializza a 0 tutte le stat del catalogo dinamico corrente
+            for (StatDefinition def : StatsUtility.getDefinitions()) {
+                this.stats.put(def.key, 0);
             }
         }
     }
@@ -57,14 +60,26 @@ public class Player implements Comparable<Player> {
             // Se servono oggetti più complessi, qui va fatto un clone profondo
             this.stats.put(key, value);
         }
+        this.bonus = new HashMap<>(other.bonus);
     }
 
     public Float getVote() {
         float voteTemp = 0;
-        for (int i = 0; i < Constants.statsDescriptionEng.length; i++) {
-            voteTemp += Float.parseFloat(String.valueOf(stats.get(Constants.statsDescriptionEng[i])));
+        // Somma i valori di tutte le stat presenti nel catalogo dinamico. Valori
+        // orfani (stat cancellate) non contribuiscono; stat nuove senza valore
+        // salvato valgono 0. Se una stat ammette bonus e il giocatore ce l'ha,
+        // aggiunge un ulteriore def.step al voto.
+        for (StatDefinition def : StatsUtility.getDefinitions()) {
+            Object value = stats.get(def.key);
+            if (value != null) {
+                try {
+                    voteTemp += Float.parseFloat(String.valueOf(value));
+                } catch (NumberFormatException ignored) { }
+            }
+            if (def.allowBonus && Boolean.TRUE.equals(bonus.get(def.key))) {
+                voteTemp += (float) def.step;
+            }
         }
-
         return voteTemp;
     }
 

@@ -16,6 +16,7 @@ import com.example.myapplication.TopToast.TopToast;
 import com.example.myapplication.Utility.AdminUtility;
 import com.example.myapplication.Utility.LiveMatchUtility;
 import com.example.myapplication.Utility.PlayerUtility;
+import com.example.myapplication.Utility.StatsUtility;
 import com.example.myapplication.Utility.TournamentUtility;
 import com.example.myapplication.Utility.Utility;
 import com.example.myapplication.Model.Constants;
@@ -33,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mainActivity = this;
 
+        // Il catalogo statistiche va acceso PRIMA dei player: getVote() lo usa.
+        StatsUtility.startListening();
         PlayerUtility.downloadPlayers();
 
         // Firebase Auth persiste la sessione: se l'admin era gia' loggato in una
@@ -131,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         LiveMatchUtility.stopListening();
         PlayerUtility.removePlayersListener();
+        StatsUtility.stopListening();
         TournamentUtility.removeTournamentsListener();
     }
 }

@@ -26,6 +26,12 @@ public class TournamentActivityManage extends AppCompatActivity {
 
         LinearLayout btnManagePlayers = findViewById(R.id.btnManagePlayers);
         btnManagePlayers.setOnClickListener(v -> openTournamentActivityManagePlayers());
+
+        LinearLayout btnManageStats = findViewById(R.id.btnManageStats);
+        btnManageStats.setOnClickListener(v -> {
+            Intent intent = new Intent(tournamentActivityManage.getApplicationContext(), ActivityManageStats.class);
+            tournamentActivityManage.startActivity(intent);
+        });
     }
 
     public void openTournamentActivityManageTournaments() {

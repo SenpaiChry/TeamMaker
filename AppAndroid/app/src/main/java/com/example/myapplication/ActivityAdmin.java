@@ -2,21 +2,30 @@ package com.example.myapplication;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.example.myapplication.Model.Constants;
+import com.example.myapplication.Utility.PlayerExportUtility;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Locale;
 
 public class ActivityAdmin extends AppCompatActivity {
 
@@ -47,6 +56,9 @@ public class ActivityAdmin extends AppCompatActivity {
             intent.putExtra("player_key", "null");
             activityAdmin.startActivity(intent);
         });
+
+        Button btnExport = findViewById(R.id.btnExportPlayers);
+        btnExport.setOnClickListener(v -> exportPlayers());
 
         EditText txtSearch = findViewById(R.id.txtSearch);
         txtSearch.setOnTouchListener((v, event) -> {
@@ -82,6 +94,36 @@ public class ActivityAdmin extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) { }
         });
+    }
+
+    /**
+     * Genera l'xlsx con la lista giocatori e apre lo share sheet Android per
+     * salvarlo/spedirlo dove si vuole (Drive, Downloads, email, WhatsApp...).
+     */
+    private void exportPlayers() {
+        try {
+            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault()).format(new Date());
+            File exportDir = new File(getCacheDir(), "exports");
+            if (!exportDir.exists()) exportDir.mkdirs();
+            File file = new File(exportDir, "teammaker_giocatori_" + timestamp + ".xlsx");
+
+            PlayerExportUtility.exportToXlsx(file);
+
+            // FileProvider condivide con altre app in modo sicuro
+            Uri uri = FileProvider.getUriForFile(this,
+                    getApplicationContext().getPackageName() + ".fileprovider", file);
+
+            Intent share = new Intent(Intent.ACTION_SEND);
+            share.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            share.putExtra(Intent.EXTRA_STREAM, uri);
+            share.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.export_players_subject));
+            share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            startActivity(Intent.createChooser(share, getString(R.string.export)));
+        } catch (Exception e) {
+            Log.e("ActivityAdmin", "Export fallito", e);
+            Toast.makeText(this, R.string.export_failed, Toast.LENGTH_SHORT).show();
+        }
     }
 
     public static void reloadPlayers() {

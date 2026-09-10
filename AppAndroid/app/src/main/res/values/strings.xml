@@ -72,7 +72,7 @@
     <string name="invalid_champions_config">INVALID: K MUST BE &lt; TEAMS AND TEAMS×K EVEN</string>
     <string name="delete_match">DELETE MATCH</string>
     <string name="reboot_tournament">REBOOT TOURNAMENT</string>
-    <string name="players" translatable="false">PLAYERS</string>
+    <string name="players">PLAYERS</string>
     <string name="tournament_n" translatable="false">TOURNAMENT N</string>
     <string name="reboot">REBOOT</string>
     <string name="scorecard">SCORECARD</string>
@@ -122,6 +122,22 @@
     <string name="save_name_date">SAVE NAME AND DATE</string>
     <string name="close">CLOSE</string>
     <string name="head_to_head_short">H2H</string>
+    <string name="manage_stats">MANAGE STATS</string>
+    <string name="new_stat">NEW STAT</string>
+    <string name="edit_stat">EDIT STAT</string>
+    <string name="delete_stat">DELETE STAT</string>
+    <string name="stat_label">LABEL</string>
+    <string name="stat_type">TYPE</string>
+    <string name="stat_type_stars">STARS</string>
+    <string name="stat_type_range">RANGE</string>
+    <string name="stat_max">MAX</string>
+    <string name="stat_step">STEP</string>
+    <string name="stat_values">VALUES</string>
+    <string name="stat_values_hint">e.g. &lt;150cm, 151-160cm, ...</string>
+    <string name="stat_allow_bonus">ALLOW BONUS STAR</string>
+    <string name="export">EXPORT</string>
+    <string name="export_players_subject">TeamMaker — Players list</string>
+    <string name="export_failed">EXPORT FAILED</string>
     <string name="delete_matches_short">DELETE ALL</string>
     <string name="type" translatable="false">TYPE</string>
     <string name="match">"MATCH"</string>
@@ -208,8 +224,8 @@
     <string name="vs" translatable="false">VS</string>
     <string name="rotate">ROTATE</string>
     <string name="swap">SWAP</string>
-    <string name="dot">.</string>
+    <string name="dot" translatable="false">.</string>
     <string name="category">category</string>
-    <string name="live">LIVE</string>
-    <string name="no_live_match">NO LIVE MATCH</string>
+    <string name="live" translatable="false">LIVE</string>
+    <string name="no_live_match" translatable="false">NO LIVE MATCH</string>
 </resources>

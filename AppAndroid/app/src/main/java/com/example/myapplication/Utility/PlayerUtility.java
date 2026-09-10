@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import com.example.myapplication.ActivityAdmin;
 import com.example.myapplication.Player;
+import com.example.myapplication.StatDefinition;
 import com.example.myapplication.Team;
 import com.example.myapplication.Tournament;
 import com.example.myapplication.Model.Constants;
@@ -43,10 +44,18 @@ public class PlayerUtility {
         playerData.put("is_active", player.isActive);
 
         Map<String, Object> statsMap = new HashMap<>();
-        for (int i = 0; i < Constants.statsDescription.length; i++) {
-            statsMap.put(Constants.statsDescriptionEng[i], player.stats.get(Constants.statsDescriptionEng[i]));
+        for (StatDefinition def : StatsUtility.getDefinitions()) {
+            Object v = player.stats.get(def.key);
+            statsMap.put(def.key, v != null ? v : 0);
         }
         playerData.put("stats", statsMap);
+
+        // Bonus: scrivo solo le stat con bonus attivo per compattezza
+        Map<String, Object> bonusMap = new HashMap<>();
+        for (Map.Entry<String, Boolean> e : player.bonus.entrySet()) {
+            if (Boolean.TRUE.equals(e.getValue())) bonusMap.put(e.getKey(), true);
+        }
+        playerData.put("bonus", bonusMap);
 
         dbRef.updateChildren(playerData).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -68,10 +77,18 @@ public class PlayerUtility {
         dbRef.child("gender").setValue(playerChanged.gender);
         dbRef.child("is_active").setValue(playerChanged.isActive);
 
-        for (int i = 0; i < Constants.statsDescription.length; i++) {
-            dbRef.child("stats").child(Constants.statsDescriptionEng[i])
-                    .setValue(playerChanged.stats.get(Constants.statsDescriptionEng[i]));
+        for (StatDefinition def : StatsUtility.getDefinitions()) {
+            Object v = playerChanged.stats.get(def.key);
+            dbRef.child("stats").child(def.key).setValue(v != null ? v : 0);
         }
+
+        // Riscrivo il nodo bonus per intero (setValue con la mappa completa: cosi'
+        // eventuali flag disattivati vengono rimossi dal DB, niente residui).
+        Map<String, Object> bonusMap = new HashMap<>();
+        for (Map.Entry<String, Boolean> e : playerChanged.bonus.entrySet()) {
+            if (Boolean.TRUE.equals(e.getValue())) bonusMap.put(e.getKey(), true);
+        }
+        dbRef.child("bonus").setValue(bonusMap);
 
         // Aggiorna anche i riferimenti nei tornei
         for (Tournament tournament : Constants.tournaments) {
@@ -129,7 +146,7 @@ public class PlayerUtility {
                 }
 
                 for (DataSnapshot playerSnapshot : snapshot.getChildren()) {
-                    Constants.players.add(new Player(
+                    Player player = new Player(
                             String.valueOf(playerSnapshot.getKey()),
                             String.valueOf(playerSnapshot.child("name").getValue(String.class)),
                             playerSnapshot.child("surname").getValue(String.class) != null
@@ -138,7 +155,13 @@ public class PlayerUtility {
                                     ? String.valueOf(playerSnapshot.child("nickname").getValue(String.class)) : "",
                             String.valueOf(playerSnapshot.child("gender").getValue(String.class)),
                             playerSnapshot.child("is_active").getValue(boolean.class),
-                            (HashMap<String, Object>) playerSnapshot.child("stats").getValue()));
+                            (HashMap<String, Object>) playerSnapshot.child("stats").getValue());
+                    // Bonus per-stat: assente = nessun bonus, retrocompatibile
+                    for (DataSnapshot b : playerSnapshot.child("bonus").getChildren()) {
+                        Boolean v = b.getValue(Boolean.class);
+                        if (Boolean.TRUE.equals(v)) player.bonus.put(b.getKey(), true);
+                    }
+                    Constants.players.add(player);
                 }
 
                 Collections.sort(Constants.players);

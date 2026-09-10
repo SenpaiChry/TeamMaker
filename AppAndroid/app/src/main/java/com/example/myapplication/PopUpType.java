@@ -13,4 +13,6 @@ public enum PopUpType {
 
     DELETE_MATCH,
     DELETE_EVERY_MATCH,
+
+    DELETE_STAT,
 }

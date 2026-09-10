@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layout_marginTop="6dp"
+    android:paddingHorizontal="10dp"
+    android:paddingVertical="4dp"
+    android:background="@drawable/bg_field_secondary">
+
+    <TextView
+        android:id="@+id/btnDrag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="≡"
+        android:textColor="@color/list_text_muted"
+        android:textSize="22sp"
+        android:fontFamily="@font/helvetica_black"
+        android:paddingHorizontal="6dp"
+        android:layout_marginEnd="2dp" />
+
+    <EditText
+        android:id="@+id/etValue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@null"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/list_text_primary"
+        android:textColorHint="@color/list_text_muted"
+        android:hint="@string/stat_values_hint"
+        android:textCursorDrawable="@null"
+        android:paddingVertical="6dp"
+        android:textSize="15sp"
+        android:inputType="text"
+        android:maxLines="1"
+        android:importantForAutofill="no" />
+
+    <TextView
+        android:id="@+id/btnRemoveValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="4dp"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold"
+        android:textColor="@color/button_danger"
+        android:text="✕"
+        android:textSize="18sp" />
+</LinearLayout>

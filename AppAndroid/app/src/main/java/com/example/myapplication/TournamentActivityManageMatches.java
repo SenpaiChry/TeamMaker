@@ -37,7 +37,11 @@ public class TournamentActivityManageMatches extends AppCompatActivity {
         Button btnGenerateFinals = findViewById(R.id.btnGenerateFinals);
         Button btnDeleteEveryMatch = findViewById(R.id.btnDeleteEveryMatch);
 
-        if (tournament.nBracket == 0) {
+        // Se non ci sono partite -> mostro GENERA CALENDARIO. Se ce ne sono
+        // (a prescindere dall'origine: generate o aggiunte a mano) -> mostro
+        // GENERA FINALI e CANCELLA TUTTE.
+        boolean hasMatches = !tournament.matches.isEmpty();
+        if (!hasMatches) {
             btnGenerateCalendar.setVisibility(View.VISIBLE);
             btnGenerateFinals.setVisibility(View.GONE);
             btnDeleteEveryMatch.setVisibility(View.GONE);

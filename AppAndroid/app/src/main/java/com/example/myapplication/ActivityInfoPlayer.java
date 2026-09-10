@@ -62,7 +62,7 @@ public class ActivityInfoPlayer extends AppCompatActivity {
             vote.setTextColor(nameColor);
             vote.setShadowLayer(10, 1, 1, shadowColor);
 
-            PlayerInfoAdapter adapter = new PlayerInfoAdapter(this, player.getStats());
+            PlayerInfoAdapter adapter = new PlayerInfoAdapter(this, player.getStats(), player.bonus);
             listViewInfo.setAdapter(adapter);
         }
 

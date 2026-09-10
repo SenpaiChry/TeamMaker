@@ -45,72 +45,109 @@
         android:gravity="center"
         android:orientation="vertical">
 
+        <!-- Card 1: icona SX, testo DX -->
         <LinearLayout
             android:id="@+id/btnManagePlayers"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="@drawable/buttons_main"
-            android:padding="10dp"
-            android:orientation="vertical"
-            android:layout_marginHorizontal="30dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginBottom="15dp"
-            android:gravity="center">
+            android:padding="14dp"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_vertical">
 
-            <ImageButton
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:background="@drawable/player"
-                android:clickable="false"
-                android:focusable="false" />
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/player"
+                android:scaleType="fitCenter"
+                android:contentDescription="@string/players" />
 
-            <Button
-                android:layout_width="300dp"
+            <TextView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:fontFamily="@font/helvetica_black"
                 android:textStyle="bold|italic"
                 android:text="@string/players"
                 android:textAllCaps="true"
-                android:textSize="20sp"
-                android:textColor="@color/white"
-                android:background="@color/transparent"
-                android:clickable="false"
-                android:focusable="false" />
+                android:textAlignment="center"
+                android:textSize="22sp"
+                android:textColor="@color/white" />
         </LinearLayout>
 
+        <!-- Card 2: testo SX, icona DX -->
         <LinearLayout
             android:id="@+id/btnManageTournament"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="@drawable/buttons_main"
-            android:padding="10dp"
-            android:orientation="vertical"
-            android:layout_marginHorizontal="30dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="30dp"
-            android:gravity="center">
+            android:padding="14dp"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginVertical="10dp"
+            android:gravity="center_vertical">
 
-            <ImageButton
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:background="@drawable/trophy"
-                android:clickable="false"
-                android:focusable="false" />
-
-            <Button
-                android:layout_width="300dp"
+            <TextView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:fontFamily="@font/helvetica_black"
                 android:textStyle="bold|italic"
                 android:text="@string/tournaments"
                 android:textAllCaps="true"
-                android:textSize="20sp"
-                android:textColor="@color/white"
-                android:background="@color/transparent"
-                android:clickable="false"
-                android:focusable="false" />
+                android:textAlignment="center"
+                android:textSize="22sp"
+                android:textColor="@color/white" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/trophy"
+                android:scaleType="fitCenter"
+                android:contentDescription="@string/tournaments" />
+        </LinearLayout>
+
+        <!-- Card 3: icona SX, testo DX -->
+        <LinearLayout
+            android:id="@+id/btnManageStats"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/buttons_main"
+            android:padding="14dp"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="24dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/star_full"
+                android:scaleType="fitCenter"
+                android:tint="@color/black"
+                android:contentDescription="@string/stats" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:text="@string/stats"
+                android:textAllCaps="true"
+                android:textAlignment="center"
+                android:textSize="22sp"
+                android:textColor="@color/white" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

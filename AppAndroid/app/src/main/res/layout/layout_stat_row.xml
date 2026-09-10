@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:gravity="center_vertical"
+    android:background="@drawable/bg_list_card">
+
+    <TextView
+        android:id="@+id/btnDrag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="≡"
+        android:textColor="@color/list_text_muted"
+        android:textSize="22sp"
+        android:fontFamily="@font/helvetica_black"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:layout_marginEnd="2dp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtStatLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_primary"
+            android:textAllCaps="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/txtStatMeta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="italic"
+            android:textColor="@color/list_text_secondary"
+            android:layout_marginTop="2dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/btnEdit"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/player_edit"
+        android:background="@drawable/bg_icon_action"
+        android:padding="5dp"
+        app:tint="@color/list_text_primary"
+        android:contentDescription="@string/edit"
+        android:layout_marginHorizontal="3dp" />
+
+    <ImageView
+        android:id="@+id/btnDelete"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/player_delete"
+        android:background="@drawable/bg_icon_action"
+        android:padding="5dp"
+        app:tint="@color/list_text_primary"
+        android:contentDescription="@string/delete"
+        android:layout_marginHorizontal="3dp" />
+</LinearLayout>

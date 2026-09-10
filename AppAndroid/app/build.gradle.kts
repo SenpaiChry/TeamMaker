@@ -35,6 +35,9 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.recyclerview)
+    implementation(libs.flexbox)
+    implementation(libs.fastexcel)
 
     // Firebase: il BOM allinea le versioni di tutte le librerie Firebase,
     // quindi le singole vanno importate SENZA versione esplicita.
