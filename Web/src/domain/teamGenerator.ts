@@ -1,6 +1,7 @@
 import type { Player, Team } from './models'
 import { getVote } from './player'
 import { createRng, type Rng } from './rng'
+import type { StatDefinition } from './statCatalog'
 
 /**
  * Generazione delle squadre bilanciate, portata da TeamGeneratorUtility.java.
@@ -25,6 +26,12 @@ import { createRng, type Rng } from './rng'
 export interface GenerateOptions {
   /** Giocatori per squadra: 2, 3, 4 o 5. */
   playersPerTeam: number
+  /**
+   * Catalogo delle stat con cui calcolare il voto di ogni giocatore. Va passato
+   * esplicitamente: la generazione può girare in un web worker, dove lo store
+   * globale del catalogo non è visibile.
+   */
+  statCatalog: StatDefinition[]
   /**
    * Differenza di voto massima accettata fra la squadra più forte e la più
    * debole. L'app Android la forza a 0 (precisione massima): la tolleranza
@@ -86,11 +93,15 @@ export function hasEnoughPlayers(playerCount: number, playersPerTeam: number): b
  * invertendo l'ordine delle squadre a ogni giro completo. Porta `algorithm2`
  * compresa l'inversione della lista, che determina l'ordine finale delle squadre.
  */
-export function generateSerpentine(players: Player[], playersPerTeam: number): Team[] {
+export function generateSerpentine(
+  players: Player[],
+  playersPerTeam: number,
+  catalog: StatDefinition[],
+): Team[] {
   const nTeams = countTeams(players.length, playersPerTeam)
   if (nTeams === 0) return []
 
-  const sorted = [...players].sort((a, b) => getVote(b) - getVote(a))
+  const sorted = [...players].sort((a, b) => getVote(b, catalog) - getVote(a, catalog))
   let buckets: Player[][] = Array.from({ length: nTeams }, () => [])
 
   sorted.forEach((player, i) => {
@@ -123,6 +134,7 @@ export function searchBalancedTeams(
 ): GenerationResult | null {
   const {
     playersPerTeam,
+    statCatalog,
     maxDifference = 0,
     maxRetries = DEFAULT_MAX_RETRIES,
     seed = Date.now(),
@@ -137,7 +149,7 @@ export function searchBalancedTeams(
   if (nPlayers === 0 || nTeams === 0) return null
 
   const rng = createRng(seed)
-  const votes = players.map(getVote)
+  const votes = players.map((p) => getVote(p, statCatalog))
   const isFemale = players.map((p) => p.gender === 'F')
 
   // Ordine di partenza: dal più forte al più debole.

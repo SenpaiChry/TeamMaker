@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Player } from '@/domain/models'
+import type { StatDefinition } from '@/domain/statCatalog'
 import type { GenerationResult } from '@/domain/teamGenerator'
 import type { GenerateRequest, GenerateResponse } from '@/workers/teamGenerator.worker'
 
@@ -41,7 +42,7 @@ export function useTeamGenerator() {
   useEffect(() => terminateAll, [terminateAll])
 
   const generate = useCallback(
-    (players: Player[], playersPerTeam: number) => {
+    (players: Player[], playersPerTeam: number, statCatalog: StatDefinition[]) => {
       terminateAll()
       setState({ running: true, result: null, retries: 0, error: null })
 
@@ -93,6 +94,7 @@ export function useTeamGenerator() {
         const request: GenerateRequest = {
           players,
           playersPerTeam,
+          statCatalog,
           // L'app Android forza la precisione massima: la tolleranza parte
           // comunque dalla deviazione standard e si allarga a ogni tentativo.
           maxDifference: 0,

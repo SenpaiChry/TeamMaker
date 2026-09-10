@@ -1,4 +1,5 @@
 import type { Player } from '@/domain/models'
+import type { StatDefinition } from '@/domain/statCatalog'
 import { searchBalancedTeams, type GenerationResult } from '@/domain/teamGenerator'
 
 /**
@@ -12,6 +13,8 @@ import { searchBalancedTeams, type GenerationResult } from '@/domain/teamGenerat
 export interface GenerateRequest {
   players: Player[]
   playersPerTeam: number
+  /** Catalogo stat con cui pesare il voto: il worker non ha lo store globale. */
+  statCatalog: StatDefinition[]
   maxDifference: number
   maxRetries: number
   seed: number
@@ -30,6 +33,7 @@ self.onmessage = (event: MessageEvent<GenerateRequest>) => {
   try {
     const result = searchBalancedTeams(request.players, {
       playersPerTeam: request.playersPerTeam,
+      statCatalog: request.statCatalog,
       maxDifference: request.maxDifference,
       maxRetries: request.maxRetries,
       seed: request.seed,

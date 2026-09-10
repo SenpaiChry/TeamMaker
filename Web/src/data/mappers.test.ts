@@ -13,7 +13,6 @@ import {
   serializePlayer,
   serializeTeam,
 } from './mappers'
-import type { Player } from '@/domain/models'
 
 /**
  * Questi test difendono il contratto con l'app Android: ogni asserzione qui
@@ -28,7 +27,7 @@ describe('parsePlayer', () => {
       nickname: 'Ciccio',
       gender: 'M',
       is_active: true,
-      stats: { height: 4, attack: 4.5, bonus: 1 },
+      stats: { '-Nheight': 4, '-Nattack': 4.5, '-Nbonus': 1 },
     })
 
     expect(player).toMatchObject({
@@ -38,14 +37,23 @@ describe('parsePlayer', () => {
       gender: 'M',
       isActive: true,
     })
-    expect(player.stats.height).toBe(4)
-    expect(player.stats.attack).toBe(4.5)
+    expect(player.stats['-Nheight']).toBe(4)
+    expect(player.stats['-Nattack']).toBe(4.5)
   })
 
-  it('azzera le statistiche mancanti invece di lasciarle indefinite', () => {
-    const player = parsePlayer('k1', { name: 'Marco', stats: { height: 4 } })
-    expect(player.stats.serve).toBe(0)
-    expect(player.stats.mentality).toBe(0)
+  it('conserva solo le chiavi presenti nel nodo (chiavi opache)', () => {
+    // Il catalogo è dinamico: se manca una stat, non la inventiamo a zero.
+    const player = parsePlayer('k1', { name: 'Marco', stats: { '-Nheight': 4 } })
+    expect(Object.keys(player.stats)).toEqual(['-Nheight'])
+  })
+
+  it('legge il bonus per-stat come mappa key → true', () => {
+    const player = parsePlayer('k1', {
+      name: 'Marco',
+      stats: { '-Nattack': 3 },
+      bonus: { '-Nattack': true, '-Nghost': false }, // false residuo: ignorato
+    })
+    expect(player.bonus).toEqual({ '-Nattack': true })
   })
 
   it('sopporta cognome e soprannome assenti', () => {
@@ -70,13 +78,23 @@ describe('parsePlayer', () => {
 })
 
 describe('serializePlayer', () => {
-  it('scrive tutte e 12 le statistiche e non include la chiave', () => {
-    const player = parsePlayer('k1', { name: 'Marco', stats: { height: 4 } })
+  it('scrive le stat effettive e non include la chiave', () => {
+    const player = parsePlayer('k1', { name: 'Marco', stats: { '-Nheight': 4 } })
     const raw = serializePlayer(player)
 
     expect(raw['key']).toBeUndefined()
     expect(raw['is_active']).toBe(true)
-    expect(Object.keys(raw['stats'] as object)).toHaveLength(12)
+    expect(raw['stats']).toEqual({ '-Nheight': 4 })
+  })
+
+  it('scrive solo le voci di bonus attive', () => {
+    const player = parsePlayer('k1', {
+      name: 'Marco',
+      stats: { '-Nattack': 3 },
+      bonus: { '-Nattack': true },
+    })
+    const raw = serializePlayer(player)
+    expect(raw['bonus']).toEqual({ '-Nattack': true })
   })
 
   it('fa il giro completo senza perdere nulla', () => {
@@ -86,7 +104,8 @@ describe('serializePlayer', () => {
       nickname: 'Ciccio',
       gender: 'F',
       is_active: false,
-      stats: { height: 4, attack: 4.5, serve: 3 },
+      stats: { '-Nheight': 4, '-Nattack': 4.5, '-Nserve': 3 },
+      bonus: { '-Nattack': true },
     })
 
     expect(parsePlayer('k1', serializePlayer(original))).toEqual(original)
@@ -467,11 +486,11 @@ describe('parseLiveMatch', () => {
 
 describe('coerenza fra dominio e database', () => {
   it('un giocatore serializzato è leggibile dallo schema Android', () => {
-    const player: Player = parsePlayer('k1', {
+    const player = parsePlayer('k1', {
       name: 'Marco',
       surname: 'Rossi',
       gender: 'M',
-      stats: { height: 4 },
+      stats: { '-Nheight': 4 },
     })
     const raw = serializePlayer(player)
 

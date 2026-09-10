@@ -1,19 +1,26 @@
-import { STAT_KEYS } from './constants'
 import type { Player } from './models'
+import type { StatDefinition } from './statCatalog'
 
 /**
  * Funzioni pure su Player, portate da Player.java.
  */
 
 /**
- * Voto complessivo: somma delle 12 statistiche.
- * Porta `Player.getVote()`. Le statistiche mancanti valgono 0, come nel Java
- * dove il costruttore vuoto le inizializza a zero.
+ * Voto complessivo di un giocatore rispetto a un catalogo di stat.
+ * Porta `Player.getVote()` dopo il passaggio al catalogo dinamico.
+ *
+ * Regola: somma dei valori per ogni stat del catalogo (mancanti = 0), più
+ * `def.step` per ogni stat con `allowBonus` e `bonus[key] === true`. Valori
+ * orfani (stat cancellate dal catalogo) non contribuiscono, così un catalogo
+ * "pulito" non trascina i punti di stat rimosse.
  */
-export function getVote(player: Player): number {
+export function getVote(player: Player, catalog: StatDefinition[]): number {
   let total = 0
-  for (const key of STAT_KEYS) {
-    total += player.stats[key] ?? 0
+  for (const def of catalog) {
+    total += player.stats[def.key] ?? 0
+    if (def.allowBonus && player.bonus[def.key] === true) {
+      total += def.step
+    }
   }
   return total
 }
@@ -56,11 +63,15 @@ export function matchesQuery(player: Player, query: string): boolean {
 }
 
 /**
- * Ordinamento per voto decrescente.
- * Porta `Player.compareTo`, che restituisce `-Float.compare(...)`.
+ * Comparator per voto decrescente, ricavato da un catalogo di stat.
+ * Porta `Player.compareTo` (che restituisce `-Float.compare(...)`).
+ *
+ * Nota: prima era una funzione a due argomenti direttamente confrontabile.
+ * Ora serve una factory perché il voto dipende dal catalogo — dopo la
+ * closure il comparator ha la stessa forma di prima.
  */
-export function byVoteDesc(a: Player, b: Player): number {
-  return getVote(b) - getVote(a)
+export function byVoteDesc(catalog: StatDefinition[]): (a: Player, b: Player) => number {
+  return (a, b) => getVote(b, catalog) - getVote(a, catalog)
 }
 
 /** Ordinamento alfabetico per nome, poi cognome — usato nella lista di selezione. */

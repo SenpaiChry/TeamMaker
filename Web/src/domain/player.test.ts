@@ -1,25 +1,59 @@
 import { describe, expect, it } from 'vitest'
 import { getNameAndSurname, getSurnameOrNickname, getVote, matchesQuery } from './player'
-import { makePlayer, makeStats } from './testing'
+import { TYPE_STARS, type StatDefinition } from './statCatalog'
+import { makePlayer } from './testing'
+
+/** Catalogo che pesa tre stat con step 1 e una stat "bonus" che ammette il flag. */
+const catalog: StatDefinition[] = [
+  { key: 'attack', label: 'Attacco', type: TYPE_STARS, max: 6, step: 1.5, order: 0, allowBonus: false, values: [] },
+  { key: 'serve', label: 'Battuta', type: TYPE_STARS, max: 6, step: 1, order: 1, allowBonus: false, values: [] },
+  { key: 'vision', label: 'Visione', type: TYPE_STARS, max: 4, step: 2, order: 2, allowBonus: false, values: [] },
+  { key: 'bonus', label: 'Bonus', type: TYPE_STARS, max: 2, step: 1, order: 3, allowBonus: true, values: [] },
+]
 
 describe('getVote', () => {
-  it('somma tutte e 12 le statistiche', () => {
+  it("somma i valori delle stat presenti nel catalogo", () => {
     const player = makePlayer('a', 0)
-    player.stats = makeStats({ height: 4, attack: 4.5, serve: 3, 'game-vision': 2, bonus: 1 })
+    player.stats = { attack: 4.5, serve: 3, vision: 2, bonus: 1 }
 
-    expect(getVote(player)).toBe(14.5)
+    expect(getVote(player, catalog)).toBe(10.5)
   })
 
   it('vale 0 quando le statistiche sono tutte a zero', () => {
-    expect(getVote(makePlayer('a', 0))).toBe(0)
+    const player = makePlayer('a', 0)
+    player.stats = {}
+    expect(getVote(player, catalog)).toBe(0)
   })
 
   it('tratta come 0 una statistica mancante', () => {
     const player = makePlayer('a', 0)
     // Il database può contenere giocatori salvati prima dell'aggiunta di una statistica.
-    delete (player.stats as Partial<typeof player.stats>).bonus
+    player.stats = { attack: 3 }
+    expect(getVote(player, catalog)).toBe(3)
+  })
 
-    expect(getVote(player)).toBe(0)
+  it('somma def.step quando il giocatore ha il bonus per una stat che lo ammette', () => {
+    const player = makePlayer('a', 0)
+    player.stats = { bonus: 1 }
+    player.bonus = { bonus: true }
+
+    // Valore stat (1) + step del bonus (1) = 2.
+    expect(getVote(player, catalog)).toBe(2)
+  })
+
+  it('ignora il flag bonus per una stat che non lo ammette', () => {
+    const player = makePlayer('a', 0)
+    player.stats = { attack: 3 }
+    // `attack` non ha `allowBonus`: il flag non deve pesare, anche se presente.
+    player.bonus = { attack: true }
+
+    expect(getVote(player, catalog)).toBe(3)
+  })
+
+  it('ignora i valori orfani (stat rimosse dal catalogo)', () => {
+    const player = makePlayer('a', 0)
+    player.stats = { attack: 3, ghost: 100 }
+    expect(getVote(player, catalog)).toBe(3)
   })
 })
 

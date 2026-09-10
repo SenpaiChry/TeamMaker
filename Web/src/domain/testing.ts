@@ -1,19 +1,38 @@
-import { STAT_KEYS } from './constants'
-import type { Gender, Match, Player, Stats, Team } from './models'
+import type { BonusFlags, Gender, Match, Player, Stats, Team } from './models'
+import type { StatDefinition } from './statCatalog'
+import { TYPE_STARS } from './statCatalog'
 
 /** Aiutanti per costruire dati di prova nei test del dominio. */
 
-export function makeStats(overrides: Partial<Stats> = {}): Stats {
-  const stats = {} as Stats
-  for (const key of STAT_KEYS) {
-    stats[key] = 0
-  }
-  return { ...stats, ...overrides }
+/**
+ * Catalogo minimo per i test: un'unica stat STARS con la chiave `vote` e
+ * `step = 1`, così caricare `stats.vote = N` dà direttamente un giocatore
+ * con voto `N`. Le stat reali del progetto sono più ricche, ma per testare
+ * la generazione basta un peso singolo.
+ */
+export function makeTestCatalog(): StatDefinition[] {
+  return [
+    {
+      key: 'vote',
+      label: 'Voto',
+      type: TYPE_STARS,
+      max: 10,
+      step: 1,
+      order: 0,
+      allowBonus: false,
+      values: [],
+    },
+  ]
+}
+
+export function makeStats(overrides: Stats = {}): Stats {
+  return { ...overrides }
 }
 
 /**
- * Giocatore con un voto complessivo pari a `vote`, ottenuto caricando la
- * statistica `bonus`. Comodo per i test del generatore, dove conta solo il voto.
+ * Giocatore con voto complessivo `vote`, caricato sulla stat `vote` del
+ * catalogo di test (vedi `makeTestCatalog`). Per usarlo insieme a `getVote`
+ * passa il catalogo di test come secondo argomento.
  */
 export function makePlayer(
   key: string,
@@ -28,7 +47,8 @@ export function makePlayer(
     nickname: '',
     gender,
     isActive: true,
-    stats: makeStats({ bonus: vote }),
+    stats: { vote },
+    bonus: {} as BonusFlags,
     ...overrides,
   }
 }

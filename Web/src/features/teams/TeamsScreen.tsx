@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { usePlayers } from '@/hooks/usePlayers'
+import { useStatCatalog } from '@/hooks/useStatCatalog'
 import { useTeamGenerator } from '@/hooks/useTeamGenerator'
 import { resolveSelected, useSelectionStore } from '@/store/selectionStore'
 import { getTeamVote } from '@/domain/team'
@@ -23,6 +24,7 @@ export function TeamsScreen() {
   const perTorneo = params.get('contesto') === 'torneo'
 
   const { players } = usePlayers()
+  const { catalog } = useStatCatalog()
   const selectedKeys = useSelectionStore((s) => s.selectedKeys)
   const teams = useSelectionStore((s) => s.teams)
   const setTeams = useSelectionStore((s) => s.setTeams)
@@ -33,12 +35,15 @@ export function TeamsScreen() {
   const selected = useMemo(() => resolveSelected(players, selectedKeys), [players, selectedKeys])
 
   // Genera una volta all'arrivo sulla schermata, quando i giocatori sono pronti.
+  // Serve anche il catalogo: senza di lui il voto sarebbe 0 e i bilanciamenti
+  // uscirebbero tutti equivalenti.
   const started = useRef(false)
   useEffect(() => {
-    if (started.current || selected.length === 0 || playersPerTeam <= 0) return
+    if (started.current || selected.length === 0 || playersPerTeam <= 0 || catalog.length === 0)
+      return
     started.current = true
-    generate(selected, playersPerTeam)
-  }, [selected, playersPerTeam, generate])
+    generate(selected, playersPerTeam, catalog)
+  }, [selected, playersPerTeam, generate, catalog])
 
   useEffect(() => {
     if (result !== null) setTeams(result.teams, playersPerTeam)
@@ -46,9 +51,9 @@ export function TeamsScreen() {
 
   const spread = useMemo(() => {
     if (teams.length === 0) return 0
-    const votes = teams.map(getTeamVote)
+    const votes = teams.map((t) => getTeamVote(t, catalog))
     return Math.round((Math.max(...votes) - Math.min(...votes)) * 10) / 10
-  }, [teams])
+  }, [teams, catalog])
 
   if (playersPerTeam <= 0 || (selected.length === 0 && !running)) {
     return (
@@ -123,7 +128,7 @@ export function TeamsScreen() {
           <Button
             variant="ghost"
             disabled={running}
-            onClick={() => generate(selected, playersPerTeam)}
+            onClick={() => generate(selected, playersPerTeam, catalog)}
             className="grow"
           >
             RIGENERA

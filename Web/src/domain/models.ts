@@ -1,5 +1,3 @@
-import type { StatKey } from './constants'
-
 /**
  * Modelli di dominio, portati da Player/Team/Match/Tournament.java.
  *
@@ -11,7 +9,20 @@ import type { StatKey } from './constants'
 
 export type Gender = 'M' | 'F'
 
-export type Stats = Record<StatKey, number>
+/**
+ * Valori delle statistiche di un giocatore, indicizzati per key opaca della
+ * stat (push-key di `teammaker/stats`, es. `-Nxyz…`). Le chiavi non sono più
+ * hardcoded: prima erano `agility`, `height`, ecc.; ora arrivano dal catalogo
+ * dinamico letto da Firebase. I valori mancanti valgono 0.
+ */
+export type Stats = Record<string, number>
+
+/**
+ * Flag di bonus per-stat, indicizzato come `stats`. `true` se il giocatore ha
+ * il bonus attivo per quella stat (visibile solo se la stat ha `allowBonus`).
+ * Per compattezza sul DB si scrivono SOLO le chiavi con valore `true`.
+ */
+export type BonusFlags = Record<string, boolean>
 
 export interface Player {
   key: string
@@ -21,6 +32,7 @@ export interface Player {
   gender: Gender
   isActive: boolean
   stats: Stats
+  bonus: BonusFlags
 }
 
 export interface Team {

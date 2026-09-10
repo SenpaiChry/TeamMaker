@@ -8,11 +8,13 @@ import {
   hasEnoughPlayers,
   searchBalancedTeams,
 } from './teamGenerator'
-import { makePlayer } from './testing'
+import { makePlayer, makeTestCatalog } from './testing'
+
+const catalog = makeTestCatalog()
 
 /** Voto grezzo di una squadra, senza l'arrotondamento cumulativo di Team.addPlayer. */
 function rawVote(players: Player[]): number {
-  return players.reduce((sum, p) => sum + getVote(p), 0)
+  return players.reduce((sum, p) => sum + getVote(p, catalog), 0)
 }
 
 function spread(teams: { players: Player[] }[]): number {
@@ -50,7 +52,7 @@ describe('generateSerpentine', () => {
     // Voti 6,5,4,3,2,1 su 3 squadre: giro 1 → 6,5,4; giro 2 invertito → 3,2,1
     // finiscono rispettivamente nelle squadre che avevano preso 4,5,6.
     const players = [6, 5, 4, 3, 2, 1].map((v, i) => makePlayer(`p${i}`, v))
-    const teams = generateSerpentine(players, 2)
+    const teams = generateSerpentine(players, 2, catalog)
 
     expect(teams).toHaveLength(3)
     expect(teams.map((t) => rawVote(t.players)).sort((a, b) => a - b)).toEqual([7, 7, 7])
@@ -58,7 +60,7 @@ describe('generateSerpentine', () => {
 
   it('assegna a ogni giocatore una e una sola squadra', () => {
     const players = roster()
-    const teams = generateSerpentine(players, 4)
+    const teams = generateSerpentine(players, 4, catalog)
 
     const assigned = teams.flatMap((t) => t.players.map((p) => p.key))
     expect(assigned).toHaveLength(players.length)
@@ -66,7 +68,7 @@ describe('generateSerpentine', () => {
   })
 
   it('riempie l’ultima squadra parzialmente quando i giocatori non bastano', () => {
-    const teams = generateSerpentine(roster().slice(0, 10), 4)
+    const teams = generateSerpentine(roster().slice(0, 10), 4, catalog)
     expect(teams).toHaveLength(3)
     expect(teams.reduce((sum, t) => sum + t.players.length, 0)).toBe(10)
   })
@@ -74,7 +76,7 @@ describe('generateSerpentine', () => {
 
 describe('searchBalancedTeams', () => {
   it('rispetta la dimensione massima delle squadre', () => {
-    const result = searchBalancedTeams(roster(), { playersPerTeam: 4, seed: 1 })
+    const result = searchBalancedTeams(roster(), { statCatalog: catalog, playersPerTeam: 4, seed: 1 })
 
     expect(result).not.toBeNull()
     expect(result!.teams).toHaveLength(3)
@@ -85,7 +87,7 @@ describe('searchBalancedTeams', () => {
 
   it('assegna ogni giocatore esattamente una volta', () => {
     const players = roster()
-    const result = searchBalancedTeams(players, { playersPerTeam: 3, seed: 42 })
+    const result = searchBalancedTeams(players, { statCatalog: catalog, playersPerTeam: 3, seed: 42 })
 
     const assigned = result!.teams.flatMap((t) => t.players.map((p) => p.key))
     expect(assigned).toHaveLength(players.length)
@@ -94,14 +96,14 @@ describe('searchBalancedTeams', () => {
 
   it('bilancia le giocatrici con uno scarto massimo di 1', () => {
     const players = roster() // 4 donne su 12
-    const result = searchBalancedTeams(players, { playersPerTeam: 4, seed: 7 })
+    const result = searchBalancedTeams(players, { statCatalog: catalog, playersPerTeam: 4, seed: 7 })
 
     const females = result!.teams.map((t) => t.players.filter((p) => p.gender === 'F').length)
     expect(Math.max(...females) - Math.min(...females)).toBeLessThanOrEqual(1)
   })
 
   it('bilancia i voti entro la tolleranza dichiarata', () => {
-    const result = searchBalancedTeams(roster(), { playersPerTeam: 4, seed: 3 })
+    const result = searchBalancedTeams(roster(), { statCatalog: catalog, playersPerTeam: 4, seed: 3 })
 
     expect(result).not.toBeNull()
     // `difference` è ciò che l'app mostra all'utente come qualità del bilanciamento.
@@ -111,7 +113,7 @@ describe('searchBalancedTeams', () => {
   it('trova la ripartizione perfetta quando esiste', () => {
     // Voti 1..8 su 4 squadre da 2: ogni squadra può totalizzare 9.
     const players = Array.from({ length: 8 }, (_, i) => makePlayer(`p${i + 1}`, i + 1))
-    const result = searchBalancedTeams(players, { playersPerTeam: 2, seed: 11 })
+    const result = searchBalancedTeams(players, { statCatalog: catalog, playersPerTeam: 2, seed: 11 })
 
     expect(result).not.toBeNull()
     expect(spread(result!.teams)).toBe(0)
@@ -119,8 +121,8 @@ describe('searchBalancedTeams', () => {
 
   it('è deterministico a parità di seme', () => {
     const players = roster()
-    const a = searchBalancedTeams(players, { playersPerTeam: 4, seed: 99 })
-    const b = searchBalancedTeams(players, { playersPerTeam: 4, seed: 99 })
+    const a = searchBalancedTeams(players, { statCatalog: catalog, playersPerTeam: 4, seed: 99 })
+    const b = searchBalancedTeams(players, { statCatalog: catalog, playersPerTeam: 4, seed: 99 })
 
     const keys = (r: typeof a) => r!.teams.map((t) => t.players.map((p) => p.key).join(','))
     expect(keys(a)).toEqual(keys(b))
@@ -135,7 +137,7 @@ describe('searchBalancedTeams', () => {
     const players = roster()
     const shapes = new Set(
       [1, 2, 3, 4, 5, 6, 7, 8].map((seed) =>
-        searchBalancedTeams(players, { playersPerTeam: 4, seed })!
+        searchBalancedTeams(players, { statCatalog: catalog, playersPerTeam: 4, seed })!
           .teams.map((t) => [...t.players.map((p) => p.key)].sort().join(','))
           .sort()
           .join('|'),
@@ -149,7 +151,7 @@ describe('searchBalancedTeams', () => {
     const players = roster()
 
     for (let seed = 1; seed <= 30; seed++) {
-      const result = searchBalancedTeams(players, { playersPerTeam: 4, seed })
+      const result = searchBalancedTeams(players, { statCatalog: catalog, playersPerTeam: 4, seed })
 
       expect(result, `nessuna soluzione con seme ${seed}`).not.toBeNull()
 
@@ -164,6 +166,7 @@ describe('searchBalancedTeams', () => {
   it('restituisce null se non trova nulla nei tentativi concessi', () => {
     const players = roster()
     const result = searchBalancedTeams(players, {
+      statCatalog: catalog,
       playersPerTeam: 4,
       maxRetries: 0,
       seed: 1,
@@ -174,14 +177,14 @@ describe('searchBalancedTeams', () => {
 
   it('gestisce l’ultima squadra incompleta', () => {
     const players = Array.from({ length: 10 }, (_, i) => makePlayer(`p${i + 1}`, i + 1))
-    const result = searchBalancedTeams(players, { playersPerTeam: 4, seed: 5 })
+    const result = searchBalancedTeams(players, { statCatalog: catalog, playersPerTeam: 4, seed: 5 })
 
     expect(result!.teams).toHaveLength(3)
     expect(result!.teams.reduce((sum, t) => sum + t.players.length, 0)).toBe(10)
   })
 
   it('non produce squadre vuote', () => {
-    const result = searchBalancedTeams(roster(), { playersPerTeam: 4, seed: 8 })
+    const result = searchBalancedTeams(roster(), { statCatalog: catalog, playersPerTeam: 4, seed: 8 })
     for (const team of result!.teams) {
       expect(team.players.length).toBeGreaterThan(0)
     }
@@ -192,6 +195,6 @@ describe('getTeamVote', () => {
   it('arrotonda a un decimale dopo ogni inserimento, come Team.addPlayer', () => {
     // 3 giocatori da 1.5: 1.5 → 3 → 4.5
     const team = { key: 't1', bracket: '', players: [1.5, 1.5, 1.5].map((v, i) => makePlayer(`p${i}`, v)) }
-    expect(getTeamVote(team)).toBe(4.5)
+    expect(getTeamVote(team, catalog)).toBe(4.5)
   })
 })

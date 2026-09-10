@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayers } from '@/hooks/usePlayers'
-import { getVote, matchesQuery } from '@/domain/player'
+import { useStatCatalog } from '@/hooks/useStatCatalog'
+import { byVoteDesc, matchesQuery } from '@/domain/player'
 import type { Player } from '@/domain/models'
 import { deletePlayer, setPlayerActive } from '@/data/playersRepo'
 import { SearchField } from '@/components/ui/SearchField'
@@ -23,6 +24,7 @@ import { PlayerAdminRow } from './PlayerAdminRow'
 export function PlayersAdminScreen() {
   const navigate = useNavigate()
   const { players, loading } = usePlayers()
+  const { catalog } = useStatCatalog()
   const [query, setQuery] = useState('')
 
   const [editing, setEditing] = useState<Player | null>(null)
@@ -33,8 +35,8 @@ export function PlayersAdminScreen() {
 
   const visible = useMemo(() => {
     const filtered = query.trim().length > 0 ? players.filter((p) => matchesQuery(p, query)) : players
-    return [...filtered].sort((a, b) => getVote(b) - getVote(a))
-  }, [players, query])
+    return [...filtered].sort(byVoteDesc(catalog))
+  }, [players, query, catalog])
 
   const archivedCount = players.filter((p) => !p.isActive).length
 

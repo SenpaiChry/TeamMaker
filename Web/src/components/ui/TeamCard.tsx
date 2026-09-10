@@ -1,6 +1,7 @@
 import type { Player, Team } from '@/domain/models'
 import { getSurnameOrNickname } from '@/domain/player'
 import { getTeamVote } from '@/domain/team'
+import { useStatCatalog } from '@/hooks/useStatCatalog'
 
 /**
  * Scheda squadra, da layout_player_teams.xml e tournament_layout_manage_teams.xml:
@@ -27,13 +28,14 @@ export function TeamCard({
   actions?: React.ReactNode
 }) {
   const [p1, p2, p3, p4, p5] = team.players
+  const { catalog } = useStatCatalog()
 
   return (
     <div className="rounded-[14px] border border-list-card-border bg-list-card p-2.5">
       <div className="flex items-center gap-2">
         {showVote && (
           <span className="app-title w-1/3 text-center text-xl text-list-text-secondary">
-            {String(getTeamVote(team)).replace('.', ',')}
+            {String(getTeamVote(team, catalog)).replace('.', ',')}
           </span>
         )}
 

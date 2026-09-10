@@ -1,5 +1,6 @@
 import type { Player } from '@/domain/models'
 import { getSurnameOrNickname, getVote } from '@/domain/player'
+import { useStatCatalog } from '@/hooks/useStatCatalog'
 
 /**
  * Riga dell'anagrafica, portata da layout_player_admin.xml + PlayerAdminAdapter.
@@ -21,6 +22,7 @@ export function PlayerAdminRow({
   onDelete: () => void
   onInfo: () => void
 }) {
+  const { catalog } = useStatCatalog()
   const active = player.isActive
   const isFemale = player.gender === 'F'
 
@@ -58,7 +60,7 @@ export function PlayerAdminRow({
         className={`mx-1 min-w-10 shrink-0 rounded-xl bg-points-pill px-[7px] py-[5px]
                     text-center text-base ${textColor} app-title`}
       >
-        {getVote(player)}
+        {getVote(player, catalog)}
       </span>
 
       <IconAction

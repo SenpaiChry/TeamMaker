@@ -1,22 +1,23 @@
 import type { Player, Team } from './models'
 import { getNameAndSurname, getVote, matchesQuery } from './player'
+import type { StatDefinition } from './statCatalog'
 
 /**
  * Funzioni pure su Team, portate da Team.java.
  */
 
 /**
- * Voto totale della squadra.
+ * Voto totale della squadra rispetto a un catalogo di stat.
  *
  * ⚠️ Riproduce fedelmente `Team.addPlayer()`, che arrotonda a un decimale
  * **dopo ogni singolo inserimento**. L'arrotondamento è quindi cumulativo e
  * dipende dall'ordine dei giocatori: sommare tutto e arrotondare alla fine
  * darebbe risultati leggermente diversi da quelli mostrati dall'app Android.
  */
-export function getTeamVote(team: Team): number {
+export function getTeamVote(team: Team, catalog: StatDefinition[]): number {
   let total = 0
   for (const player of team.players) {
-    total = Math.round((total + getVote(player)) * 10) / 10
+    total = Math.round((total + getVote(player, catalog)) * 10) / 10
   }
   return total
 }

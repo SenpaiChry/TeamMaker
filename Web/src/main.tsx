@@ -19,6 +19,10 @@ try {
   // sbloccati invece di comparire dopo un flicker.
   const { initAdminAuth } = await import('./store/authStore')
   initAdminAuth()
+  // Catalogo statistiche in tempo reale: senza queste definizioni voto,
+  // pillole e schede giocatore sarebbero vuoti al primo render.
+  const { initStatCatalog } = await import('./store/statCatalogStore')
+  initStatCatalog()
   root.render(
     <StrictMode>
       <App />

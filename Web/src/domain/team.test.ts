@@ -9,7 +9,9 @@ import {
   getTeamVote,
   teamMatchesQuery,
 } from './team'
-import { makePlayer, makeTeam } from './testing'
+import { makePlayer, makeTeam, makeTestCatalog } from './testing'
+
+const catalog = makeTestCatalog()
 
 const marco = makePlayer('p1', 10, 'M', { name: 'Marco', surname: 'Rossini' })
 const anna = makePlayer('p2', 8, 'F', { name: 'Anna', surname: 'Bianchi', nickname: 'Anny' })
@@ -19,16 +21,16 @@ const team = makeTeam('t1', [marco, anna, luca])
 
 describe('getTeamVote', () => {
   it('somma i voti dei giocatori', () => {
-    expect(getTeamVote(team)).toBe(24)
+    expect(getTeamVote(team, catalog)).toBe(24)
   })
 
   it('arrotonda a un decimale dopo ogni inserimento, come Team.addPlayer', () => {
     const decimals = makeTeam('t1', [1.5, 1.5, 1.5].map((v, i) => makePlayer(`p${i}`, v)))
-    expect(getTeamVote(decimals)).toBe(4.5)
+    expect(getTeamVote(decimals, catalog)).toBe(4.5)
   })
 
   it('vale 0 per una squadra vuota', () => {
-    expect(getTeamVote(makeTeam('t1'))).toBe(0)
+    expect(getTeamVote(makeTeam('t1'), catalog)).toBe(0)
   })
 })
 

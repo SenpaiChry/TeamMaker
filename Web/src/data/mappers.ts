@@ -1,5 +1,13 @@
-import { STAT_KEYS } from '@/domain/constants'
-import type { Gender, LiveMatch, Match, Player, Stats, Team, Tournament } from '@/domain/models'
+import type {
+  BonusFlags,
+  Gender,
+  LiveMatch,
+  Match,
+  Player,
+  Stats,
+  Team,
+  Tournament,
+} from '@/domain/models'
 import { compareByDayAndTime } from '@/domain/time'
 
 /**
@@ -76,13 +84,38 @@ export function formatDate(date: Date): string {
 // Giocatori
 // ---------------------------------------------------------------------------
 
+/**
+ * Legge le stat con chiavi opache: accetta qualunque `statKey` compaia nel
+ * nodo. Ignora i valori non numerici invece di forzarli a zero, così un
+ * campo spurio non "inventa" una statistica a zero.
+ */
 function parseStats(raw: unknown): Stats {
   const node = (raw ?? {}) as RawNode
-  const stats = {} as Stats
-  for (const key of STAT_KEYS) {
-    stats[key] = toNumber(node[key])
+  const stats: Stats = {}
+  for (const [key, value] of Object.entries(node)) {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      stats[key] = value
+    } else if (typeof value === 'string') {
+      const parsed = Number(value.trim())
+      if (Number.isFinite(parsed)) stats[key] = parsed
+    }
+    // `Boolean` non entra qui: sono i flag di `bonus`, letti da parseBonus.
   }
   return stats
+}
+
+/**
+ * Flag di bonus per-stat. Sul DB si scrivono SOLO le chiavi con valore `true`,
+ * ma per prudenza filtriamo qui: se qualcuno lascia un `false` residuo, lo
+ * ignoriamo (è come se non ci fosse).
+ */
+function parseBonus(raw: unknown): BonusFlags {
+  const node = (raw ?? {}) as RawNode
+  const bonus: BonusFlags = {}
+  for (const [key, value] of Object.entries(node)) {
+    if (value === true) bonus[key] = true
+  }
+  return bonus
 }
 
 export function parsePlayer(key: string, raw: unknown): Player {
@@ -97,6 +130,7 @@ export function parsePlayer(key: string, raw: unknown): Player {
     gender: gender as Gender,
     isActive: toBoolean(node['is_active'], true),
     stats: parseStats(node['stats']),
+    bonus: parseBonus(node['bonus']),
   }
 }
 
@@ -110,11 +144,23 @@ export function parsePlayers(raw: unknown): Map<string, Player> {
   return players
 }
 
-/** Giocatore nel formato del database. Il campo `key` non viene serializzato. */
+/**
+ * Giocatore nel formato del database. Il campo `key` non viene serializzato.
+ *
+ * Scrive tutte le stat presenti in `player.stats` (chiavi opache) e SOLO le
+ * chiavi con valore `true` in `player.bonus`: sul DB Android le voci `false`
+ * non vengono neppure salvate, così quando una si disattiva sparisce dal nodo
+ * invece di restare come residuo `false`.
+ */
 export function serializePlayer(player: Player): RawNode {
   const stats: RawNode = {}
-  for (const key of STAT_KEYS) {
-    stats[key] = player.stats[key]
+  for (const [key, value] of Object.entries(player.stats)) {
+    stats[key] = value
+  }
+
+  const bonus: RawNode = {}
+  for (const [key, value] of Object.entries(player.bonus)) {
+    if (value === true) bonus[key] = true
   }
 
   return {
@@ -124,6 +170,7 @@ export function serializePlayer(player: Player): RawNode {
     gender: player.gender,
     is_active: player.isActive,
     stats,
+    bonus,
   }
 }
 
