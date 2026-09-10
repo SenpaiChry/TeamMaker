@@ -121,7 +121,7 @@ public class ActivityEditPlayer extends AppCompatActivity {
 
                 ListView listStats = findViewById(R.id.listStats);
                 StatsPlayerAdapter statsPlayerAdapter = new StatsPlayerAdapter(this,
-                        (HashMap<String, Object>) player.stats.clone(),
+                        new PlayerStats(player.stats),
                         (HashMap<String, Boolean>) player.bonus.clone());
                 listStats.setAdapter(statsPlayerAdapter);
 

@@ -141,17 +141,22 @@ public class TournamentActivityPopUpEditTeam extends AppCompatActivity {
         playersString.add("---");
         playersEntity.add(null);
 
+        // Deduplica per player.key (non per Nome+Cognome: due omonimi devono comparire entrambi).
+        Set<String> keysSeen = new HashSet<>();
+
         // all players in tournament
         for (Team team : tournament.teams) {
             for (Player player : team.players) {
-                playersString.add(player.getNameAndSurname(nCharSurname));
-                playersEntity.add(player);
+                if (player != null && player.key != null && keysSeen.add(player.key)) {
+                    playersString.add(player.getNameAndSurname(nCharSurname));
+                    playersEntity.add(player);
+                }
             }
         }
 
         // + all players active
         for (Player player : PlayerUtility.getPlayersActive(true)) {
-            if (!playersString.contains(player.getNameAndSurname(nCharSurname))) {
+            if (player.key != null && keysSeen.add(player.key)) {
                 playersString.add(player.getNameAndSurname(nCharSurname));
                 playersEntity.add(player);
             }
@@ -167,14 +172,16 @@ public class TournamentActivityPopUpEditTeam extends AppCompatActivity {
         playersString.add("---");
         playersEntity.add(null);
 
+        // Set delle key gia' prese in altre squadre del torneo (non piu' Nome+Cognome).
+        Set<String> takenKeys = new HashSet<>();
         for (Team team : tournament.teams) {
             for (Player player : team.players) {
-                playersTaken.add(player.getNameAndSurname(nCharSurname));
+                if (player != null && player.key != null) takenKeys.add(player.key);
             }
         }
 
         for (Player player : PlayerUtility.getPlayersActive(true)) {
-            if (!playersTaken.contains(player.getNameAndSurname(nCharSurname))) {
+            if (player.key != null && !takenKeys.contains(player.key)) {
                 playersString.add(player.getNameAndSurname(nCharSurname));
                 playersEntity.add(player);
             }
@@ -188,18 +195,15 @@ public class TournamentActivityPopUpEditTeam extends AppCompatActivity {
         return 0;
     }
 
+    /** Cerca per player.key: cosi' due omonimi non collidono nella selezione dello spinner. */
     private int getIndexByPlayer(Player player) {
-        int nCharSurname = 20;
-//        TODO int nCharSurname = getIntent().getExtras().getInt("nCharSurname");
-
-        String playerString = PlayerUtility.getPlayerByKey(player.key).getNameAndSurname(nCharSurname);
-
-        for (int i = 0; i < playersString.size(); i ++){
-            if (playersString.get(i).equals(playerString)) {
-                return  i;
+        if (player == null || player.key == null) return 0;
+        for (int i = 0; i < playersEntity.size(); i++) {
+            Player p = playersEntity.get(i);
+            if (p != null && player.key.equals(p.key)) {
+                return i;
             }
         }
-
         return 0;
     }
 
@@ -209,10 +213,11 @@ public class TournamentActivityPopUpEditTeam extends AppCompatActivity {
             return false;
         }
 
-        Set<Player> seenPlayers = new HashSet<>();
+        // Duplicati: uso player.key invece di equals (che sarebbe identita' di riferimento).
+        Set<String> seenKeys = new HashSet<>();
         for (Player player : teamEdited.players) {
-            if (player != null) {
-                if (!seenPlayers.add(player)) {
+            if (player != null && player.key != null) {
+                if (!seenKeys.add(player.key)) {
                     Toast.makeText(this, R.string.same_player_selected_twice, Toast.LENGTH_SHORT).show();
                     return false;
                 }
@@ -228,15 +233,15 @@ public class TournamentActivityPopUpEditTeam extends AppCompatActivity {
                 continue;
             }
 
+            // Se editedPlayer e' gia' in un'altra squadra, va rimosso (o sostituito con l'originale).
             for (Team team : tournament.teams) {
                 if (team.key.equals(teamOriginal.key)) continue;
 
-                if (team.players.contains(editedPlayer)) {
+                int indexInOtherTeam = indexOfByKey(team.players, editedPlayer.key);
+                if (indexInOtherTeam >= 0) {
                     Player originalPlayer = (i < teamOriginal.players.size()) ? teamOriginal.players.get(i) : null;
 
-                    int indexInOtherTeam = team.players.indexOf(editedPlayer);
-
-                    if (originalPlayer != null && !team.players.contains(originalPlayer)) {
+                    if (originalPlayer != null && indexOfByKey(team.players, originalPlayer.key) < 0) {
                         team.players.set(indexInOtherTeam, originalPlayer);
                     } else {
                         team.players.remove(indexInOtherTeam);
@@ -251,5 +256,15 @@ public class TournamentActivityPopUpEditTeam extends AppCompatActivity {
         teamOriginal.players = newPlayers;
 
         return true;
+    }
+
+    /** Indice del giocatore identificato dalla key, -1 se non trovato. */
+    private static int indexOfByKey(ArrayList<Player> players, String key) {
+        if (key == null) return -1;
+        for (int i = 0; i < players.size(); i++) {
+            Player p = players.get(i);
+            if (p != null && key.equals(p.key)) return i;
+        }
+        return -1;
     }
 }

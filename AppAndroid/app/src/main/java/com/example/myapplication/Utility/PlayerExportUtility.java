@@ -70,14 +70,9 @@ public class PlayerExportUtility {
                 double totale = 0;
                 for (int i = 0; i < statsDefs.size(); i++) {
                     StatDefinition def = statsDefs.get(i);
-                    Object rawValue = player.stats != null ? player.stats.get(def.key) : null;
-                    Double parsed = toDouble(rawValue);
-                    if (parsed != null) {
-                        writeNumber(ws, rowIndex, firstStatCol + i, parsed);
-                        totale += parsed;
-                    } else {
-                        writeNumber(ws, rowIndex, firstStatCol + i, 0);
-                    }
+                    double value = player.stats != null ? player.stats.get(def.key) : 0;
+                    writeNumber(ws, rowIndex, firstStatCol + i, value);
+                    totale += value;
                 }
                 writeNumber(ws, rowIndex, lastFixedCol, totale);
                 rowIndex++;
@@ -108,17 +103,6 @@ public class PlayerExportUtility {
     }
 
     private static String str(String s) { return s != null ? s : ""; }
-
-    /** Converte in Double se possibile; null se non e' un numero valido. */
-    private static Double toDouble(Object value) {
-        if (value == null) return null;
-        if (value instanceof Number) return ((Number) value).doubleValue();
-        try {
-            return Double.parseDouble(String.valueOf(value));
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
 
     /** Scrive un numero senza .0 inutile (3.0 -> 3, 1.5 -> 1.5) come nel Python. */
     private static void writeNumber(Worksheet ws, int row, int col, double value) {

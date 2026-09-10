@@ -18,15 +18,15 @@ import java.util.HashMap;
 import java.util.List;
 
 public class PlayerInfoAdapter extends BaseAdapter {
-    private final HashMap<String, Object> stats;
+    private final PlayerStats stats;
     private final HashMap<String, Boolean> bonus;
     private final Context context;
 
-    public PlayerInfoAdapter(Context context, HashMap<String, Object> s) {
+    public PlayerInfoAdapter(Context context, PlayerStats s) {
         this(context, s, new HashMap<>());
     }
 
-    public PlayerInfoAdapter(Context context, HashMap<String, Object> s, HashMap<String, Boolean> bonus) {
+    public PlayerInfoAdapter(Context context, PlayerStats s, HashMap<String, Boolean> bonus) {
         this.context = context;
         this.stats = s;
         this.bonus = bonus;
@@ -52,13 +52,7 @@ public class PlayerInfoAdapter extends BaseAdapter {
     }
 
     private float valueFor(StatDefinition def) {
-        Object v = stats.get(def.key);
-        if (v == null) return 0;
-        try {
-            return Float.parseFloat(String.valueOf(v));
-        } catch (NumberFormatException e) {
-            return 0;
-        }
+        return stats.get(def.key);
     }
 
     @SuppressLint("DefaultLocale")

@@ -11,34 +11,34 @@ public class Player implements Comparable<Player> {
     public String nickname;
     public String gender;
     public boolean isActive;
-    public HashMap<String, Object> stats = new HashMap<>();
+    public PlayerStats stats = new PlayerStats();
     /** Bonus per-stat: {statKey: true} solo se il giocatore ha il bonus attivo per quella stat. */
     public HashMap<String, Boolean> bonus = new HashMap<>();
 
-    public Player(String key, String name, String surname, String nickname, String gender, boolean isActive, HashMap<String, Object> stats) {
+    public Player(String key, String name, String surname, String nickname, String gender, boolean isActive, PlayerStats stats) {
         this.key = key;
         this.name = name;
         this.surname = surname;
         this.nickname = nickname;
         this.gender = gender;
         this.isActive = isActive;
-        this.stats = stats;
+        this.stats = stats != null ? stats : new PlayerStats();
     }
 
-    public Player(String name, String surname, String nickname, String gender, HashMap<String, Object> stats) {
+    public Player(String name, String surname, String nickname, String gender, PlayerStats stats) {
         this.name = name;
         this.surname = surname;
         this.nickname = nickname;
         this.isActive = true;
         this.gender = gender;
-        this.stats = stats;
+        this.stats = stats != null ? stats : new PlayerStats();
     }
 
     public Player() {
         if (this.stats.isEmpty()) {
             // Inizializza a 0 tutte le stat del catalogo dinamico corrente
             for (StatDefinition def : StatsUtility.getDefinitions()) {
-                this.stats.put(def.key, 0);
+                this.stats.set(def.key, 0f);
             }
         }
     }
@@ -51,15 +51,7 @@ public class Player implements Comparable<Player> {
         this.gender = other.gender;
         this.isActive = other.isActive;
 
-        // Copia profonda della mappa stats
-        this.stats = new HashMap<>();
-        for (String key : other.stats.keySet()) {
-            Object value = other.stats.get(key);
-
-            // Per ora assumiamo che value sia un numero o tipo immutabile
-            // Se servono oggetti più complessi, qui va fatto un clone profondo
-            this.stats.put(key, value);
-        }
+        this.stats = new PlayerStats(other.stats);
         this.bonus = new HashMap<>(other.bonus);
     }
 
@@ -70,12 +62,7 @@ public class Player implements Comparable<Player> {
         // salvato valgono 0. Se una stat ammette bonus e il giocatore ce l'ha,
         // aggiunge un ulteriore def.step al voto.
         for (StatDefinition def : StatsUtility.getDefinitions()) {
-            Object value = stats.get(def.key);
-            if (value != null) {
-                try {
-                    voteTemp += Float.parseFloat(String.valueOf(value));
-                } catch (NumberFormatException ignored) { }
-            }
+            voteTemp += stats.get(def.key);
             if (def.allowBonus && Boolean.TRUE.equals(bonus.get(def.key))) {
                 voteTemp += (float) def.step;
             }
@@ -83,7 +70,7 @@ public class Player implements Comparable<Player> {
         return voteTemp;
     }
 
-    public HashMap<String, Object> getStats() {
+    public PlayerStats getStats() {
         return stats;
     }
 

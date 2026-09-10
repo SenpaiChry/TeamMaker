@@ -20,15 +20,15 @@ import java.util.List;
 
 public class StatsPlayerAdapter extends BaseAdapter {
 
-    private final HashMap<String, Object> stats;
+    private final PlayerStats stats;
     private final HashMap<String, Boolean> bonus;
     private final Context context;
 
-    public StatsPlayerAdapter(Context context, HashMap<String, Object> stats) {
+    public StatsPlayerAdapter(Context context, PlayerStats stats) {
         this(context, stats, new HashMap<>());
     }
 
-    public StatsPlayerAdapter(Context context, HashMap<String, Object> stats, HashMap<String, Boolean> bonus) {
+    public StatsPlayerAdapter(Context context, PlayerStats stats, HashMap<String, Boolean> bonus) {
         this.context = context;
         this.stats = stats;
         this.bonus = bonus;
@@ -54,13 +54,7 @@ public class StatsPlayerAdapter extends BaseAdapter {
     }
 
     private float valueFor(StatDefinition def) {
-        Object v = stats.get(def.key);
-        if (v == null) return 0;
-        try {
-            return Float.parseFloat(String.valueOf(v));
-        } catch (NumberFormatException e) {
-            return 0;
-        }
+        return stats.get(def.key);
     }
 
     @Override
@@ -108,11 +102,11 @@ public class StatsPlayerAdapter extends BaseAdapter {
             spinnerValue.setSelection(idx);
 
             final String statKey = def.key;
-            final double statStep = def.step > 0 ? def.step : 1;
+            final float statStep = (float) (def.step > 0 ? def.step : 1);
             spinnerValue.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int posValue, long id) {
-                    stats.put(statKey, posValue * statStep);
+                    stats.set(statKey, posValue * statStep);
                 }
 
                 @Override
@@ -138,9 +132,9 @@ public class StatsPlayerAdapter extends BaseAdapter {
 
                 final int index = i;
                 final String statKey = def.key;
-                final double statStep = def.step;
+                final float statStep = (float) def.step;
                 image.setOnClickListener(v -> {
-                    stats.put(statKey, index * statStep);
+                    stats.set(statKey, index * statStep);
                     notifyDataSetChanged();
                 });
 
@@ -151,7 +145,7 @@ public class StatsPlayerAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public HashMap<String, Object> getStats() {
+    public PlayerStats getStats() {
         return stats;
     }
 

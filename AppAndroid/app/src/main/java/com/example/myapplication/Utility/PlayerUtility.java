@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import com.example.myapplication.ActivityAdmin;
 import com.example.myapplication.Player;
+import com.example.myapplication.PlayerStats;
 import com.example.myapplication.StatDefinition;
 import com.example.myapplication.Team;
 import com.example.myapplication.Tournament;
@@ -45,8 +46,7 @@ public class PlayerUtility {
 
         Map<String, Object> statsMap = new HashMap<>();
         for (StatDefinition def : StatsUtility.getDefinitions()) {
-            Object v = player.stats.get(def.key);
-            statsMap.put(def.key, v != null ? v : 0);
+            statsMap.put(def.key, player.stats.get(def.key));
         }
         playerData.put("stats", statsMap);
 
@@ -78,8 +78,7 @@ public class PlayerUtility {
         dbRef.child("is_active").setValue(playerChanged.isActive);
 
         for (StatDefinition def : StatsUtility.getDefinitions()) {
-            Object v = playerChanged.stats.get(def.key);
-            dbRef.child("stats").child(def.key).setValue(v != null ? v : 0);
+            dbRef.child("stats").child(def.key).setValue(playerChanged.stats.get(def.key));
         }
 
         // Riscrivo il nodo bonus per intero (setValue con la mappa completa: cosi'
@@ -146,6 +145,11 @@ public class PlayerUtility {
                 }
 
                 for (DataSnapshot playerSnapshot : snapshot.getChildren()) {
+                    // Conversione grezzo Firebase -> PlayerStats tipizzato in un solo posto.
+                    HashMap<String, Object> rawStats =
+                            (HashMap<String, Object>) playerSnapshot.child("stats").getValue();
+                    PlayerStats stats = PlayerStats.fromRawMap(rawStats);
+
                     Player player = new Player(
                             String.valueOf(playerSnapshot.getKey()),
                             String.valueOf(playerSnapshot.child("name").getValue(String.class)),
@@ -155,7 +159,7 @@ public class PlayerUtility {
                                     ? String.valueOf(playerSnapshot.child("nickname").getValue(String.class)) : "",
                             String.valueOf(playerSnapshot.child("gender").getValue(String.class)),
                             playerSnapshot.child("is_active").getValue(boolean.class),
-                            (HashMap<String, Object>) playerSnapshot.child("stats").getValue());
+                            stats);
                     // Bonus per-stat: assente = nessun bonus, retrocompatibile
                     for (DataSnapshot b : playerSnapshot.child("bonus").getChildren()) {
                         Boolean v = b.getValue(Boolean.class);
