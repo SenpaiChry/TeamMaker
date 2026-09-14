@@ -9,6 +9,12 @@ local.properties
 .idea/
 !.idea/codeStyles/
 
+# Firma release: file con le password del keystore, MAI committare.
+# L'esempio (keystore.properties.example) resta versionato.
+keystore.properties
+*.jks
+*.keystore
+
 # Archivi / collegamenti locali finiti nel progetto
 *.zip
 *.lnk
