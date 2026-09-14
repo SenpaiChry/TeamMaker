@@ -62,6 +62,8 @@ public class TournamentAdapter extends BaseAdapter {
                 tournament.isValid ? R.drawable.bg_list_card_highlight : R.drawable.bg_list_card));
 
         ImageView btnDelete = convertView.findViewById(R.id.btnDelete);
+        // Torneo bloccato: nascondo il 🗑 (l'eliminazione avviene solo dopo lo sblocco).
+        btnDelete.setVisibility(tournament.locked ? View.GONE : View.VISIBLE);
         btnDelete.setOnClickListener(v -> {
             Intent intent = new Intent(TournamentActivityManageTournaments.tournamentActivityManageTournaments.getApplicationContext(), ActivityPopUp.class);
             intent.putExtra("tournament_key", tournament.key);

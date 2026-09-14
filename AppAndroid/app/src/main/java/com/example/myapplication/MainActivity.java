@@ -18,6 +18,7 @@ import com.example.myapplication.Utility.LiveMatchUtility;
 import com.example.myapplication.Utility.PlayerUtility;
 import com.example.myapplication.Utility.StatsUtility;
 import com.example.myapplication.Utility.TournamentUtility;
+import com.example.myapplication.Utility.UpdateUtility;
 import com.example.myapplication.Utility.Utility;
 import com.example.myapplication.Model.Constants;
 import com.google.firebase.database.FirebaseDatabase;
@@ -52,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
                     "Nessuna connessione",
                     "Errore nella connessione a internet",
                     TopToast.MessageType.DANGER);
+        } else {
+            // Controllo aggiornamenti in silenzio: nessun feedback se non c'e' nulla.
+            UpdateUtility.checkForUpdate(this, true);
         }
 
         // ---- Tasto LIVE: appare/scompare in base al nodo live_match su Firebase ----

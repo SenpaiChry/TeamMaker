@@ -18,6 +18,12 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // BuildConfig e' usato da UpdateUtility per confrontare la versione installata
+    // con quella su GitHub Releases (BuildConfig.VERSION_CODE / VERSION_NAME).
+    buildFeatures {
+        buildConfig = true
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false

@@ -37,23 +37,32 @@ public class TournamentActivityManageMatches extends AppCompatActivity {
         Button btnGenerateFinals = findViewById(R.id.btnGenerateFinals);
         Button btnDeleteEveryMatch = findViewById(R.id.btnDeleteEveryMatch);
 
-        // Se non ci sono partite -> mostro GENERA CALENDARIO. Se ce ne sono
-        // (a prescindere dall'origine: generate o aggiunte a mano) -> mostro
-        // GENERA FINALI e CANCELLA TUTTE.
-        boolean hasMatches = !tournament.matches.isEmpty();
-        if (!hasMatches) {
-            btnGenerateCalendar.setVisibility(View.VISIBLE);
+        // Torneo bloccato: nascondo TUTTE le azioni sulle partite (nuova, genera,
+        // cancella tutte). L'adapter, a sua volta, nasconde ✎/🗑/▶ sulle righe.
+        if (tournament.locked) {
+            btnNewMatch.setVisibility(View.GONE);
+            btnGenerateCalendar.setVisibility(View.GONE);
             btnGenerateFinals.setVisibility(View.GONE);
             btnDeleteEveryMatch.setVisibility(View.GONE);
-
-            btnGenerateCalendar.setOnClickListener(v -> openPopUpBracket(tournamentKey));
         } else {
-            btnGenerateCalendar.setVisibility(View.GONE);
-            btnGenerateFinals.setVisibility(View.VISIBLE);
-            btnDeleteEveryMatch.setVisibility(View.VISIBLE);
+            // Se non ci sono partite -> mostro GENERA CALENDARIO. Se ce ne sono
+            // (a prescindere dall'origine: generate o aggiunte a mano) -> mostro
+            // GENERA FINALI e CANCELLA TUTTE.
+            boolean hasMatches = !tournament.matches.isEmpty();
+            if (!hasMatches) {
+                btnGenerateCalendar.setVisibility(View.VISIBLE);
+                btnGenerateFinals.setVisibility(View.GONE);
+                btnDeleteEveryMatch.setVisibility(View.GONE);
 
-            btnGenerateFinals.setOnClickListener(v -> openPopUpFinals(tournamentKey));
-            btnDeleteEveryMatch.setOnClickListener(v -> openPopUp(tournamentKey));
+                btnGenerateCalendar.setOnClickListener(v -> openPopUpBracket(tournamentKey));
+            } else {
+                btnGenerateCalendar.setVisibility(View.GONE);
+                btnGenerateFinals.setVisibility(View.VISIBLE);
+                btnDeleteEveryMatch.setVisibility(View.VISIBLE);
+
+                btnGenerateFinals.setOnClickListener(v -> openPopUpFinals(tournamentKey));
+                btnDeleteEveryMatch.setOnClickListener(v -> openPopUp(tournamentKey));
+            }
         }
 
         ListView listView = findViewById(R.id.listViewMatches);

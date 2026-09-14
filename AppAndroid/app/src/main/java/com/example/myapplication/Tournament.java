@@ -13,6 +13,8 @@ public class Tournament {
     public int nBracket;
     public Calendar date = null;
     public boolean isValid;
+    /** Se true, il torneo e' congelato: da UI restano usabili solo SBLOCCA e ATTIVA/DISATTIVA. */
+    public boolean locked = false;
     public ArrayList<Team> teams = new ArrayList<>();
     public ArrayList<Match> matches = new ArrayList<>();
 

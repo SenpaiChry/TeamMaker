@@ -178,6 +178,42 @@ public class ActivityPopUpManageTournament extends AppCompatActivity {
 
         Button btnCancel = findViewById(R.id.btnCancel);
         btnCancel.setOnClickListener(v -> finish());
+
+        // ---- Blocca / Sblocca torneo ----
+        Button btnLockToggle = findViewById(R.id.btnLockToggle);
+        btnLockToggle.setOnClickListener(v -> {
+            boolean newLocked = !tournament.locked;
+            TournamentUtility.setLocked(tournament.key, newLocked);
+            applyLockedState(newLocked);
+            // Sblocco/blocco silenzioso: chiudo cosi' rientrando la lista tornei si aggiorna
+            // (l'evento realtime ci pensera' comunque, ma la chiusura evita che l'utente veda
+            // per un attimo lo stato incoerente prima del rimbalzo Firebase).
+            finish();
+        });
+
+        applyLockedState(tournament.locked);
+    }
+
+    /**
+     * Riconfigura la UI di gestione torneo in base al lock.
+     * Se locked: restano visibili solo BLOCCA/SBLOCCA e ATTIVA/DISATTIVA.
+     * Nome/data e sotto-schermate di modifica scompaiono.
+     */
+    private void applyLockedState(boolean locked) {
+        Button btnLockToggle = findViewById(R.id.btnLockToggle);
+        btnLockToggle.setText(locked ? R.string.unlock_tournament : R.string.lock_tournament);
+
+        int hideIfLocked = locked ? View.GONE : View.VISIBLE;
+
+        // Card nome + data + salvataggio: nascondo l'intera card padre del btnConfirm
+        View btnConfirm = findViewById(R.id.btnConfirm);
+        View card = (View) btnConfirm.getParent();
+        card.setVisibility(hideIfLocked);
+
+        findViewById(R.id.btnManageTeams).setVisibility(hideIfLocked);
+        findViewById(R.id.btnManageMatches).setVisibility(hideIfLocked);
+        findViewById(R.id.btnCopyTeams).setVisibility(hideIfLocked);
+        findViewById(R.id.btnCopyMatches).setVisibility(hideIfLocked);
     }
 
     private void openActivityManageTeams(String tournamentKey) {

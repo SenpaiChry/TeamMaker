@@ -58,6 +58,8 @@ public class TournamentUtility {
                     tournament.name = tournamentSnapshot.child("name").getValue(String.class);
                     tournament.nBracket = tournamentSnapshot.child("nBracket").getValue(Integer.class) != null
                             ? tournamentSnapshot.child("nBracket").getValue(Integer.class) : 0;
+                    Boolean lockedRaw = tournamentSnapshot.child("locked").getValue(Boolean.class);
+                    tournament.locked = lockedRaw != null && lockedRaw;
                     tournament.key = tournamentSnapshot.getKey();
 
                     String dateString = tournamentSnapshot.child("date").getValue(String.class);
@@ -149,6 +151,18 @@ public class TournamentUtility {
                 return;
             }
         }
+    }
+
+    /**
+     * Congela/scongela il torneo. Con locked=true la UI nasconde tutti i tasti di
+     * modifica (partite, squadre, salvataggio nome/data, elimina): restano usabili
+     * solo SBLOCCA e ATTIVA/DISATTIVA. Non e' una guardia server-side.
+     */
+    public static void setLocked(String key, boolean locked) {
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + key);
+        FirebaseWriteHelper.attach(null, "setLocked", dbRef.child("locked").setValue(locked));
+        Tournament tournament = getTournamentByKey(key);
+        if (tournament != null) tournament.locked = locked;
     }
 
     public static void deleteTournament(String key) {

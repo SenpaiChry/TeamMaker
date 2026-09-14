@@ -228,4 +228,16 @@
     <string name="category">category</string>
     <string name="live" translatable="false">LIVE</string>
     <string name="no_live_match" translatable="false">NO LIVE MATCH</string>
+    <string name="lock_tournament">BLOCCA TORNEO</string>
+    <string name="unlock_tournament">SBLOCCA TORNEO</string>
+    <string name="tournament_locked">TORNEO BLOCCATO</string>
+    <string name="update_available">AGGIORNAMENTO DISPONIBILE</string>
+    <string name="update_now">AGGIORNA</string>
+    <string name="update_later">PIÙ TARDI</string>
+    <string name="check_updates">CERCA AGGIORNAMENTI</string>
+    <string name="no_updates_available">NESSUN AGGIORNAMENTO DISPONIBILE</string>
+    <string name="checking_updates">CONTROLLO AGGIORNAMENTI…</string>
+    <string name="downloading_update">DOWNLOAD IN CORSO…</string>
+    <string name="update_download_failed">DOWNLOAD FALLITO</string>
+    <string name="update_install_permission_required">SERVE IL PERMESSO DI INSTALLARE APK DALL\'APP</string>
 </resources>

@@ -2,4 +2,7 @@
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Cartella exports/ dentro la cache app: le esportazioni Excel finiscono qui -->
     <cache-path name="exports" path="exports/" />
+    <!-- Cartella apk/ dentro external files: qui scarichiamo l'apk di aggiornamento
+         (external files perche' il DownloadManager non scrive nella cache privata). -->
+    <external-files-path name="apk" path="apk/" />
 </paths>

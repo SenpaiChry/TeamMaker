@@ -35,10 +35,10 @@
     <color name="women_icon_background">#E96EE4</color>
 
     <!--    MEN    -->
-    <color name="men_color_name">#491FED</color>
-    <color name="men_color_icon">#BFA896F0</color>
-    <color name="men_shadow">#BF370AE8</color>
-    <color name="men_icon_background">#3609E7</color>
+    <color name="men_color_name">#0B3F8E</color>
+    <color name="men_color_icon">#BF1468EC</color>
+    <color name="men_shadow">#BF093272</color>
+    <color name="men_icon_background">#0D47A1</color>
 
     <!--    MODAL    -->
     <color name="modal_background">#666666</color>
@@ -88,7 +88,7 @@
     <color name="points_pill_fill">#22FFFFFF</color>
     <color name="match_meta_text">#8FA6B0</color>
 
-    <color name="men_color_name_dark">#8E82FF</color>
+    <color name="men_color_name_dark">#307BEE</color>
     <color name="women_color_name_dark">#E96EE4</color>
     <color name="player_archived_fill">#0DFFFFFF</color>
     <color name="player_archived_border">#40FFFFFF</color>

@@ -80,6 +80,19 @@ public class TournamentBracketAdminAdapter extends BaseAdapter {
         }
 
         ImageView btnPlay = convertView.findViewById(R.id.btnPlay);
+        ImageView btnEditRow = convertView.findViewById(R.id.btnEdit);
+        ImageView btnDeleteRow = convertView.findViewById(R.id.btnDelete);
+        // Torneo bloccato: niente modifica/eliminazione/play sulle righe partita.
+        if (tournament.locked) {
+            btnPlay.setVisibility(View.GONE);
+            btnEditRow.setVisibility(View.GONE);
+            btnDeleteRow.setVisibility(View.GONE);
+        } else {
+            btnPlay.setVisibility(View.VISIBLE);
+            btnEditRow.setVisibility(View.VISIBLE);
+            btnDeleteRow.setVisibility(View.VISIBLE);
+        }
+
         View finalConvertView = convertView;
         btnPlay.setOnClickListener(v -> {
             String orientation = finalConvertView.getContext().getResources().getConfiguration().orientation
@@ -91,16 +104,14 @@ public class TournamentBracketAdminAdapter extends BaseAdapter {
             TournamentActivityManageMatches.tournamentActivityManageMatches.startActivity(intent);
         });
 
-        ImageView btnEdit = convertView.findViewById(R.id.btnEdit);
-        btnEdit.setOnClickListener(v -> {
+        btnEditRow.setOnClickListener(v -> {
             Intent intent = new Intent(TournamentActivityManageMatches.tournamentActivityManageMatches, TournamentActivityEditMatch.class);
             intent.putExtra("tournament_key", tournament.key);
             intent.putExtra("position", position);
             TournamentActivityManageMatches.tournamentActivityManageMatches.startActivity(intent);
         });
 
-        ImageView btnDelete = convertView.findViewById(R.id.btnDelete);
-        btnDelete.setOnClickListener(v -> {
+        btnDeleteRow.setOnClickListener(v -> {
             Intent intent = new Intent(TournamentActivityManageMatches.tournamentActivityManageMatches, ActivityPopUp.class);
             intent.putExtra("tournament_key", tournament.key);
             intent.putExtra("match_key", match.key);

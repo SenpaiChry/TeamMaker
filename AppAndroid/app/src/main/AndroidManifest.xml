@@ -3,6 +3,8 @@
         xmlns:tools="http://schemas.android.com/tools">
 
         <uses-permission android:name="android.permission.INTERNET" />
+        <!-- Necessario per lanciare l'installer APK dall'app (aggiornamento in-app) -->
+        <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
         <application
             android:allowBackup="true"
@@ -144,6 +146,11 @@
 
             <activity
                 android:name=".ActivityPopUpEditStat"
+                android:screenOrientation="portrait"
+                android:theme="@style/NoTitleDialog" />
+
+            <activity
+                android:name=".ActivityPopUpUpdateApp"
                 android:screenOrientation="portrait"
                 android:theme="@style/NoTitleDialog" />
 
