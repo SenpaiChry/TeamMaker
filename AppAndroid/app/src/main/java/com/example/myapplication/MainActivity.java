@@ -6,8 +6,11 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +19,7 @@ import com.example.myapplication.TopToast.TopToast;
 import com.example.myapplication.Utility.AdminUtility;
 import com.example.myapplication.Utility.LiveMatchUtility;
 import com.example.myapplication.Utility.PlayerUtility;
+import com.example.myapplication.Utility.SoundUtility;
 import com.example.myapplication.Utility.StatsUtility;
 import com.example.myapplication.Utility.TournamentUtility;
 import com.example.myapplication.Utility.UpdateUtility;
@@ -129,6 +133,59 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 intent = new Intent(this, ActivityLogin.class);
                 startActivity(intent);
+            }
+        });
+
+        // Easter egg: 5 tap sul logo -> fatass.mp3; press-hold 6-7s -> sixtyseven.mp3
+        setupLogoEasterEggs();
+    }
+
+    // ---- Easter egg logo ----
+    /** Reset del contatore tap se passa piu' di questo tempo tra un tap e l'altro. */
+    private static final long TAP_RESET_MS = 1500L;
+    private int logoTapCount = 0;
+    private long lastLogoTapMs = 0L;
+    private long logoPressDownMs = 0L;
+
+    private void setupLogoEasterEggs() {
+        ImageView imgLogo = findViewById(R.id.imgLogo);
+        if (imgLogo == null) return;
+
+        imgLogo.setOnTouchListener((v, event) -> {
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    logoPressDownMs = SystemClock.uptimeMillis();
+                    return false; // lascio arrivare il click normale
+                case MotionEvent.ACTION_UP: {
+                    long heldMs = SystemClock.uptimeMillis() - logoPressDownMs;
+                    logoPressDownMs = 0L;
+                    // Hold da 6 a 7 secondi: '67'
+                    if (heldMs >= 6000L && heldMs <= 7000L) {
+                        SoundUtility.play(this, R.raw.sixtyseven);
+                        // Un hold non deve contare come tap
+                        logoTapCount = 0;
+                        return true;
+                    }
+                    return false;
+                }
+                case MotionEvent.ACTION_CANCEL:
+                    logoPressDownMs = 0L;
+                    return false;
+                default:
+                    return false;
+            }
+        });
+
+        imgLogo.setOnClickListener(v -> {
+            long now = SystemClock.uptimeMillis();
+            if (now - lastLogoTapMs > TAP_RESET_MS) {
+                logoTapCount = 0;
+            }
+            lastLogoTapMs = now;
+            logoTapCount++;
+            if (logoTapCount >= 5) {
+                SoundUtility.play(this, R.raw.fatass);
+                logoTapCount = 0;
             }
         });
     }
