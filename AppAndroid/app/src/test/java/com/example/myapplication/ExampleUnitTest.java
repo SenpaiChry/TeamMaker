@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.teammaker.app;
 
 import org.junit.Test;
 

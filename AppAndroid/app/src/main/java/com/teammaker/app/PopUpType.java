@@ -1,0 +1,18 @@
+package com.teammaker.app;
+
+public enum PopUpType {
+    DELETE_PLAYER,
+    ARCHIVE_PLAYER,
+    UNARCHIVE_PLAYER,
+
+    DELETE_TOURNAMENT,
+    ACTIVATE_TOURNAMENT,
+    DEACTIVATE_TOURNAMENT,
+
+    DELETE_TEAM,
+
+    DELETE_MATCH,
+    DELETE_EVERY_MATCH,
+
+    DELETE_STAT,
+}
