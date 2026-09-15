@@ -2,10 +2,8 @@ package com.teammaker.app.domain;
 
 import android.util.Log;
 
-import com.teammaker.app.ui.activity.MainActivity;
 import com.teammaker.app.data.model.Player;
 import com.teammaker.app.data.model.Team;
-import com.teammaker.app.data.model.Constants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,14 +16,28 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TeamGenerator {
 
+    // Stato del generatore (prima era in Constants). Le squadre generate restano
+    // qui finche' un nuovo giro non le sostituisce; il chiamante ne prende la
+    // lista via getGenerated().
+    private static ArrayList<Team> teams = new ArrayList<>();
+    private static int nCycle = 0;
+    private static float lastDifference = 0.0F;
+    private static float inputMaxDifference = 1.0F;
+
+    /** Vista mutabile delle squadre generate (per non spezzare i chiamanti che ordinano/scambiano). */
+    public static ArrayList<Team> getGenerated() { return teams; }
+    public static int getCycles() { return nCycle; }
+    public static float getLastDifference() { return lastDifference; }
+    public static float getInputMaxDifference() { return inputMaxDifference; }
+    public static void setInputMaxDifference(float v) { inputMaxDifference = v; }
+
     /**
-     * @return GenerationResult con esito esplicito. Su successo Constants.teams
-     * contiene le nuove squadre e result.teams punta alle stesse istanze; su
-     * fallimento Constants.teams NON viene toccato (il chiamante decide se
-     * mostrare un errore o mantenere le squadre precedenti).
+     * @return GenerationResult con esito esplicito. Su successo la lista interna
+     * di squadre viene sostituita (leggibile via getGenerated()); su fallimento
+     * resta quella precedente (il chiamante gestisce l'esito).
      */
     public static GenerationResult makeTeams(int nPlayerInSquad, int nAlgorithm, ArrayList<Player> playersSelected) {
-        Constants.nCycle = 0;
+        nCycle = 0;
 
         // Validazione minima: servono almeno due squadre reali (una intera + una parziale)
         if (playersSelected.size() < nPlayerInSquad * 2 - 1) {
@@ -35,7 +47,7 @@ public class TeamGenerator {
         if (nAlgorithm == 2) {
             initTeams(playersSelected, nPlayerInSquad);
             algorithm2(playersSelected);
-            return GenerationResult.ok(Constants.teams, 0);
+            return GenerationResult.ok(teams, 0);
         } else if (nAlgorithm == 5) {
             int nThreads = Runtime.getRuntime().availableProcessors();
             return makeTeamsThreads(nPlayerInSquad, nThreads, playersSelected);
@@ -45,29 +57,29 @@ public class TeamGenerator {
     }
 
     public static void initTeams(ArrayList<Player> playersSelected, int nPlayerInSquad) {
-        Constants.teams.clear();
+        teams.clear();
 
         for (int i = 0; i < Math.ceil((float)playersSelected.size() / nPlayerInSquad); i ++) {
-            Constants.teams.add(new Team());
+            teams.add(new Team());
         }
     }
 
     public static void algorithm2(ArrayList<Player> playersSelected) {
         int nPlayers = playersSelected.size();
-        int nTeams = Constants.teams.size();
+        int nTeams = teams.size();
         Collections.sort(playersSelected);
 
         for (int i = 0; i < nPlayers; i ++) {
             if (i % nTeams == 0 && i != 0) {
-                Collections.reverse(Constants.teams);
+                Collections.reverse(teams);
             }
 
-            Constants.teams.get(i % nTeams).addPlayer(playersSelected.get(i));
+            teams.get(i % nTeams).addPlayer(playersSelected.get(i));
         }
     }
 
     public static GenerationResult makeTeamsThreads(int nPlayerInSquad, int nThreads, ArrayList<Player> playersSelected) {
-        // Constants.teams NON va azzerato qui: verrebbe letto vuoto dalla UI durante
+        // teams NON va azzerato qui: verrebbe letto vuoto dalla UI durante
         // il reroll (race). Su successo lo sostituisce atomicamente tryCommitSolution;
         // su fallimento restano le squadre precedenti (il chiamante gestisce l'esito).
 
@@ -118,7 +130,7 @@ public class TeamGenerator {
                         if (isFemale[playerIdx]) teamFemales[weakestTeam]++;
                     }
 
-                    float tolerance = Math.max(Constants.inputMaxDifference, baseTolerance) + retry / 10000f;
+                    float tolerance = Math.max(inputMaxDifference, baseTolerance) + retry / 10000f;
 
                     if (isValid(teamVotes, teamSizes, teamFemales, tolerance)) {
                         tryCommitSolution(solutionFound, assignment, playersSelected, nTeams, retry, teamVotes);
@@ -152,7 +164,7 @@ public class TeamGenerator {
         }
 
         if (solutionFound.get()) {
-            return GenerationResult.ok(Constants.teams, Constants.nCycle);
+            return GenerationResult.ok(teams, nCycle);
         }
         return GenerationResult.fail(GenerationResult.Reason.TIMEOUT);
     }
@@ -366,10 +378,10 @@ public class TeamGenerator {
             result.get(assignment[i]).addPlayer(players.get(i));
         }
 
-        synchronized (MainActivity.class) {
-            Constants.nCycle = retry;
-            Constants.teams = result;
-            Constants.lastDifference = maxV - minV; // utile per mostrare all'utente la qualità
+        synchronized (TeamGenerator.class) {
+            nCycle = retry;
+            teams = result;
+            lastDifference = maxV - minV; // utile per mostrare all'utente la qualità
         }
     }
 }

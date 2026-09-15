@@ -100,11 +100,11 @@ public class TeamsActivity extends AppCompatActivity {
 
         new Thread(() -> {
             try {
-                Constants.inputMaxDifference = 0;
+                TeamGenerator.setInputMaxDifference(0);
                 TeamGenerator.makeTeams(nPlayers, nAlgorithm, Constants.playersSelected);
 
                 // Se le squadre sono identiche a prima, forza uno scambio casuale
-                if (snapshotTeams().equals(previousTeams) && Constants.teams.size() >= 2) {
+                if (snapshotTeams().equals(previousTeams) && TeamGenerator.getGenerated().size() >= 2) {
                     forceRandomSwap();
                     Log.d("TeamsActivity", "Squadre identiche -> forzato swap casuale");
                 }
@@ -124,7 +124,7 @@ public class TeamsActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     private void refreshUI() {
         float diff = calcMaxDiff();
-        int cycle = Constants.nCycle;
+        int cycle = TeamGenerator.getCycles();
 
         Log.d("TeamsActivity", "refreshUI -> diff=" + diff + " cycle=" + cycle);
 
@@ -138,7 +138,7 @@ public class TeamsActivity extends AppCompatActivity {
      */
     private static Set<Set<String>> snapshotTeams() {
         Set<Set<String>> snapshot = new HashSet<>();
-        for (Team team : Constants.teams) {
+        for (Team team : TeamGenerator.getGenerated()) {
             Set<String> keys = new HashSet<>();
             for (Player p : team.players) {
                 keys.add(p.key);
@@ -155,16 +155,16 @@ public class TeamsActivity extends AppCompatActivity {
      * stesso-genere da scambiare, non forza nulla (meglio invariato che sbilanciato).
      */
     private static void forceRandomSwap() {
-        if (Constants.teams.size() < 2) return;
+        if (TeamGenerator.getGenerated().size() < 2) return;
         Random rng = new Random();
 
         for (int attempt = 0; attempt < 100; attempt++) {
-            int t1idx = rng.nextInt(Constants.teams.size());
-            int t2idx = rng.nextInt(Constants.teams.size());
+            int t1idx = rng.nextInt(TeamGenerator.getGenerated().size());
+            int t2idx = rng.nextInt(TeamGenerator.getGenerated().size());
             if (t1idx == t2idx) continue;
 
-            Team team1 = Constants.teams.get(t1idx);
-            Team team2 = Constants.teams.get(t2idx);
+            Team team1 = TeamGenerator.getGenerated().get(t1idx);
+            Team team2 = TeamGenerator.getGenerated().get(t2idx);
             if (team1.players.isEmpty() || team2.players.isEmpty()) continue;
 
             int p1 = rng.nextInt(team1.players.size());
@@ -181,10 +181,10 @@ public class TeamsActivity extends AppCompatActivity {
     }
 
     private float calcMaxDiff() {
-        if (Constants.teams == null || Constants.teams.isEmpty()) return 0;
+        if (TeamGenerator.getGenerated() == null || TeamGenerator.getGenerated().isEmpty()) return 0;
 
         float minValue = Float.MAX_VALUE, maxValue = -Float.MAX_VALUE;
-        for (Team team : Constants.teams) {
+        for (Team team : TeamGenerator.getGenerated()) {
             float vote = team.getTotalVote();
             if (vote < minValue) minValue = vote;
             if (vote > maxValue) maxValue = vote;

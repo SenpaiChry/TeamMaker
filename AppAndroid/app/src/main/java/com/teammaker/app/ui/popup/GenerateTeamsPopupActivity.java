@@ -71,7 +71,7 @@ public class GenerateTeamsPopupActivity extends AppCompatActivity {
             if (btnSelectedPlayer > 0 && Constants.playersSelected.size() >= btnSelectedPlayer * 2 - 1) {
 
                 // Precisione massima: differenza zero
-                Constants.inputMaxDifference = 0;
+                TeamGenerator.setInputMaxDifference(0);
 
                 executor = Executors.newSingleThreadExecutor();
                 Handler handler = new Handler(Looper.getMainLooper());

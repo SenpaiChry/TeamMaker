@@ -8,7 +8,7 @@ import com.teammaker.app.data.model.Constants;
 /**
  * Esito della generazione squadre: il chiamante distingue successo, mancanza di
  * giocatori e timeout senza dover leggere Constants globali. Le squadre sono
- * quelle salvate in Constants.teams su successo (stesso riferimento).
+ * quelle salvate in TeamGenerator.getGenerated() su successo (stesso riferimento).
  */
 public class GenerationResult {
 

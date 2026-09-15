@@ -6,7 +6,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.data.model.Match;
 import com.teammaker.app.data.model.Team;
 import com.teammaker.app.data.model.Tournament;
@@ -30,6 +29,7 @@ import com.teammaker.app.data.firebase.FirebaseWriteHelper;
 import com.teammaker.app.data.mapper.MatchMapper;
 import com.teammaker.app.data.mapper.TeamMapper;
 import com.teammaker.app.data.AppConfig;
+import com.teammaker.app.domain.TeamGenerator;
 
 public class TournamentRepository {
 
@@ -41,7 +41,7 @@ public class TournamentRepository {
 
     /**
      * True quando il primo caricamento dei dati e' completato (players + tournaments).
-     * Prima si chiamava TournamentRepository.isDataReady().
+     * Prima si chiamava Constants.downloadEnd.
      */
     private static boolean dataReady = false;
     public static boolean isDataReady() { return dataReady; }
@@ -203,7 +203,7 @@ public class TournamentRepository {
         dbRef.child("nBracket").setValue(0);
         dbRef.child("date").setValue(formattedDate);
 
-        for (Team team : Constants.teams) {
+        for (Team team : TeamGenerator.getGenerated()) {
             String keyTeam = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + key + "/teams/").push().getKey();
             dbRefTeam = dbRef.child("teams").child(keyTeam);
             team.key = keyTeam;

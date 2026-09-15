@@ -16,6 +16,7 @@ import com.teammaker.app.data.model.Constants;
 import java.util.ArrayList;
 import com.teammaker.app.data.model.Player;
 import com.teammaker.app.R;
+import com.teammaker.app.domain.TeamGenerator;
 
 public class PlayerTeamsAdapter extends RecyclerView.Adapter<PlayerTeamsAdapter.ViewHolder> {
 
@@ -26,7 +27,7 @@ public class PlayerTeamsAdapter extends RecyclerView.Adapter<PlayerTeamsAdapter.
     }
 
     @Override
-    public int getItemCount() { return Constants.teams.size(); }
+    public int getItemCount() { return TeamGenerator.getGenerated().size(); }
 
     @NonNull
     @Override
@@ -42,7 +43,7 @@ public class PlayerTeamsAdapter extends RecyclerView.Adapter<PlayerTeamsAdapter.
         h.txtTeamN.setText(h.itemView.getContext().getResources().getString(R.string.team) + " " + (position + 1));
 
         if ("TOURNAMENT".equals(type)) {
-            h.txtValueTeam.setText(Constants.teams.get(position).getTotalVote() + "");
+            h.txtValueTeam.setText(TeamGenerator.getGenerated().get(position).getTotalVote() + "");
             h.txtValueTeam.setVisibility(View.VISIBLE);
             h.spaceValue.setVisibility(View.VISIBLE);
         } else {
@@ -54,7 +55,7 @@ public class PlayerTeamsAdapter extends RecyclerView.Adapter<PlayerTeamsAdapter.
         h.llPlayer34.setVisibility(View.GONE);
         h.llPlayer5.setVisibility(View.GONE);
 
-        ArrayList<Player> players = Constants.teams.get(position).players;
+        ArrayList<Player> players = TeamGenerator.getGenerated().get(position).players;
 
         // Squadra senza giocatori (es. stato transitorio durante la generazione): niente crash
         if (players.isEmpty()) {
