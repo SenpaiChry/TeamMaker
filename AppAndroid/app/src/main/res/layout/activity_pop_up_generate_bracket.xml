@@ -232,7 +232,7 @@
             android:background="@drawable/bg_segment_selected" />
     </LinearLayout>
 
-    <com.teammaker.app.MaxHeightScrollView
+    <com.teammaker.app.ui.common.MaxHeightScrollView
         android:id="@+id/scrollTimes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -244,7 +244,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" />
-    </com.teammaker.app.MaxHeightScrollView>
+    </com.teammaker.app.ui.common.MaxHeightScrollView>
 
     <!-- Info: partite da generare / non ospitate -->
     <LinearLayout

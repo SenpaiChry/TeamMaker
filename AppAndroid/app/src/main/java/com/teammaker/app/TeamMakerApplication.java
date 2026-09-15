@@ -4,8 +4,11 @@ import android.app.Application;
 import android.content.Context;
 
 import com.google.firebase.database.FirebaseDatabase;
-import com.teammaker.app.Utility.PlayerUtility;
-import com.teammaker.app.Utility.StatsUtility;
+import com.teammaker.app.data.repository.PlayerRepository;
+import com.teammaker.app.data.repository.StatsRepository;
+import com.teammaker.app.data.repository.TournamentRepository;
+import com.teammaker.app.ui.activity.MainActivity;
+import com.teammaker.app.util.NetworkUtils;
 
 /**
  * Classe Application: e' il primo pezzo di codice che Android istanzia quando
@@ -24,7 +27,7 @@ public class TeamMakerApplication extends Application {
     private static Context appContext;
 
     /**
-     * Application context globale, utile alle Utility per mostrare Toast
+     * Application context globale, utile alle NetworkUtils per mostrare Toast
      * senza dover conoscere l'Activity corrente. Non usarlo mai come Context
      * di un componente UI (Dialog, inflater di layout non tema-aware, ecc.).
      */
@@ -41,10 +44,10 @@ public class TeamMakerApplication extends Application {
         FirebaseDatabase.getInstance().setPersistenceEnabled(false);
 
         // Catalogo statistiche PRIMA dei player (getVote() lo usa).
-        StatsUtility.startListening();
+        StatsRepository.startListening();
 
-        // A cascata: PlayerUtility.downloadPlayers() a fine caricamento
-        // chiama TournamentUtility.downloadTournaments().
-        PlayerUtility.downloadPlayers();
+        // A cascata: PlayerRepository.downloadPlayers() a fine caricamento
+        // chiama TournamentRepository.downloadTournaments().
+        PlayerRepository.downloadPlayers();
     }
 }

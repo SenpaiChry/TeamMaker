@@ -19,7 +19,7 @@
         android:textSize="26sp"
         android:layout_marginBottom="10dp" />
 
-    <com.teammaker.app.MaxHeightScrollView
+    <com.teammaker.app.ui.common.MaxHeightScrollView
         android:id="@+id/scrollContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -254,7 +254,7 @@
                     android:layout_marginTop="8dp" />
             </LinearLayout>
         </LinearLayout>
-    </com.teammaker.app.MaxHeightScrollView>
+    </com.teammaker.app.ui.common.MaxHeightScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"

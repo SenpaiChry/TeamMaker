@@ -19,7 +19,7 @@
             tools:targetApi="31">
 
             <activity
-                android:name=".MainActivity"
+                android:name=".ui.activity.MainActivity"
                 android:exported="true"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication">
@@ -30,128 +30,128 @@
             </activity>
 
             <activity
-                android:name=".ActivityInfoPlayer"
+                android:name=".ui.activity.InfoPlayerActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/NoTitleDialog" />
 
-            <activity android:name=".ActivityLiveMatch"
+            <activity android:name=".ui.activity.LiveMatchActivity"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
-                android:name=".ActivityGenerate"
+                android:name=".ui.activity.GenerateActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
-                android:name=".ActivityLogin"
+                android:name=".ui.activity.LoginActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
-                android:name=".ActivityAdmin"
+                android:name=".ui.activity.AdminActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
-                android:name=".ActivityTeams"
+                android:name=".ui.activity.TeamsActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
-                android:name=".ActivityScorecard"
+                android:name=".ui.activity.ScorecardActivity"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
-                android:name=".ActivityNextMatch"
+                android:name=".ui.activity.NextMatchActivity"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
-                android:name=".TournamentActivityManage"
+                android:name=".ui.activity.ManageTournamentActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
-                android:name=".TournamentActivityTeamsBracketsTable"
+                android:name=".ui.activity.TeamsBracketsTableActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
-                android:name=".TournamentActivityManageTeams"
+                android:name=".ui.activity.ManageTeamsActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
-                android:name=".TournamentActivityManageMatches"
+                android:name=".ui.activity.ManageMatchesActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
-                android:name=".TournamentActivityManageTournaments"
+                android:name=".ui.activity.ManageTournamentsActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
-                android:name=".ActivityPopUp"
-                android:screenOrientation="portrait"
-                android:theme="@style/NoTitleDialog" />
-
-            <activity
-                android:name=".ActivityEditPlayer"
+                android:name=".ui.popup.ConfirmPopupActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/NoTitleDialog" />
 
             <activity
-                android:name=".ActivityPopUpSaveNewTournament"
+                android:name=".ui.activity.EditPlayerActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/NoTitleDialog" />
 
             <activity
-                android:name=".ActivityPopUpManageTournament"
+                android:name=".ui.popup.SaveNewTournamentPopupActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/NoTitleDialog" />
 
             <activity
-                android:name=".ActivityPopUpGenerateTeams"
+                android:name=".ui.popup.ManageTournamentPopupActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/NoTitleDialog" />
 
             <activity
-                android:name=".TournamentActivityEditMatch"
+                android:name=".ui.popup.GenerateTeamsPopupActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/NoTitleDialog" />
 
             <activity
-                android:name=".ActivityPopUpGenerateBracket"
+                android:name=".ui.activity.EditMatchActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/NoTitleDialog" />
 
             <activity
-                android:name=".TournamentActivityPopUpEditTeam"
+                android:name=".ui.popup.GenerateBracketPopupActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/NoTitleDialog" />
 
             <activity
-                android:name=".ActivityPopUpInfoMatch"
+                android:name=".ui.popup.EditTeamPopupActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/NoTitleDialog" />
 
             <activity
-                android:name=".ActivityPopUpGenerateFinals"
+                android:name=".ui.popup.InfoMatchPopupActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/NoTitleDialog" />
 
             <activity
-                android:name=".ActivityManageStats"
+                android:name=".ui.popup.GenerateFinalsPopupActivity"
+                android:screenOrientation="portrait"
+                android:theme="@style/NoTitleDialog" />
+
+            <activity
+                android:name=".ui.activity.ManageStatsActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
-                android:name=".ActivityPopUpEditStat"
+                android:name=".ui.popup.EditStatPopupActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/NoTitleDialog" />
 
             <activity
-                android:name=".ActivityPopUpUpdateApp"
+                android:name=".update.UpdatePopupActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/NoTitleDialog" />
 
