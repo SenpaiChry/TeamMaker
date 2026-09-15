@@ -10,16 +10,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Utility.TournamentTeamUtility;
 import com.teammaker.app.Utility.TournamentUtility;
 import com.teammaker.app.Utility.Utility;
+import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
 import java.util.ArrayList;
 
@@ -27,9 +29,9 @@ public class TournamentActivityTeamsBracketsTable extends AppCompatActivity {
 
     private ArrayList<Team> teamsTooSee = new ArrayList<>();
     private ArrayList<Match> matchesTooSee = new ArrayList<>();
-    private ListView listViewTeams;
-    private ListView listViewBracket;
-    private ListView listViewTable;
+    private RecyclerView listViewTeams;
+    private RecyclerView listViewBracket;
+    private RecyclerView listViewTable;
     private TournamentTeamsAdapter tournamentTeamsAdapter;
     private TournamentBracketAdapter tournamentBracketAdapter;
     private TournamentTableAdapter tournamentTableAdapter;
@@ -55,8 +57,14 @@ public class TournamentActivityTeamsBracketsTable extends AppCompatActivity {
         }
 
         listViewTeams = findViewById(R.id.listViewTeams);
+        listViewTeams.setLayoutManager(new LinearLayoutManager(this));
+        listViewTeams.addItemDecoration(new VerticalSpacingItemDecoration(this, 8));
         listViewBracket = findViewById(R.id.listViewBracket);
+        listViewBracket.setLayoutManager(new LinearLayoutManager(this));
+        listViewBracket.addItemDecoration(new VerticalSpacingItemDecoration(this, 8));
         listViewTable = findViewById(R.id.listViewTable);
+        listViewTable.setLayoutManager(new LinearLayoutManager(this));
+        listViewTable.addItemDecoration(new VerticalSpacingItemDecoration(this, 6));
 
         tournamentTeamsAdapter = new TournamentTeamsAdapter(teamsTooSee);
         listViewTeams.setAdapter(tournamentTeamsAdapter);

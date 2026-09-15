@@ -6,11 +6,12 @@ import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Utility.StandingsUtility;
 
@@ -19,14 +20,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class TournamentTableAdapter extends BaseAdapter {
+public class TournamentTableAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int VIEW_TYPE_TEAM = 0;
     private static final int VIEW_TYPE_BRACKET_HEADER = 1;
 
     private final Tournament tournament;
     private final Context context;
-    private final ArrayList<Object> items;      // String (intestazione girone) oppure Team
+    private final ArrayList<Object> items;      // String (intestazione girone) oppure StandingsUtility.TeamStanding
     private final ArrayList<Integer> positions; // posizione nel girone; 0 per le intestazioni
 
     /** Testo cercato: la classifica mostra SEMPRE tutti i team, ma evidenzia quelli che lo contengono. */
@@ -77,88 +78,61 @@ public class TournamentTableAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
-        return items.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return items.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public int getViewTypeCount() {
-        return 2;
-    }
+    public int getItemCount() { return items.size(); }
 
     @Override
     public int getItemViewType(int position) {
         return (items.get(position) instanceof StandingsUtility.TeamStanding) ? VIEW_TYPE_TEAM : VIEW_TYPE_BRACKET_HEADER;
     }
 
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        if (viewType == VIEW_TYPE_BRACKET_HEADER) {
+            View v = inflater.inflate(R.layout.tournament_layout_bracket_header, parent, false);
+            return new HeaderViewHolder(v);
+        }
+        View v = inflater.inflate(R.layout.tournament_layout_table, parent, false);
+        return new TeamViewHolder(v);
+    }
+
     @SuppressLint("SetTextI18n")
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        int viewType = getItemViewType(position);
-
-        if (viewType == VIEW_TYPE_BRACKET_HEADER) {
-            if (convertView == null) {
-                convertView = LayoutInflater.from(context)
-                        .inflate(R.layout.tournament_layout_bracket_header, parent, false);
-            }
-            TextView txtHeader = convertView.findViewById(R.id.txtBracketHeader);
-            txtHeader.setText(context.getString(R.string.bracket) + " " + items.get(position));
-            return convertView;
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof HeaderViewHolder) {
+            HeaderViewHolder h = (HeaderViewHolder) holder;
+            h.txtHeader.setText(context.getString(R.string.bracket) + " " + items.get(position));
+            return;
         }
 
-        // ---- Riga squadra ----
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context)
-                    .inflate(R.layout.tournament_layout_table, parent, false);
-        }
-
+        TeamViewHolder h = (TeamViewHolder) holder;
         StandingsUtility.TeamStanding standing = (StandingsUtility.TeamStanding) items.get(position);
         Team team = standing.team;
-        TextView txtPosition = convertView.findViewById(R.id.txtPosition);
-        TextView txtTeam = convertView.findViewById(R.id.txtTeam);
-        TextView txtTeamPlayers = convertView.findViewById(R.id.txtTeamPlayers);
-        TextView txtWins = convertView.findViewById(R.id.txtWins);
-        TextView txtSetQuotient = convertView.findViewById(R.id.txtSetQuotient);
-        TextView txtPointsQuotient = convertView.findViewById(R.id.txtPointsQuotient);
-        TextView txtPoints = convertView.findViewById(R.id.txtPoints);
 
-        // txtPosition puo' non esistere se si usa un layout riga senza la posizione
-        if (txtPosition != null) {
-            txtPosition.setText(String.format(Locale.getDefault(), "%d", positions.get(position)));
+        if (h.txtPosition != null) {
+            h.txtPosition.setText(String.format(Locale.getDefault(), "%d", positions.get(position)));
         }
-        txtTeam.setText(context.getString(R.string.team) + " " + tournament.getNTeamByKey(team.key));
-        if (txtTeamPlayers != null) {
-            txtTeamPlayers.setText(team.toStringNameAndSurname());
+        h.txtTeam.setText(context.getString(R.string.team) + " " + tournament.getNTeamByKey(team.key));
+        if (h.txtTeamPlayers != null) {
+            h.txtTeamPlayers.setText(team.toStringNameAndSurname());
         }
-        if (txtWins != null) {
-            txtWins.setText(String.valueOf(standing.wins));
+        if (h.txtWins != null) {
+            h.txtWins.setText(String.valueOf(standing.wins));
         }
-        if (txtSetQuotient != null) {
-            txtSetQuotient.setText(formatQuotient(standing.setsWon, standing.setsLost));
+        if (h.txtSetQuotient != null) {
+            h.txtSetQuotient.setText(formatQuotient(standing.setsWon, standing.setsLost));
         }
-        if (txtPointsQuotient != null) {
-            txtPointsQuotient.setText(formatQuotient(standing.pointsFor, standing.pointsAgainst));
+        if (h.txtPointsQuotient != null) {
+            h.txtPointsQuotient.setText(formatQuotient(standing.pointsFor, standing.pointsAgainst));
         }
-        txtPoints.setText(String.valueOf(standing.classificaPoints));
+        h.txtPoints.setText(String.valueOf(standing.classificaPoints));
 
-        TextView txtDirectClash = convertView.findViewById(R.id.txtDirectClash);
-        if (txtDirectClash != null) {
-            txtDirectClash.setVisibility(standing.directClash ? View.VISIBLE : View.GONE);
+        if (h.txtDirectClash != null) {
+            h.txtDirectClash.setVisibility(standing.directClash ? View.VISIBLE : View.GONE);
         }
 
-        applyHighlight(convertView, txtPosition, txtTeam, txtTeamPlayers, txtPoints, matchesQuery(team));
-
-        return convertView;
+        applyHighlight(h.itemView, h.txtPosition, h.txtTeam, h.txtTeamPlayers, h.txtPoints, matchesQuery(team));
     }
 
     /** Quoziente vinti/persi come decimale; "∞" se non ha mai perso, "–" se nessun dato. */
@@ -204,6 +178,31 @@ public class TournamentTableAdapter extends BaseAdapter {
         if (txtTeamPlayers != null) {
             txtTeamPlayers.setTextColor(ContextCompat.getColor(context,
                     highlighted ? R.color.list_highlight_text : R.color.list_text_secondary));
+        }
+    }
+
+    static class HeaderViewHolder extends RecyclerView.ViewHolder {
+        final TextView txtHeader;
+        HeaderViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txtHeader = itemView.findViewById(R.id.txtBracketHeader);
+        }
+    }
+
+    static class TeamViewHolder extends RecyclerView.ViewHolder {
+        final TextView txtPosition, txtTeam, txtTeamPlayers, txtWins;
+        final TextView txtSetQuotient, txtPointsQuotient, txtPoints, txtDirectClash;
+
+        TeamViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txtPosition = itemView.findViewById(R.id.txtPosition);
+            txtTeam = itemView.findViewById(R.id.txtTeam);
+            txtTeamPlayers = itemView.findViewById(R.id.txtTeamPlayers);
+            txtWins = itemView.findViewById(R.id.txtWins);
+            txtSetQuotient = itemView.findViewById(R.id.txtSetQuotient);
+            txtPointsQuotient = itemView.findViewById(R.id.txtPointsQuotient);
+            txtPoints = itemView.findViewById(R.id.txtPoints);
+            txtDirectClash = itemView.findViewById(R.id.txtDirectClash);
         }
     }
 }

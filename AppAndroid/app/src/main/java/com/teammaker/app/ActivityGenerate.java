@@ -11,14 +11,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Model.Constants;
 import com.teammaker.app.Utility.PlayerUtility;
+import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -50,8 +52,10 @@ public class ActivityGenerate extends AppCompatActivity {
                         .thenComparing(p -> p.surname, String.CASE_INSENSITIVE_ORDER)
         );
 
-        ListView listViewGenerate = findViewById(R.id.listViewGenerate);
-        playerGenerateAdapter = new PlayerGenerateAdapter(listViewGenerate.getContext(), playersToSee);
+        RecyclerView listViewGenerate = findViewById(R.id.listViewGenerate);
+        listViewGenerate.setLayoutManager(new LinearLayoutManager(this));
+        listViewGenerate.addItemDecoration(new VerticalSpacingItemDecoration(this, 8));
+        playerGenerateAdapter = new PlayerGenerateAdapter(this, playersToSee);
         listViewGenerate.setAdapter(playerGenerateAdapter);
 
         txtNSelected = findViewById(R.id.txtNSelected);

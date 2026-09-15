@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -39,13 +40,14 @@
                 android:textSize="18sp"/>
         </LinearLayout>
 
-        <ListView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listViewTournaments"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="@color/transparent"
             android:paddingHorizontal="5dp"
             android:paddingVertical="2dp"
-            android:dividerHeight="8dp" />
+            android:clipToPadding="false"
+            android:scrollbars="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

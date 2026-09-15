@@ -6,21 +6,21 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Utility.MatchLabelUtility;
 import com.teammaker.app.Utility.PhaseUtility;
 import com.teammaker.app.Utility.TournamentTeamUtility;
 import com.teammaker.app.Utility.TournamentUtility;
-import com.teammaker.app.Utility.Utility;
 
 import java.util.ArrayList;
 
-public class TournamentBracketAdapter extends BaseAdapter {
+public class TournamentBracketAdapter extends RecyclerView.Adapter<TournamentBracketAdapter.ViewHolder> {
 
     private final Context context;
     private final ArrayList<Match> matches;
@@ -50,77 +50,55 @@ public class TournamentBracketAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
-        return matches.size();
-    }
+    public int getItemCount() { return matches.size(); }
 
+    @NonNull
     @Override
-    public Match getItem(int position) {
-        return matches.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.tournament_layout_bracket, parent, false);
+        return new ViewHolder(view);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public void onBindViewHolder(@NonNull ViewHolder h, int position) {
+        Match match = matches.get(position);
 
-        if (convertView == null) {
-            LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-            convertView = layoutInflater.inflate(R.layout.tournament_layout_bracket, parent, false);
-        }
+        h.txtDay.setText(context.getString(R.string.day) + " " + match.day);
 
-        Match match = getItem(position);
-
-        TextView txtDay = convertView.findViewById(R.id.txtDay);
-        txtDay.setText(context.getString(R.string.day) + " " + match.day);
-
-        TextView txtType = convertView.findViewById(R.id.txtType);
         String phaseLabel = PhaseUtility.label(context, match.type);
         if (!phaseLabel.isEmpty()) {
-            txtType.setText(phaseLabel);
-            txtType.setVisibility(View.VISIBLE);
+            h.txtType.setText(phaseLabel);
+            h.txtType.setVisibility(View.VISIBLE);
         } else {
-            txtType.setVisibility(View.GONE);
+            h.txtType.setVisibility(View.GONE);
         }
 
-        TextView txtTime = convertView.findViewById(R.id.txtTime);
-        TextView txtTeam1 = convertView.findViewById(R.id.txtTeam1);
-        TextView txtTeam2 = convertView.findViewById(R.id.txtTeam2);
-        TextView txtPoints1 = convertView.findViewById(R.id.txtPoints1);
-        TextView txtPoints2 = convertView.findViewById(R.id.txtPoints2);
-
-        txtTime.setText(match.time);
+        h.txtTime.setText(match.time);
         Tournament activeTournament = TournamentUtility.getActiveTournament();
-        txtTeam1.setText(MatchLabelUtility.teamOrPlaceholder(context, activeTournament, match, 1));
-        txtTeam2.setText(MatchLabelUtility.teamOrPlaceholder(context, activeTournament, match, 2));
-        txtPoints1.setText(String.valueOf(match.points1));
-        txtPoints2.setText(String.valueOf(match.points2));
+        h.txtTeam1.setText(MatchLabelUtility.teamOrPlaceholder(context, activeTournament, match, 1));
+        h.txtTeam2.setText(MatchLabelUtility.teamOrPlaceholder(context, activeTournament, match, 2));
+        h.txtPoints1.setText(String.valueOf(match.points1));
+        h.txtPoints2.setText(String.valueOf(match.points2));
 
-        TextView txtSetDetail = convertView.findViewById(R.id.txtSetDetail);
         String setDetail = match.detailString();
         if (setDetail.isEmpty()) {
-            txtSetDetail.setVisibility(View.GONE);
+            h.txtSetDetail.setVisibility(View.GONE);
         } else {
-            txtSetDetail.setText(setDetail);
-            txtSetDetail.setVisibility(View.VISIBLE);
+            h.txtSetDetail.setText(setDetail);
+            h.txtSetDetail.setVisibility(View.VISIBLE);
         }
 
         // Evidenzia il lato in cui gioca il giocatore cercato
-        applyTeamHighlight(txtTeam1, txtPoints1, teamMatchesQuery(match.keyTeam1));
-        applyTeamHighlight(txtTeam2, txtPoints2, teamMatchesQuery(match.keyTeam2));
+        applyTeamHighlight(h.txtTeam1, h.txtPoints1, teamMatchesQuery(match.keyTeam1));
+        applyTeamHighlight(h.txtTeam2, h.txtPoints2, teamMatchesQuery(match.keyTeam2));
 
-        Button btnInfo = convertView.findViewById(R.id.btnInfo);
-        btnInfo.setOnClickListener(v -> {
+        h.btnInfo.setOnClickListener(v -> {
             Intent intent = new Intent(context.getApplicationContext(), ActivityPopUpInfoMatch.class);
             intent.putExtra("match_key", match.key);
             context.startActivity(intent);
         });
-
-        return convertView;
     }
 
     /** True se la squadra contiene un giocatore che corrisponde al testo cercato. */
@@ -149,5 +127,23 @@ public class TournamentBracketAdapter extends BaseAdapter {
             txtTeam.setBackground(null);
         }
         txtTeam.setPadding(l, t, r, bo);
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        final TextView txtDay, txtType, txtTime, txtTeam1, txtTeam2, txtPoints1, txtPoints2, txtSetDetail;
+        final Button btnInfo;
+
+        ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txtDay = itemView.findViewById(R.id.txtDay);
+            txtType = itemView.findViewById(R.id.txtType);
+            txtTime = itemView.findViewById(R.id.txtTime);
+            txtTeam1 = itemView.findViewById(R.id.txtTeam1);
+            txtTeam2 = itemView.findViewById(R.id.txtTeam2);
+            txtPoints1 = itemView.findViewById(R.id.txtPoints1);
+            txtPoints2 = itemView.findViewById(R.id.txtPoints2);
+            txtSetDetail = itemView.findViewById(R.id.txtSetDetail);
+            btnInfo = itemView.findViewById(R.id.btnInfo);
+        }
     }
 }

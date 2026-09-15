@@ -4,14 +4,16 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Utility.PlayerUtility;
 import com.teammaker.app.Utility.Utility;
+import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
 public class ActivityInfoPlayer extends AppCompatActivity {
 
@@ -30,7 +32,9 @@ public class ActivityInfoPlayer extends AppCompatActivity {
         if (getIntent().getExtras() != null) {
             Player player = PlayerUtility.getPlayerByKey(getIntent().getExtras().get("player_key").toString());
 
-            ListView listViewInfo = findViewById(R.id.listInfo);
+            RecyclerView listViewInfo = findViewById(R.id.listInfo);
+            listViewInfo.setLayoutManager(new LinearLayoutManager(this));
+            listViewInfo.addItemDecoration(new VerticalSpacingItemDecoration(this, 4));
             TextView txtName = findViewById(R.id.txtName);
             TextView txtSurname = findViewById(R.id.txtSurname);
             TextView txtNickname = findViewById(R.id.txtNickname);

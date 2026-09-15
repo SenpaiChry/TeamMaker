@@ -5,12 +5,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Utility.TournamentUtility;
 import com.teammaker.app.Utility.Utility;
+import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
 public class TournamentActivityManageMatches extends AppCompatActivity {
 
@@ -65,7 +67,9 @@ public class TournamentActivityManageMatches extends AppCompatActivity {
             }
         }
 
-        ListView listView = findViewById(R.id.listViewMatches);
+        RecyclerView listView = findViewById(R.id.listViewMatches);
+        listView.setLayoutManager(new LinearLayoutManager(this));
+        listView.addItemDecoration(new VerticalSpacingItemDecoration(this, 8));
         tournamentBracketAdminAdapter = new TournamentBracketAdminAdapter(tournament);
         listView.setAdapter(tournamentBracketAdminAdapter);
     }

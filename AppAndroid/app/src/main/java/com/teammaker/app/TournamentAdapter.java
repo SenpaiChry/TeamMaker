@@ -6,19 +6,20 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Model.Constants;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class TournamentAdapter extends BaseAdapter {
+public class TournamentAdapter extends RecyclerView.Adapter<TournamentAdapter.ViewHolder> {
 
     static TournamentAdapter tournamentAdapter;
     private final Context context;
@@ -37,69 +38,74 @@ public class TournamentAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() { return tournaments.size(); }
+    public int getItemCount() { return tournaments.size(); }
 
+    @NonNull
     @Override
-    public Tournament getItem(int position) { return tournaments.get(position); }
-
-    @Override
-    public long getItemId(int position) { return position; }
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.tournament_layout_tournaments, parent, false);
+        return new ViewHolder(view);
+    }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-
-        if (convertView == null) {
-            convertView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.tournament_layout_tournaments, parent, false);
-        }
-
+    public void onBindViewHolder(@NonNull ViewHolder h, int position) {
         tournamentAdapter = this;
-        Tournament tournament = getItem(position);
+        Tournament tournament = tournaments.get(position);
 
-        LinearLayout llTournament = convertView.findViewById(R.id.llTournament);
-        llTournament.setBackground(ContextCompat.getDrawable(context,
+        h.llTournament.setBackground(ContextCompat.getDrawable(context,
                 tournament.isValid ? R.drawable.bg_list_card_highlight : R.drawable.bg_list_card));
 
-        ImageView btnDelete = convertView.findViewById(R.id.btnDelete);
         // Torneo bloccato: nascondo il 🗑 (l'eliminazione avviene solo dopo lo sblocco).
-        btnDelete.setVisibility(tournament.locked ? View.GONE : View.VISIBLE);
-        btnDelete.setOnClickListener(v -> {
+        h.btnDelete.setVisibility(tournament.locked ? View.GONE : View.VISIBLE);
+        h.btnDelete.setOnClickListener(v -> {
             Intent intent = new Intent(TournamentActivityManageTournaments.tournamentActivityManageTournaments.getApplicationContext(), ActivityPopUp.class);
             intent.putExtra("tournament_key", tournament.key);
             intent.putExtra("pop_up_type", PopUpType.DELETE_TOURNAMENT);
             TournamentActivityManageTournaments.tournamentActivityManageTournaments.startActivity(intent);
         });
 
-        ImageView btnEdit = convertView.findViewById(R.id.btnEdit);
-        btnEdit.setOnClickListener(v -> {
+        h.btnEdit.setOnClickListener(v -> {
             Intent intent = new Intent(TournamentActivityManageTournaments.tournamentActivityManageTournaments.getApplicationContext(), ActivityPopUpManageTournament.class);
             intent.putExtra("tournament_key", tournament.key);
             TournamentActivityManageTournaments.tournamentActivityManageTournaments.startActivity(intent);
         });
 
-        TextView txtTournamentN = convertView.findViewById(R.id.txtTournamentN);
         if (tournament.name == null || tournament.name.isEmpty()) {
-            txtTournamentN.setText(context.getString(R.string.tournament) + " " + (position + 1));
+            h.txtTournamentN.setText(context.getString(R.string.tournament) + " " + (position + 1));
         } else {
-            txtTournamentN.setText(tournament.name);
+            h.txtTournamentN.setText(tournament.name);
         }
 
         // Colore titolo: ciano se attivo, bianco se no
-        txtTournamentN.setTextColor(ContextCompat.getColor(context,
+        h.txtTournamentN.setTextColor(ContextCompat.getColor(context,
                 tournament.isValid ? R.color.list_highlight_text : R.color.list_text_primary));
 
-        LinearLayout llTeamsPlayers = convertView.findViewById(R.id.llTeamsPlayers);
-        llTeamsPlayers.removeAllViews();
-
+        h.llTeamsPlayers.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(h.llTeamsPlayers.getContext());
         for (Team team : tournament.teams) {
-            View teamItem = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.layout_teams_short, parent, false);
+            View teamItem = inflater.inflate(R.layout.layout_teams_short, h.llTeamsPlayers, false);
             TextView txtPlayers = teamItem.findViewById(R.id.txtPlayers);
             txtPlayers.setText(team.toStringNameAndSurname());
-            llTeamsPlayers.addView(teamItem);
+            h.llTeamsPlayers.addView(teamItem);
         }
+    }
 
-        return convertView;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        final LinearLayout llTournament;
+        final LinearLayout llTeamsPlayers;
+        final ImageView btnDelete;
+        final ImageView btnEdit;
+        final TextView txtTournamentN;
+
+        ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            llTournament = itemView.findViewById(R.id.llTournament);
+            llTeamsPlayers = itemView.findViewById(R.id.llTeamsPlayers);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
+            btnEdit = itemView.findViewById(R.id.btnEdit);
+            txtTournamentN = itemView.findViewById(R.id.txtTournamentN);
+        }
     }
 }

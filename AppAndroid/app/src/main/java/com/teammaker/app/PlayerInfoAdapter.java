@@ -5,19 +5,19 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Utility.StatsUtility;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class PlayerInfoAdapter extends BaseAdapter {
+public class PlayerInfoAdapter extends RecyclerView.Adapter<PlayerInfoAdapter.ViewHolder> {
     private final PlayerStats stats;
     private final HashMap<String, Boolean> bonus;
     private final Context context;
@@ -37,63 +37,46 @@ public class PlayerInfoAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
-        return defs().size();
-    }
+    public int getItemCount() { return defs().size(); }
 
+    @NonNull
     @Override
-    public StatDefinition getItem(int position) {
-        return defs().get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    private float valueFor(StatDefinition def) {
-        return stats.get(def.key);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.layout_info, parent, false);
+        return new ViewHolder(view);
     }
 
     @SuppressLint("DefaultLocale")
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_info, parent, false);
-        }
-
-        StatDefinition def = getItem(position);
-        TextView txtName = convertView.findViewById(R.id.txtName);
-        txtName.setText(def.label);
-
-        ViewGroup llImagesContainer = convertView.findViewById(R.id.llImages);
-        TextView txtHeight = convertView.findViewById(R.id.txtHeight);
-        ImageView imgBonus = convertView.findViewById(R.id.imgBonus);
+    public void onBindViewHolder(@NonNull ViewHolder h, int position) {
+        StatDefinition def = defs().get(position);
+        h.txtName.setText(def.label);
 
         // COL 3 (bonus): visibile solo se stat ammette bonus E il giocatore ce l'ha
         if (StatDefinition.TYPE_STARS.equals(def.type) && def.allowBonus
                 && Boolean.TRUE.equals(bonus.get(def.key))) {
-            imgBonus.setVisibility(View.VISIBLE);
-            imgBonus.setImageTintList(ContextCompat.getColorStateList(context, R.color.main_blue));
+            h.imgBonus.setVisibility(View.VISIBLE);
+            h.imgBonus.setImageTintList(ContextCompat.getColorStateList(context, R.color.main_blue));
         } else {
-            imgBonus.setVisibility(View.INVISIBLE);
+            h.imgBonus.setVisibility(View.INVISIBLE);
         }
 
         // Pulisci le stelle vecchie e reintroduci txtHeight (era dentro llImages)
-        llImagesContainer.removeAllViews();
-        llImagesContainer.addView(txtHeight);
+        h.llImagesContainer.removeAllViews();
+        h.llImagesContainer.addView(h.txtHeight);
 
         if (StatDefinition.TYPE_RANGE.equals(def.type) && def.values != null && !def.values.isEmpty()) {
-            txtHeight.setVisibility(View.VISIBLE);
+            h.txtHeight.setVisibility(View.VISIBLE);
             // Valore salvato = indice * step; per mostrare la fascia risalgo all'indice.
             double step = def.step > 0 ? def.step : 1;
-            int idx = (int) Math.round(valueFor(def) / step);
+            int idx = (int) Math.round(stats.get(def.key) / step);
             idx = Math.max(0, Math.min(idx, def.values.size() - 1));
-            txtHeight.setText(def.values.get(idx));
+            h.txtHeight.setText(def.values.get(idx));
         } else {
-            txtHeight.setVisibility(View.GONE);
+            h.txtHeight.setVisibility(View.GONE);
 
-            float value = valueFor(def);
+            float value = stats.get(def.key);
             int maxLevel = (int) (def.max / def.step);
             float density = context.getResources().getDisplayMetrics().density;
             int starSize = Math.round(density * 22);
@@ -105,10 +88,23 @@ public class PlayerInfoAdapter extends BaseAdapter {
                 ViewGroup.MarginLayoutParams starParams = new ViewGroup.MarginLayoutParams(starSize, starSize);
                 if (i > 0) starParams.setMarginStart(marginPx);
                 image.setLayoutParams(starParams);
-                llImagesContainer.addView(image);
+                h.llImagesContainer.addView(image);
             }
         }
+    }
 
-        return convertView;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        final TextView txtName;
+        final ViewGroup llImagesContainer;
+        final TextView txtHeight;
+        final ImageView imgBonus;
+
+        ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txtName = itemView.findViewById(R.id.txtName);
+            llImagesContainer = itemView.findViewById(R.id.llImages);
+            txtHeight = itemView.findViewById(R.id.txtHeight);
+            imgBonus = itemView.findViewById(R.id.imgBonus);
+        }
     }
 }

@@ -5,20 +5,20 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Model.Constants;
 import com.teammaker.app.Utility.PlayerUtility;
-import com.teammaker.app.Utility.Utility;
 
 import java.util.ArrayList;
 
-public class PlayerGenerateAdapter extends BaseAdapter {
+public class PlayerGenerateAdapter extends RecyclerView.Adapter<PlayerGenerateAdapter.ViewHolder> {
     final private Context context;
     private final ArrayList<Player> playersToSee;
 
@@ -28,66 +28,50 @@ public class PlayerGenerateAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
-        return playersToSee.size();
-    }
+    public int getItemCount() { return playersToSee.size(); }
 
+    @NonNull
     @Override
-    public Player getItem(int position) {
-        return playersToSee.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.layout_player_generate, parent, false);
+        return new ViewHolder(view);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-            convertView = layoutInflater.inflate(R.layout.layout_player_generate, parent, false);
-        }
-
-        Player player = getItem(position);
+    public void onBindViewHolder(@NonNull ViewHolder h, int position) {
+        Player player = playersToSee.get(position);
         boolean isSelected = Constants.playersSelected.contains(player);
 
-        TextView txtName = convertView.findViewById(R.id.txtName);
-        TextView txtSurname = convertView.findViewById(R.id.txtSurname);
-
-        txtName.setText(player.name);
-        txtSurname.setText(player.surname);
+        h.txtName.setText(player.name);
+        h.txtSurname.setText(player.surname);
 
         // Colori per genere (senza icona)
         boolean isF = "F".equals(player.gender);
         int nameColor = ContextCompat.getColor(context,
                 isF ? R.color.women_color_name_dark : R.color.men_color_name_dark);
-        txtName.setTextColor(nameColor);
-        txtSurname.setTextColor(nameColor);
+        h.txtName.setTextColor(nameColor);
+        h.txtSurname.setTextColor(nameColor);
 
-        ImageView btnAdd = convertView.findViewById(R.id.btnAdd);
-        ImageView btnRemove = convertView.findViewById(R.id.btnRemove);
-        LinearLayout llPlayer = convertView.findViewById(R.id.llPlayer);
-
-        llPlayer.setBackground(ContextCompat.getDrawable(context,
+        h.llPlayer.setBackground(ContextCompat.getDrawable(context,
                 isSelected ? R.drawable.bg_player_card_selected : R.drawable.bg_player_card));
-        btnAdd.setVisibility(isSelected ? View.GONE : View.VISIBLE);
-        btnRemove.setVisibility(isSelected ? View.VISIBLE : View.GONE);
+        h.btnAdd.setVisibility(isSelected ? View.GONE : View.VISIBLE);
+        h.btnRemove.setVisibility(isSelected ? View.VISIBLE : View.GONE);
 
-        llPlayer.setOnClickListener(v -> {
+        h.llPlayer.setOnClickListener(v -> {
             boolean selected = Constants.playersSelected.contains(player);
 
             if (selected) {
                 Constants.playersSelected.remove(player);
-                llPlayer.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_player_card));
-                btnAdd.setVisibility(View.VISIBLE);
-                btnRemove.setVisibility(View.GONE);
+                h.llPlayer.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_player_card));
+                h.btnAdd.setVisibility(View.VISIBLE);
+                h.btnRemove.setVisibility(View.GONE);
             } else {
                 Constants.playersSelected.add(player);
-                llPlayer.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_player_card_selected));
-                btnAdd.setVisibility(View.GONE);
-                btnRemove.setVisibility(View.VISIBLE);
+                h.llPlayer.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_player_card_selected));
+                h.btnAdd.setVisibility(View.GONE);
+                h.btnRemove.setVisibility(View.VISIBLE);
             }
 
             ActivityGenerate.txtNSelected.setText(String.valueOf(Constants.playersSelected.size()));
@@ -98,7 +82,20 @@ public class PlayerGenerateAdapter extends BaseAdapter {
                 ActivityGenerate.switchSelectDeselect("SELECT");
             }
         });
+    }
 
-        return convertView;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        final LinearLayout llPlayer;
+        final ImageView btnAdd, btnRemove;
+        final TextView txtName, txtSurname;
+
+        ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            llPlayer = itemView.findViewById(R.id.llPlayer);
+            btnAdd = itemView.findViewById(R.id.btnAdd);
+            btnRemove = itemView.findViewById(R.id.btnRemove);
+            txtName = itemView.findViewById(R.id.txtName);
+            txtSurname = itemView.findViewById(R.id.txtSurname);
+        }
     }
 }

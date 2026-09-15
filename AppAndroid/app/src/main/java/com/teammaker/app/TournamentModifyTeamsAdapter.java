@@ -6,14 +6,16 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 
-public class TournamentModifyTeamsAdapter extends BaseAdapter {
+public class TournamentModifyTeamsAdapter extends RecyclerView.Adapter<TournamentModifyTeamsAdapter.ViewHolder> {
 
     private final Context context;
     private final int nCharSurname;
@@ -37,59 +39,50 @@ public class TournamentModifyTeamsAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() { return tournament.teams.size(); }
+    public int getItemCount() { return tournament.teams.size(); }
 
+    @NonNull
     @Override
-    public Team getItem(int position) { return tournament.teams.get(position); }
-
-    @Override
-    public long getItemId(int position) { return position; }
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.tournament_layout_manage_teams, parent, false);
+        return new ViewHolder(view);
+    }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-
-        if (convertView == null) {
-            convertView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.tournament_layout_manage_teams, parent, false);
-        }
-
-        Team team = getItem(position);
+    public void onBindViewHolder(@NonNull ViewHolder h, int position) {
+        Team team = tournament.teams.get(position);
         ArrayList<Player> players = team.players;
 
-        TextView txtTeamN = convertView.findViewById(R.id.txtTeamN);
-        txtTeamN.setText(context.getString(R.string.team) + " " + tournament.getNTeamByKey(team.key));
+        h.txtTeamN.setText(context.getString(R.string.team) + " " + tournament.getNTeamByKey(team.key));
 
         // Riempie i 5 slot giocatore, nasconde quelli non usati
-        LinearLayout llPlayer34 = convertView.findViewById(R.id.llPlayer34);
-        LinearLayout llPlayer5 = convertView.findViewById(R.id.llPlayer5);
-
-        llPlayer34.setVisibility(View.GONE);
-        llPlayer5.setVisibility(View.GONE);
+        h.llPlayer34.setVisibility(View.GONE);
+        h.llPlayer5.setVisibility(View.GONE);
 
         for (int i = 0; i < CONTAINER_IDS.length; i++) {
-            View container = convertView.findViewById(CONTAINER_IDS[i]);
-            TextView txtName = convertView.findViewById(NAME_IDS[i][0]);
-            TextView txtSurname = convertView.findViewById(NAME_IDS[i][1]);
+            View container = h.itemView.findViewById(CONTAINER_IDS[i]);
+            TextView txtName = h.itemView.findViewById(NAME_IDS[i][0]);
+            TextView txtSurname = h.itemView.findViewById(NAME_IDS[i][1]);
 
             if (i < players.size()) {
                 container.setVisibility(View.VISIBLE);
                 txtName.setText(players.get(i).name);
                 txtSurname.setText(players.get(i).getSurnameOrNickname());
 
-                if (i >= 2 && i <= 3) llPlayer34.setVisibility(View.VISIBLE);
-                if (i == 4) llPlayer5.setVisibility(View.VISIBLE);
+                if (i >= 2 && i <= 3) h.llPlayer34.setVisibility(View.VISIBLE);
+                if (i == 4) h.llPlayer5.setVisibility(View.VISIBLE);
             } else {
                 container.setVisibility(View.GONE);
             }
         }
 
         // Nasconde anche il container del player 2 se c'è solo 1 giocatore
-        convertView.findViewById(R.id.llPlayer2)
+        h.itemView.findViewById(R.id.llPlayer2)
                 .setVisibility(players.size() >= 2 ? View.VISIBLE : View.GONE);
 
-        ImageView btnEdit = convertView.findViewById(R.id.btnEdit);
-        btnEdit.setOnClickListener(v -> {
+        h.btnEdit.setOnClickListener(v -> {
             Intent intent = new Intent(context, TournamentActivityPopUpEditTeam.class);
             intent.putExtra("tournament_key", tournament.key);
             intent.putExtra("team_key", team.key);
@@ -97,14 +90,26 @@ public class TournamentModifyTeamsAdapter extends BaseAdapter {
             context.startActivity(intent);
         });
 
-        ImageView btnDelete = convertView.findViewById(R.id.btnDelete);
-        btnDelete.setOnClickListener(v -> {
+        h.btnDelete.setOnClickListener(v -> {
             Intent intent = new Intent(context, ActivityPopUp.class);
             intent.putExtra("team_key", team.key);
             intent.putExtra("pop_up_type", PopUpType.DELETE_TEAM);
             context.startActivity(intent);
         });
+    }
 
-        return convertView;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        final TextView txtTeamN;
+        final LinearLayout llPlayer34, llPlayer5;
+        final ImageView btnEdit, btnDelete;
+
+        ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txtTeamN = itemView.findViewById(R.id.txtTeamN);
+            llPlayer34 = itemView.findViewById(R.id.llPlayer34);
+            llPlayer5 = itemView.findViewById(R.id.llPlayer5);
+            btnEdit = itemView.findViewById(R.id.btnEdit);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
+        }
     }
 }

@@ -11,14 +11,16 @@ import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Model.Constants;
 import com.teammaker.app.Utility.PlayerExportUtility;
+import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -32,7 +34,7 @@ public class ActivityAdmin extends AppCompatActivity {
     private static ArrayList<Player> playersToSee;
     public static ActivityAdmin activityAdmin;
     public static PlayerAdminAdapter playerAdminAdapter;
-    ListView listViewAdmin;
+    RecyclerView listViewAdmin;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -42,9 +44,11 @@ public class ActivityAdmin extends AppCompatActivity {
 
         activityAdmin = this;
         listViewAdmin = findViewById(R.id.listViewAdmin);
+        listViewAdmin.setLayoutManager(new LinearLayoutManager(this));
+        listViewAdmin.addItemDecoration(new VerticalSpacingItemDecoration(this, 8));
         playersToSee = new ArrayList<>(Constants.players);
         sortActiveFirst(playersToSee);
-        playerAdminAdapter = new PlayerAdminAdapter(listViewAdmin.getContext(), playersToSee);
+        playerAdminAdapter = new PlayerAdminAdapter(this, playersToSee);
         listViewAdmin.setAdapter(playerAdminAdapter);
 
         ImageButton btnGoBack = findViewById(R.id.btnGoBack);

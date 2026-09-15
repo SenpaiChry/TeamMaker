@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Utility.TournamentUtility;
 import com.teammaker.app.Utility.Utility;
+import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
 public class TournamentActivityManageTeams extends AppCompatActivity {
 
@@ -28,7 +30,9 @@ public class TournamentActivityManageTeams extends AppCompatActivity {
         Button btnNewTeam = findViewById(R.id.btnNewTeam);
         btnNewTeam.setOnClickListener(v -> openPopUpNewTeam(this, tournamentKey));
 
-        ListView listView = findViewById(R.id.listViewTeams);
+        RecyclerView listView = findViewById(R.id.listViewTeams);
+        listView.setLayoutManager(new LinearLayoutManager(this));
+        listView.addItemDecoration(new VerticalSpacingItemDecoration(this, 8));
         tournamentModifyTeamsAdapter = new TournamentModifyTeamsAdapter(this, nCharSurname, tournament);
         listView.setAdapter(tournamentModifyTeamsAdapter);
 

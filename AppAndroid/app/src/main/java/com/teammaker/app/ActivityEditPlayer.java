@@ -3,16 +3,18 @@ package com.teammaker.app;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.TopToast.TopToast;
 import com.teammaker.app.Utility.PlayerUtility;
 import com.teammaker.app.Utility.Utility;
+import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
 import java.util.HashMap;
 
@@ -54,7 +56,9 @@ public class ActivityEditPlayer extends AppCompatActivity {
                     updateGenderButtons("F");
                 });
 
-                ListView listStats = findViewById(R.id.listStats);
+                RecyclerView listStats = findViewById(R.id.listStats);
+                listStats.setLayoutManager(new LinearLayoutManager(this));
+                listStats.addItemDecoration(new VerticalSpacingItemDecoration(this, 6));
                 StatsPlayerAdapter statsPlayerAdapter = new StatsPlayerAdapter(this, player.stats, player.bonus);
                 listStats.setAdapter(statsPlayerAdapter);
 
@@ -119,7 +123,9 @@ public class ActivityEditPlayer extends AppCompatActivity {
                     updateGenderButtons("F");
                 });
 
-                ListView listStats = findViewById(R.id.listStats);
+                RecyclerView listStats = findViewById(R.id.listStats);
+                listStats.setLayoutManager(new LinearLayoutManager(this));
+                listStats.addItemDecoration(new VerticalSpacingItemDecoration(this, 6));
                 StatsPlayerAdapter statsPlayerAdapter = new StatsPlayerAdapter(this,
                         new PlayerStats(player.stats),
                         (HashMap<String, Boolean>) player.bonus.clone());

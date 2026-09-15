@@ -5,15 +5,16 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.teammaker.app.Utility.MatchLabelUtility;
 import com.teammaker.app.Utility.PhaseUtility;
-import com.teammaker.app.Utility.TournamentUtility;
 
-public class TournamentBracketAdminAdapter extends BaseAdapter {
+public class TournamentBracketAdminAdapter extends RecyclerView.Adapter<TournamentBracketAdminAdapter.ViewHolder> {
 
     private final Tournament tournament;
 
@@ -22,80 +23,62 @@ public class TournamentBracketAdminAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() { return tournament.matches.size(); }
-
-    @Override
-    public Match getItem(int position) { return tournament.matches.get(position); }
-
-    @Override
-    public long getItemId(int position) { return position; }
+    public int getItemCount() { return tournament.matches.size(); }
 
     public void refresh() {
         notifyDataSetChanged();
     }
 
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.tournament_layout_manage_matches, parent, false);
+        return new ViewHolder(view);
+    }
+
     @SuppressLint("SetTextI18n")
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public void onBindViewHolder(@NonNull ViewHolder h, int position) {
+        Match match = tournament.matches.get(position);
 
-        if (convertView == null) {
-            convertView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.tournament_layout_manage_matches, parent, false);
-        }
+        h.txtDay.setText(h.itemView.getContext().getString(R.string.day) + " " + match.day);
 
-        Match match = getItem(position);
-
-        TextView txtDay = convertView.findViewById(R.id.txtDay);
-        txtDay.setText(parent.getContext().getString(R.string.day) + " " + match.day);
-
-        TextView txtType = convertView.findViewById(R.id.txtType);
-        String phaseLabel = PhaseUtility.label(parent.getContext(), match.type);
+        String phaseLabel = PhaseUtility.label(h.itemView.getContext(), match.type);
         if (!phaseLabel.isEmpty()) {
-            txtType.setText(phaseLabel);
-            txtType.setVisibility(View.VISIBLE);
+            h.txtType.setText(phaseLabel);
+            h.txtType.setVisibility(View.VISIBLE);
         } else {
-            txtType.setVisibility(View.GONE);
+            h.txtType.setVisibility(View.GONE);
         }
 
-        TextView txtTime = convertView.findViewById(R.id.txtTime);
-        txtTime.setText(match.time);
+        h.txtTime.setText(match.time);
+        h.txtTeam1.setText(MatchLabelUtility.teamOrPlaceholder(h.itemView.getContext(), tournament, match, 1));
+        h.txtTeam2.setText(MatchLabelUtility.teamOrPlaceholder(h.itemView.getContext(), tournament, match, 2));
+        h.txtPoints1.setText(String.valueOf(match.points1));
+        h.txtPoints2.setText(String.valueOf(match.points2));
 
-        TextView txtTeam1 = convertView.findViewById(R.id.txtTeam1);
-        TextView txtTeam2 = convertView.findViewById(R.id.txtTeam2);
-        txtTeam1.setText(MatchLabelUtility.teamOrPlaceholder(parent.getContext(), tournament, match, 1));
-        txtTeam2.setText(MatchLabelUtility.teamOrPlaceholder(parent.getContext(), tournament, match, 2));
-
-        TextView txtPoints1 = convertView.findViewById(R.id.txtPoints1);
-        TextView txtPoints2 = convertView.findViewById(R.id.txtPoints2);
-        txtPoints1.setText(String.valueOf(match.points1));
-        txtPoints2.setText(String.valueOf(match.points2));
-
-        TextView txtSetDetail = convertView.findViewById(R.id.txtSetDetail);
         String setDetail = match.detailString();
         if (setDetail.isEmpty()) {
-            txtSetDetail.setVisibility(View.GONE);
+            h.txtSetDetail.setVisibility(View.GONE);
         } else {
-            txtSetDetail.setText(setDetail);
-            txtSetDetail.setVisibility(View.VISIBLE);
+            h.txtSetDetail.setText(setDetail);
+            h.txtSetDetail.setVisibility(View.VISIBLE);
         }
 
-        ImageView btnPlay = convertView.findViewById(R.id.btnPlay);
-        ImageView btnEditRow = convertView.findViewById(R.id.btnEdit);
-        ImageView btnDeleteRow = convertView.findViewById(R.id.btnDelete);
         // Torneo bloccato: niente modifica/eliminazione/play sulle righe partita.
         if (tournament.locked) {
-            btnPlay.setVisibility(View.GONE);
-            btnEditRow.setVisibility(View.GONE);
-            btnDeleteRow.setVisibility(View.GONE);
+            h.btnPlay.setVisibility(View.GONE);
+            h.btnEdit.setVisibility(View.GONE);
+            h.btnDelete.setVisibility(View.GONE);
         } else {
-            btnPlay.setVisibility(View.VISIBLE);
-            btnEditRow.setVisibility(View.VISIBLE);
-            btnDeleteRow.setVisibility(View.VISIBLE);
+            h.btnPlay.setVisibility(View.VISIBLE);
+            h.btnEdit.setVisibility(View.VISIBLE);
+            h.btnDelete.setVisibility(View.VISIBLE);
         }
 
-        View finalConvertView = convertView;
-        btnPlay.setOnClickListener(v -> {
-            String orientation = finalConvertView.getContext().getResources().getConfiguration().orientation
+        h.btnPlay.setOnClickListener(v -> {
+            String orientation = h.itemView.getContext().getResources().getConfiguration().orientation
                     == android.content.res.Configuration.ORIENTATION_LANDSCAPE ? "landscape" : "portrait";
             Intent intent = new Intent(TournamentActivityManageMatches.tournamentActivityManageMatches, ActivityNextMatch.class);
             intent.putExtra("tournament_key", tournament.key);
@@ -104,21 +87,39 @@ public class TournamentBracketAdminAdapter extends BaseAdapter {
             TournamentActivityManageMatches.tournamentActivityManageMatches.startActivity(intent);
         });
 
-        btnEditRow.setOnClickListener(v -> {
+        h.btnEdit.setOnClickListener(v -> {
             Intent intent = new Intent(TournamentActivityManageMatches.tournamentActivityManageMatches, TournamentActivityEditMatch.class);
             intent.putExtra("tournament_key", tournament.key);
             intent.putExtra("position", position);
             TournamentActivityManageMatches.tournamentActivityManageMatches.startActivity(intent);
         });
 
-        btnDeleteRow.setOnClickListener(v -> {
+        h.btnDelete.setOnClickListener(v -> {
             Intent intent = new Intent(TournamentActivityManageMatches.tournamentActivityManageMatches, ActivityPopUp.class);
             intent.putExtra("tournament_key", tournament.key);
             intent.putExtra("match_key", match.key);
             intent.putExtra("pop_up_type", PopUpType.DELETE_MATCH);
             TournamentActivityManageMatches.tournamentActivityManageMatches.startActivity(intent);
         });
+    }
 
-        return convertView;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        final TextView txtDay, txtType, txtTime, txtTeam1, txtTeam2, txtPoints1, txtPoints2, txtSetDetail;
+        final ImageView btnPlay, btnEdit, btnDelete;
+
+        ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txtDay = itemView.findViewById(R.id.txtDay);
+            txtType = itemView.findViewById(R.id.txtType);
+            txtTime = itemView.findViewById(R.id.txtTime);
+            txtTeam1 = itemView.findViewById(R.id.txtTeam1);
+            txtTeam2 = itemView.findViewById(R.id.txtTeam2);
+            txtPoints1 = itemView.findViewById(R.id.txtPoints1);
+            txtPoints2 = itemView.findViewById(R.id.txtPoints2);
+            txtSetDetail = itemView.findViewById(R.id.txtSetDetail);
+            btnPlay = itemView.findViewById(R.id.btnPlay);
+            btnEdit = itemView.findViewById(R.id.btnEdit);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
+        }
     }
 }

@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Model.Constants;
+import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,7 +27,9 @@ public class TournamentActivityManageTournaments extends AppCompatActivity {
 
         tournamentActivityManageTournaments = this;
 
-        ListView listViewTournaments = findViewById(R.id.listViewTournaments);
+        RecyclerView listViewTournaments = findViewById(R.id.listViewTournaments);
+        listViewTournaments.setLayoutManager(new LinearLayoutManager(this));
+        listViewTournaments.addItemDecoration(new VerticalSpacingItemDecoration(this, 8));
         tournamentAdapter = new TournamentAdapter(this);
         listViewTournaments.setAdapter(tournamentAdapter);
 

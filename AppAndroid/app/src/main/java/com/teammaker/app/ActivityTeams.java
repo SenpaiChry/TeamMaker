@@ -7,15 +7,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Model.Constants;
 import com.teammaker.app.Utility.TeamGeneratorUtility;
+import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -51,7 +53,9 @@ public class ActivityTeams extends AppCompatActivity {
         Button btnSave = findViewById(R.id.btnSave);
         btnReroll = findViewById(R.id.btnReroll);
 
-        ListView listView = findViewById(R.id.listViewTeams);
+        RecyclerView listView = findViewById(R.id.listViewTeams);
+        listView.setLayoutManager(new LinearLayoutManager(this));
+        listView.addItemDecoration(new VerticalSpacingItemDecoration(this, 8));
         playerTeamsAdapter = new PlayerTeamsAdapter(type);
         listView.setAdapter(playerTeamsAdapter);
 
