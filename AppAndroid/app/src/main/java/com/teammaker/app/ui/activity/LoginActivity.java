@@ -35,7 +35,6 @@ public class LoginActivity extends AppCompatActivity {
             AdminAuth.signIn(password, new AdminAuth.AuthCallback() {
                 @Override
                 public void onSuccess() {
-                    Constants.logged = true;
                     Intent intent = new Intent(LoginActivity.this, ManageTournamentActivity.class);
                     startActivity(intent);
                     finish();

@@ -1,7 +1,6 @@
 package com.teammaker.app.domain;
 
-import static com.teammaker.app.data.model.Constants.dbRoot;
-
+import static com.teammaker.app.data.AppConfig.DB_ROOT;
 import com.teammaker.app.data.model.Match;
 import com.teammaker.app.data.model.Team;
 import com.teammaker.app.data.model.Tournament;
@@ -14,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.data.repository.MatchRepository;
+import com.teammaker.app.data.AppConfig;
 
 /**
  * Genera il tabellone a eliminazione diretta (quarti / semifinali / finale + 3°/4°)
@@ -59,7 +59,7 @@ public class FinalStageGenerator {
         }
 
         DatabaseReference matchesRef = FirebaseDatabase.getInstance()
-                .getReference(dbRoot + "tournaments/" + tournament.key + "/matches/");
+                .getReference(DB_ROOT + "tournaments/" + tournament.key + "/matches/");
         int g = tournament.nBracket >= 2 ? tournament.nBracket : 1;
         boolean gironi = tournament.nBracket >= 2;
 

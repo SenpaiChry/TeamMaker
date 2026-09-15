@@ -1,21 +1,18 @@
 package com.teammaker.app.data.model;
 
-import com.teammaker.app.data.model.Player;
-import com.teammaker.app.data.model.Team;
-import com.teammaker.app.data.model.Tournament;
-
 import java.util.ArrayList;
 
+/**
+ * Contenitore residuale di stato globale. In via di smantellamento:
+ *   - cache dati (players, tournaments, downloadEnd, dbRoot) → repository
+ *   - flag admin (logged) → AdminAuth.isAdmin()
+ *   - stato generatore (nCycle, inputMaxDifference, lastDifference, teams) → TODO Step B
+ *   - selezione giocatori (playersSelected) → TODO Step C
+ */
 public class Constants {
     public static float inputMaxDifference = 1.0F;
     public static float lastDifference = 0.0F;
     public static int nCycle = 0;
-    public static ArrayList<Player> players = new ArrayList<>();
     public static ArrayList<Player> playersSelected = new ArrayList<>();
     public static ArrayList<Team> teams = new ArrayList<>();
-    public static ArrayList<Tournament> tournaments = new ArrayList<>();
-    public static boolean logged = false;
-    public static boolean downloadEnd = false;
-    public static final String dbRoot = "teammaker/";
-//    public static final String dbRoot = "teammakerStaging/";
 }

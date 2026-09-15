@@ -1,7 +1,6 @@
 package com.teammaker.app.domain;
 
-import static com.teammaker.app.data.model.Constants.dbRoot;
-
+import static com.teammaker.app.data.AppConfig.DB_ROOT;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -15,6 +14,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 import com.teammaker.app.data.model.Constants;
+import com.teammaker.app.data.AppConfig;
 
 /**
  * Gestisce il nodo "live_match" su Firebase.
@@ -22,7 +22,7 @@ import com.teammaker.app.data.model.Constants;
  */
 public class LiveMatchTimer {
 
-    private static final String LIVE_NODE = dbRoot + "live_match";
+    private static final String LIVE_NODE = DB_ROOT + "live_match";
     private static ValueEventListener liveListener;
     private static DatabaseReference liveRef;
 

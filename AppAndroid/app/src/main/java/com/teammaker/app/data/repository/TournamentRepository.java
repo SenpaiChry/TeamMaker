@@ -1,15 +1,15 @@
 package com.teammaker.app.data.repository;
 
-import static com.teammaker.app.data.model.Constants.dbRoot;
+import static com.teammaker.app.data.AppConfig.DB_ROOT;
 
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.data.model.Match;
 import com.teammaker.app.data.model.Team;
 import com.teammaker.app.data.model.Tournament;
-import com.teammaker.app.data.model.Constants;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,6 +18,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -28,9 +29,22 @@ import com.teammaker.app.bus.DataChangeBus;
 import com.teammaker.app.data.firebase.FirebaseWriteHelper;
 import com.teammaker.app.data.mapper.MatchMapper;
 import com.teammaker.app.data.mapper.TeamMapper;
-import com.teammaker.app.ui.activity.MainActivity;
+import com.teammaker.app.data.AppConfig;
 
 public class TournamentRepository {
+
+    /** Cache in memoria dei tornei (sincronizzata dal listener realtime). */
+    private static final ArrayList<Tournament> tournaments = new ArrayList<>();
+
+    /** Vista mutabile della cache. */
+    public static ArrayList<Tournament> getAll() { return tournaments; }
+
+    /**
+     * True quando il primo caricamento dei dati e' completato (players + tournaments).
+     * Prima si chiamava TournamentRepository.isDataReady().
+     */
+    private static boolean dataReady = false;
+    public static boolean isDataReady() { return dataReady; }
 
     /** Listener persistente: si stacca con removeTournamentsListener() */
     private static ValueEventListener tournamentsListener;
@@ -42,15 +56,15 @@ public class TournamentRepository {
      */
     public static void downloadTournaments() {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        tournamentsRef = firebaseDatabase.getReference(dbRoot + "tournaments/");
+        tournamentsRef = firebaseDatabase.getReference(DB_ROOT + "tournaments/");
 
         tournamentsListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Constants.tournaments.clear();
+                TournamentRepository.getAll().clear();
 
                 if (!snapshot.exists()) {
-                    Constants.downloadEnd = true;
+                    dataReady = true;
                     return;
                 }
 
@@ -101,19 +115,19 @@ public class TournamentRepository {
                     }
 
                     Collections.sort(tournament.matches);
-                    Constants.tournaments.add(tournament);
+                    TournamentRepository.getAll().add(tournament);
                     } catch (Exception e) {
                         Log.e("TournamentRepository", "Torneo malformato ignorato: " + tournamentSnapshot.getKey(), e);
                     }
                 }
 
-                Constants.downloadEnd = true;
+                dataReady = true;
 
                 // Notifica chi mostra tornei/partite (l'Activity visibile lo raccoglie)
                 DataChangeBus.emit(DataChangeBus.Event.TOURNAMENTS);
                 DataChangeBus.emit(DataChangeBus.Event.MATCHES);
 
-                Log.d("Firebase", "Tournaments aggiornati in tempo reale: " + Constants.tournaments.size());
+                Log.d("Firebase", "Tournaments aggiornati in tempo reale: " + TournamentRepository.getAll().size());
             }
 
             @Override
@@ -134,10 +148,10 @@ public class TournamentRepository {
     }
 
     public static void deactivateAllTournaments() {
-        for (Tournament tournament : Constants.tournaments) {
+        for (Tournament tournament : TournamentRepository.getAll()) {
             if (tournament.isValid) {
                 tournament.isValid = false;
-                DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key);
+                DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournament.key);
                 FirebaseWriteHelper.attach(null, "deactivateAllTournaments", dbRef.child("is_valid").setValue("false"));
                 return;
             }
@@ -150,14 +164,14 @@ public class TournamentRepository {
      * solo SBLOCCA e ATTIVA/DISATTIVA. Non e' una guardia server-side.
      */
     public static void setLocked(String key, boolean locked) {
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + key);
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + key);
         FirebaseWriteHelper.attach(null, "setLocked", dbRef.child("locked").setValue(locked));
         Tournament tournament = getTournamentByKey(key);
         if (tournament != null) tournament.locked = locked;
     }
 
     public static void deleteTournament(String key) {
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + key);
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + key);
         dbRef.removeValue().addOnSuccessListener(aVoid -> {
             Log.d("Firebase", "Torneo eliminato: " + key);
         }).addOnFailureListener(e -> {
@@ -169,14 +183,14 @@ public class TournamentRepository {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         String formattedDate = sdf.format(date.getTime());
 
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + key);
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + key);
         dbRef.child("name").setValue(name);
         dbRef.child("date").setValue(formattedDate);
     }
 
     public static void saveNewTournamentTeams(String tournamentName, Calendar date) {
-        String key = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/").push().getKey();
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + key);
+        String key = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/").push().getKey();
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + key);
         DatabaseReference dbRefTeam;
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -190,7 +204,7 @@ public class TournamentRepository {
         dbRef.child("date").setValue(formattedDate);
 
         for (Team team : Constants.teams) {
-            String keyTeam = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + key + "/teams/").push().getKey();
+            String keyTeam = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + key + "/teams/").push().getKey();
             dbRefTeam = dbRef.child("teams").child(keyTeam);
             team.key = keyTeam;
 
@@ -204,12 +218,12 @@ public class TournamentRepository {
 
     public static void updateNBracketsTournament(String tournamentKey, int nBrackets) {
         Tournament tournament = getTournamentByKey(tournamentKey);
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key);
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournament.key);
         dbRef.child("nBracket").setValue(nBrackets);
     }
 
     public static Tournament getActiveTournament() {
-        for (Tournament tournament : Constants.tournaments) {
+        for (Tournament tournament : TournamentRepository.getAll()) {
             if (tournament.isValid) {
                 return tournament;
             }
@@ -224,7 +238,7 @@ public class TournamentRepository {
      */
     public static void setActiveTournament(String key) {
         Map<String, Object> updates = new HashMap<>();
-        for (Tournament tournament : Constants.tournaments) {
+        for (Tournament tournament : TournamentRepository.getAll()) {
             if (tournament.isValid && !tournament.key.equals(key)) {
                 updates.put(tournament.key + "/is_valid", "false");
                 tournament.isValid = false;
@@ -232,12 +246,12 @@ public class TournamentRepository {
         }
         updates.put(key + "/is_valid", "true");
 
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/");
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/");
         FirebaseWriteHelper.attach(null, "setActiveTournament", dbRef.updateChildren(updates));
     }
 
     public static Tournament getTournamentByKey(String key) {
-        for (Tournament tournament : Constants.tournaments) {
+        for (Tournament tournament : TournamentRepository.getAll()) {
             if (tournament.key.equals(key)) {
                 return tournament;
             }

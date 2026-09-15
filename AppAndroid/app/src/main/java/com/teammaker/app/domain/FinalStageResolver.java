@@ -1,7 +1,6 @@
 package com.teammaker.app.domain;
 
-import static com.teammaker.app.data.model.Constants.dbRoot;
-
+import static com.teammaker.app.data.AppConfig.DB_ROOT;
 import com.teammaker.app.data.model.Match;
 import com.teammaker.app.data.model.Team;
 import com.teammaker.app.data.model.Tournament;
@@ -14,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.data.repository.TournamentRepository;
+import com.teammaker.app.data.AppConfig;
 
 /**
  * Risolve i placeholder delle fasi finali: trasforma le sorgenti degli slot
@@ -81,7 +81,7 @@ public class FinalStageResolver {
 
         if (!updates.isEmpty()) {
             DatabaseReference dbRef = FirebaseDatabase.getInstance()
-                    .getReference(dbRoot + "tournaments/" + tournament.key + "/matches/");
+                    .getReference(DB_ROOT + "tournaments/" + tournament.key + "/matches/");
             dbRef.updateChildren(updates);
         }
     }

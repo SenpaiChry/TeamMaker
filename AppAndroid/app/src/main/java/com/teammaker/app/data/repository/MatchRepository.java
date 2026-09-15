@@ -1,7 +1,6 @@
 package com.teammaker.app.data.repository;
 
-import static com.teammaker.app.data.model.Constants.dbRoot;
-
+import static com.teammaker.app.data.AppConfig.DB_ROOT;
 import com.teammaker.app.data.model.Match;
 import com.teammaker.app.data.model.Team;
 import com.teammaker.app.TeamMakerApplication;
@@ -20,6 +19,7 @@ import com.teammaker.app.data.mapper.MatchMapper;
 import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.domain.FinalStageResolver;
 import com.teammaker.app.domain.Times;
+import com.teammaker.app.data.AppConfig;
 
 public class MatchRepository {
 
@@ -40,7 +40,7 @@ public class MatchRepository {
      */
     public static void saveMatches(String tournamentKey, List<Match> matches) {
         Tournament tournament = TournamentRepository.getTournamentByKey(tournamentKey);
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key + "/matches/");
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournament.key + "/matches/");
 
         Map<String, Object> updates = new HashMap<>();
         for (Match match : matches) {
@@ -59,7 +59,7 @@ public class MatchRepository {
 
     public static void addNewMatch(String tournamentKey, Match match) {
         Tournament tournament = TournamentRepository.getTournamentByKey(tournamentKey);
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key + "/matches/");
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournament.key + "/matches/");
 
         match.key = dbRef.push().getKey();
         // Scrittura atomica del nodo completo (era una sequenza di 8 setValue distinte)
@@ -80,7 +80,7 @@ public class MatchRepository {
 
         for (int i = 0; i < tournament.matches.size(); i++) {
             if (tournament.matches.get(i).key.equals(match.key)) {
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key + "/matches/" + tournament.matches.get(i).key);
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournament.key + "/matches/" + tournament.matches.get(i).key);
                 // Scrittura atomica del nodo (era una sequenza di 8 setValue distinte)
                 FirebaseWriteHelper.attach(
                         TeamMakerApplication.getAppContext(),
@@ -113,7 +113,7 @@ public class MatchRepository {
 
         for (Match match : tournament.matches) {
             if (match.key.equals(matchKey)) {
-                DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournamentKey + "/matches/" + match.key);
+                DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournamentKey + "/matches/" + match.key);
 
                 tournament.matches.remove(match);
                 DataChangeBus.emit(DataChangeBus.Event.MATCHES);
@@ -143,7 +143,7 @@ public class MatchRepository {
         tournament.matches.clear();
         tournament.nBracket = 0;
 
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournamentKey);
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournamentKey);
         FirebaseWriteHelper.attach(
                 TeamMakerApplication.getAppContext(),
                 "deleteEveryMatch",

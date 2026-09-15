@@ -1,6 +1,6 @@
 package com.teammaker.app.data.repository;
 
-import static com.teammaker.app.data.model.Constants.dbRoot;
+import static com.teammaker.app.data.AppConfig.DB_ROOT;
 
 import android.util.Log;
 
@@ -11,7 +11,6 @@ import com.teammaker.app.data.model.PlayerStats;
 import com.teammaker.app.data.model.StatDefinition;
 import com.teammaker.app.data.model.Team;
 import com.teammaker.app.data.model.Tournament;
-import com.teammaker.app.data.model.Constants;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,18 +22,24 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import com.teammaker.app.bus.DataChangeBus;
-import com.teammaker.app.ui.activity.MainActivity;
 import com.teammaker.app.util.NetworkUtils;
+import com.teammaker.app.data.AppConfig;
 
 public class PlayerRepository {
+
+    /** Cache in memoria della lista giocatori (sincronizzata dal listener realtime). */
+    private static final ArrayList<Player> players = new ArrayList<>();
+
+    /** Vista mutabile della cache: chi la modifica lo fa a suo rischio. */
+    public static ArrayList<Player> getAll() { return players; }
 
     /** Listener persistente: si stacca con removePlayersListener() */
     private static ValueEventListener playersListener;
     private static DatabaseReference playersRef;
 
     public static void addPlayer(Player player, NetworkUtils.FirebaseCallback callback) {
-        String key = FirebaseDatabase.getInstance().getReference(dbRoot + "players/").push().getKey();
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "players/" + key);
+        String key = FirebaseDatabase.getInstance().getReference(DB_ROOT + "players/").push().getKey();
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "players/" + key);
 
         player.key = key;
         // Non aggiorniamo la lista locale: il listener in tempo reale se ne occupa
@@ -71,7 +76,7 @@ public class PlayerRepository {
     }
 
     public static void addEditPlayer(Player playerChanged, String playerKey) {
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "players/" + playerChanged.key);
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "players/" + playerChanged.key);
 
         dbRef.child("name").setValue(playerChanged.name);
         dbRef.child("surname").setValue(playerChanged.surname);
@@ -92,13 +97,13 @@ public class PlayerRepository {
         dbRef.child("bonus").setValue(bonusMap);
 
         // Aggiorna anche i riferimenti nei tornei
-        for (Tournament tournament : Constants.tournaments) {
+        for (Tournament tournament : TournamentRepository.getAll()) {
             for (Team team : tournament.teams) {
                 for (int i = 0; i < team.players.size(); i++) {
                     if (team.players.get(i).key.equals(playerChanged.key)) {
                         team.players.get(i).name = playerChanged.name;
                         DatabaseReference dbRefTournament = FirebaseDatabase.getInstance()
-                                .getReference(dbRoot + "tournaments/" + tournament.key + "/teams/" + team.key);
+                                .getReference(DB_ROOT + "tournaments/" + tournament.key + "/teams/" + team.key);
                         dbRefTournament.child("player" + (i + 1)).setValue(playerChanged.key);
                     }
                 }
@@ -107,7 +112,7 @@ public class PlayerRepository {
     }
 
     public static void deletePlayer(String playerKey) {
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "players/" + playerKey);
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "players/" + playerKey);
         dbRef.removeValue().addOnSuccessListener(aVoid -> {
             Log.d("Firebase", "Giocatore eliminato: " + playerKey);
         }).addOnFailureListener(e -> {
@@ -116,12 +121,12 @@ public class PlayerRepository {
     }
 
     public static void archivePlayer(String playerKey) {
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "players/" + playerKey);
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "players/" + playerKey);
         dbRef.child("is_active").setValue(false);
     }
 
     public static void unarchivePlayer(String playerKey) {
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "players/" + playerKey);
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "players/" + playerKey);
         dbRef.child("is_active").setValue(true);
     }
 
@@ -131,16 +136,16 @@ public class PlayerRepository {
      */
     public static void downloadPlayers() {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        playersRef = firebaseDatabase.getReference(dbRoot + "players/");
+        playersRef = firebaseDatabase.getReference(DB_ROOT + "players/");
 
         playersListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Constants.players.clear();
+                PlayerRepository.getAll().clear();
 
                 if (!snapshot.exists()) {
                     // Primo avvio: avvia anche il listener dei tornei
-                    if (!Constants.downloadEnd) {
+                    if (!TournamentRepository.isDataReady()) {
                         TournamentRepository.downloadTournaments();
                     }
                     return;
@@ -167,20 +172,20 @@ public class PlayerRepository {
                         Boolean v = b.getValue(Boolean.class);
                         if (Boolean.TRUE.equals(v)) player.bonus.put(b.getKey(), true);
                     }
-                    Constants.players.add(player);
+                    PlayerRepository.getAll().add(player);
                 }
 
-                Collections.sort(Constants.players);
+                Collections.sort(PlayerRepository.getAll());
 
                 // Primo avvio: avvia il listener dei tornei
-                if (!Constants.downloadEnd) {
+                if (!TournamentRepository.isDataReady()) {
                     TournamentRepository.downloadTournaments();
                 }
 
                 // Notifica chi mostra la lista giocatori (Activity visibile lo raccoglie)
                 DataChangeBus.emit(DataChangeBus.Event.PLAYERS);
 
-                Log.d("Firebase", "Players aggiornati in tempo reale: " + Constants.players.size());
+                Log.d("Firebase", "Players aggiornati in tempo reale: " + PlayerRepository.getAll().size());
             }
 
             @Override
@@ -202,7 +207,7 @@ public class PlayerRepository {
 
     public static ArrayList<Player> getPlayersActive(boolean active) {
         ArrayList<Player> players = new ArrayList<>();
-        for (Player p : Constants.players) {
+        for (Player p : PlayerRepository.getAll()) {
             if (p.isActive == active) {
                 players.add(p);
             }
@@ -211,7 +216,7 @@ public class PlayerRepository {
     }
 
     public static Player getPlayerByKey(String key) {
-        for (Player p : Constants.players) {
+        for (Player p : PlayerRepository.getAll()) {
             if (p.key.equals(key)) {
                 return p;
             }

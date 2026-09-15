@@ -19,6 +19,7 @@ import java.util.Comparator;
 import com.teammaker.app.data.model.Tournament;
 import com.teammaker.app.ui.adapter.TournamentAdapter;
 import com.teammaker.app.R;
+import com.teammaker.app.data.repository.TournamentRepository;
 
 public class ManageTournamentsActivity extends AppCompatActivity {
 
@@ -65,7 +66,7 @@ public class ManageTournamentsActivity extends AppCompatActivity {
 
     /** Riordina i tornei per data (desc) e notifica l'adapter se aperto. */
     private void reloadTournamentsInternal() {
-        Collections.sort(Constants.tournaments, new Comparator<Tournament>() {
+        Collections.sort(TournamentRepository.getAll(), new Comparator<Tournament>() {
             @Override
             public int compare(Tournament t1, Tournament t2) {
                 if (t1.date == null && t2.date == null) return 0;

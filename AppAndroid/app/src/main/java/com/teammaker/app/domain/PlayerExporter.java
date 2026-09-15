@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import com.teammaker.app.data.repository.StatsRepository;
+import com.teammaker.app.data.repository.PlayerRepository;
 
 /**
  * Esporta la lista giocatori con tutte le statistiche in un file .xlsx
@@ -60,7 +61,7 @@ public class PlayerExporter {
 
             // ---- RIGHE GIOCATORI ----
             int rowIndex = 1;
-            for (Player player : Constants.players) {
+            for (Player player : PlayerRepository.getAll()) {
                 if (player == null) continue;
 
                 ws.value(rowIndex, 0, str(player.name));

@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import com.teammaker.app.data.AppConfig;
 
 /**
  * Aggiornamento in-app tramite GitHub Releases.
@@ -112,7 +113,7 @@ public class AppUpdater {
 
         try {
             FirebaseDatabase.getInstance()
-                    .getReference(Constants.dbRoot + "app_min_version_code")
+                    .getReference(AppConfig.DB_ROOT + "app_min_version_code")
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot snapshot) {

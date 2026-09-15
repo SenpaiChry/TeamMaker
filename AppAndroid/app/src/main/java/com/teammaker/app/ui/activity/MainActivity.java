@@ -1,7 +1,6 @@
 package com.teammaker.app.ui.activity;
 
-import static com.teammaker.app.data.model.Constants.dbRoot;
-
+import static com.teammaker.app.data.AppConfig.DB_ROOT;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Intent;
@@ -25,6 +24,7 @@ import com.teammaker.app.util.NetworkUtils;
 import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.TeamMakerApplication;
 import com.teammaker.app.R;
+import com.teammaker.app.data.AppConfig;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,9 +41,7 @@ public class MainActivity extends AppCompatActivity {
         // Firebase Auth persiste la sessione: se l'admin era gia' loggato in una
         // precedente esecuzione dell'app, ripristina il flag e permetti l'accesso
         // diretto senza riscrivere la password.
-        Constants.logged = AdminAuth.isAdmin();
-
-        if (dbRoot.equals("teammakerStaging/")) {
+        if (DB_ROOT.equals("teammakerStaging/")) {
             findViewById(R.id.txtDB).setVisibility(View.VISIBLE);
         }
 
@@ -86,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         // ---- Bottoni esistenti ----
         Button btnOpenGenerate = findViewById(R.id.btnOpenGenerate);
         btnOpenGenerate.setOnClickListener(v -> {
-            if (Constants.downloadEnd) {
+            if (TournamentRepository.isDataReady()) {
                 Intent intent = new Intent(this, GenerateActivity.class);
                 intent.putExtra("GENERATE_FOR", "TEMPORARY");
                 startActivity(intent);
@@ -97,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnOpenTournament = findViewById(R.id.btnOpenTournament);
         btnOpenTournament.setOnClickListener(v -> {
-            if (Constants.downloadEnd) {
+            if (TournamentRepository.isDataReady()) {
                 if (TournamentRepository.getActiveTournament() != null) {
                     Intent intent = new Intent(this, TeamsBracketsTableActivity.class);
                     startActivity(intent);
@@ -118,8 +116,8 @@ public class MainActivity extends AppCompatActivity {
         Button btnOpenLogin = findViewById(R.id.btnOpenLogin);
         btnOpenLogin.setOnClickListener(v -> {
             Intent intent;
-            if (Constants.logged) {
-                if (Constants.downloadEnd) {
+            if (AdminAuth.isAdmin()) {
+                if (TournamentRepository.isDataReady()) {
                     intent = new Intent(this, ManageTournamentActivity.class);
                     startActivity(intent);
                 } else {

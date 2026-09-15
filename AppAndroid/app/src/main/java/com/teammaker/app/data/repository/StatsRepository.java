@@ -1,7 +1,6 @@
 package com.teammaker.app.data.repository;
 
-import static com.teammaker.app.data.model.Constants.dbRoot;
-
+import static com.teammaker.app.data.AppConfig.DB_ROOT;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -20,6 +19,7 @@ import java.util.Map;
 import com.teammaker.app.data.firebase.FirebaseWriteHelper;
 import com.teammaker.app.data.mapper.StatMapper;
 import com.teammaker.app.data.model.Constants;
+import com.teammaker.app.data.AppConfig;
 
 /**
  * Catalogo delle statistiche: prima era una lista hardcoded in Constants, ora
@@ -28,7 +28,7 @@ import com.teammaker.app.data.model.Constants;
  */
 public class StatsRepository {
 
-    private static final String NODE = dbRoot + "stats";
+    private static final String NODE = DB_ROOT + "stats";
 
     private static final List<StatDefinition> DEFINITIONS = new ArrayList<>();
     private static final List<Runnable> LISTENERS = new ArrayList<>();

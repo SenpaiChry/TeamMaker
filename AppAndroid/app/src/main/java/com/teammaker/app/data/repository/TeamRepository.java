@@ -1,7 +1,6 @@
 package com.teammaker.app.data.repository;
 
-import static com.teammaker.app.data.model.Constants.dbRoot;
-
+import static com.teammaker.app.data.AppConfig.DB_ROOT;
 import com.teammaker.app.data.model.Team;
 import com.teammaker.app.data.model.Tournament;
 import com.teammaker.app.data.model.Constants;
@@ -10,13 +9,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.teammaker.app.bus.DataChangeBus;
 import com.teammaker.app.data.firebase.FirebaseWriteHelper;
 import com.teammaker.app.data.mapper.TeamMapper;
+import com.teammaker.app.data.AppConfig;
 
 public class TeamRepository {
 
     public static void saveBracketForTeams(String tournamentKey) {
         Tournament tournament = TournamentRepository.getTournamentByKey(tournamentKey);
 
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key + "/teams/");
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournament.key + "/teams/");
 
         for (Team team : tournament.teams) {
             DatabaseReference dbRefTeam = dbRef.child(team.key + "/");
@@ -27,9 +27,9 @@ public class TeamRepository {
     public static void deleteTeam(String teamKey) {
         Team team = getTeamByKey(teamKey);
 
-        for (Tournament tournament : Constants.tournaments) {
+        for (Tournament tournament : TournamentRepository.getAll()) {
             if (tournament.teams.contains(team)) {
-                DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key + "/teams/" + team.key);
+                DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournament.key + "/teams/" + team.key);
 
                 tournament.teams.remove(team);
                 DataChangeBus.emit(DataChangeBus.Event.TEAMS);
@@ -46,13 +46,13 @@ public class TeamRepository {
         // Mappa completa via TeamMapper: setValue sostituisce il nodo per intero,
         // così i playerN residui (es. player4 quando la squadra passa da 4 a 3) spariscono.
         for (Team team : tournament.teams) {
-            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key + "/teams/" + team.key);
+            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournament.key + "/teams/" + team.key);
             FirebaseWriteHelper.attach(null, "editTeamsTournament", dbRef.setValue(TeamMapper.toMap(team)));
         }
     }
 
     public static Team getTeamByKey(String key) {
-        for (Tournament tournament : Constants.tournaments) {
+        for (Tournament tournament : TournamentRepository.getAll()) {
             for (Team team : tournament.teams) {
                 if (team.key.equals(key)) {
                     return team;
@@ -66,8 +66,8 @@ public class TeamRepository {
     public static void addTeamToTournament(String tournamentKey, Team newTeam) {
         Tournament tournament = TournamentRepository.getTournamentByKey(tournamentKey);
 
-        String key = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key + "/teams/").push().getKey();
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key + "/teams/" + key);
+        String key = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournament.key + "/teams/").push().getKey();
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournament.key + "/teams/" + key);
 
         newTeam.key = key;
         tournament.teams.add(newTeam);

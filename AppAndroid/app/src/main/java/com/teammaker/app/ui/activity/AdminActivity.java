@@ -33,6 +33,7 @@ import java.util.Locale;
 import com.teammaker.app.data.model.Player;
 import com.teammaker.app.ui.adapter.PlayerAdminAdapter;
 import com.teammaker.app.R;
+import com.teammaker.app.data.repository.PlayerRepository;
 
 public class AdminActivity extends AppCompatActivity {
 
@@ -57,7 +58,7 @@ public class AdminActivity extends AppCompatActivity {
         listViewAdmin = findViewById(R.id.listViewAdmin);
         listViewAdmin.setLayoutManager(new LinearLayoutManager(this));
         listViewAdmin.addItemDecoration(new VerticalSpacingItemDecoration(this, 8));
-        playersToSee = new ArrayList<>(Constants.players);
+        playersToSee = new ArrayList<>(PlayerRepository.getAll());
         sortActiveFirst(playersToSee);
         playerAdminAdapter = new PlayerAdminAdapter(this, playersToSee);
         listViewAdmin.setAdapter(playerAdminAdapter);
@@ -96,7 +97,7 @@ public class AdminActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 playersToSee.clear();
 
-                for (Player player : Constants.players) {
+                for (Player player : PlayerRepository.getAll()) {
                     if (player.containsString(s.toString())) {
                         playersToSee.add(player);
                     }
@@ -157,7 +158,7 @@ public class AdminActivity extends AppCompatActivity {
     private void reloadPlayersInternal() {
         if (playerAdminAdapter == null) return;
         playersToSee.clear();
-        playersToSee.addAll(Constants.players);
+        playersToSee.addAll(PlayerRepository.getAll());
         sortActiveFirst(playersToSee);
         playerAdminAdapter.notifyDataSetChanged();
     }

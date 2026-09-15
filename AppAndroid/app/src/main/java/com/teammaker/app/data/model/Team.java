@@ -3,6 +3,7 @@ package com.teammaker.app.data.model;
 import com.teammaker.app.data.model.Constants;
 
 import java.util.ArrayList;
+import com.teammaker.app.data.repository.PlayerRepository;
 
 public class Team {
     public String key;
@@ -25,7 +26,7 @@ public class Team {
     }
 
     public void addPlayerByKey(String key) {
-        for (Player p : Constants.players) {
+        for (Player p : PlayerRepository.getAll()) {
             if (p.key.equals(key)) {
                 Player temp = new Player();
                 temp.setTo(p);

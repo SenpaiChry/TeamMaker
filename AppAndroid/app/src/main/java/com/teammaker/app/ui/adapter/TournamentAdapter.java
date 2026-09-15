@@ -24,6 +24,7 @@ import com.teammaker.app.data.model.Tournament;
 import com.teammaker.app.ui.popup.ConfirmPopupActivity;
 import com.teammaker.app.ui.popup.ManageTournamentPopupActivity;
 import com.teammaker.app.R;
+import com.teammaker.app.data.repository.TournamentRepository;
 
 public class TournamentAdapter extends RecyclerView.Adapter<TournamentAdapter.ViewHolder> {
 
@@ -32,7 +33,7 @@ public class TournamentAdapter extends RecyclerView.Adapter<TournamentAdapter.Vi
 
     public TournamentAdapter(Context context) {
         this.context = context;
-        this.tournaments = Constants.tournaments;
+        this.tournaments = TournamentRepository.getAll();
 
         Collections.sort(tournaments, (t1, t2) -> {
             if (t1.date == null && t2.date == null) return 0;
