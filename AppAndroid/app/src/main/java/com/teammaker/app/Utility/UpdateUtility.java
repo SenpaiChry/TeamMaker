@@ -14,8 +14,13 @@ import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.teammaker.app.ActivityPopUpUpdateApp;
 import com.teammaker.app.BuildConfig;
+import com.teammaker.app.Model.Constants;
 import com.teammaker.app.R;
 
 import org.json.JSONArray;
@@ -59,11 +64,21 @@ public class UpdateUtility {
      * Controlla se e' disponibile una release piu' recente.
      * @param silent se true, non mostra toast/popup in caso di "nessun update"
      *               (usato al boot); se false mostra sempre un feedback.
+     *
+     * Anche il flag "mandatory" viene calcolato: se
+     * teammaker/app_min_version_code > BuildConfig.VERSION_CODE, l'update
+     * remoto viene proposto in modalita' obbligatoria (popup non skippabile).
      */
     public static void checkForUpdate(Activity activity, boolean silent) {
         new Thread(() -> {
             ReleaseInfo info = fetchLatestRelease();
+            // Lettura in parallelo del min supportato: se manca (o offline) resta 0
+            // e il popup sara' opzionale. Il timeout in fetchMinVersion evita di
+            // bloccare l'utente su rete lenta.
+            int minVersion = fetchMinVersionCodeBlocking();
+
             activity.runOnUiThread(() -> {
+                boolean mandatory = minVersion > BuildConfig.VERSION_CODE;
                 if (info == null) {
                     if (!silent) {
                         Toast.makeText(activity, R.string.no_updates_available, Toast.LENGTH_SHORT).show();
@@ -76,12 +91,49 @@ public class UpdateUtility {
                     intent.putExtra("new_version_name", info.versionName != null ? info.versionName : "");
                     intent.putExtra("apk_url", info.apkUrl);
                     intent.putExtra("changelog", info.changelog != null ? info.changelog : "");
+                    intent.putExtra("mandatory", mandatory);
                     activity.startActivity(intent);
                 } else if (!silent) {
                     Toast.makeText(activity, R.string.no_updates_available, Toast.LENGTH_SHORT).show();
                 }
             });
         }, "UpdateCheck").start();
+    }
+
+    /**
+     * Legge teammaker/app_min_version_code da Firebase in modo bloccante (max 5s).
+     * 0 se il nodo manca, non e' un numero, o se c'e' errore/offline.
+     * Chiamare SOLO da thread non-UI (blocca fino a risposta o timeout).
+     */
+    private static int fetchMinVersionCodeBlocking() {
+        final int[] result = { 0 };
+        final Object lock = new Object();
+        final boolean[] done = { false };
+
+        try {
+            FirebaseDatabase.getInstance()
+                    .getReference(Constants.dbRoot + "app_min_version_code")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            Integer v = snapshot.getValue(Integer.class);
+                            if (v != null) result[0] = v;
+                            synchronized (lock) { done[0] = true; lock.notifyAll(); }
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError error) {
+                            Log.w(TAG, "app_min_version_code cancelled", error.toException());
+                            synchronized (lock) { done[0] = true; lock.notifyAll(); }
+                        }
+                    });
+
+            synchronized (lock) {
+                if (!done[0]) lock.wait(5000);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "fetchMinVersionCode fallito, proseguo senza mandatory", e);
+        }
+        return result[0];
     }
 
     /** Chiamata sincrona alla GitHub API. Ritorna null in caso di errore o niente APK. */

@@ -27,6 +27,10 @@
       "tournaments": {
         ".read": true,
         ".write": "auth != null && root.child('teammaker/admins').child(auth.uid).exists()"
+      },
+      "app_min_version_code": {
+        ".read": true,
+        ".write": "auth != null && root.child('teammaker/admins').child(auth.uid).exists()"
       }
     },
 
@@ -48,6 +52,10 @@
         ".write": "auth != null && root.child('teammaker/admins').child(auth.uid).exists()"
       },
       "tournaments": {
+        ".read": true,
+        ".write": "auth != null && root.child('teammaker/admins').child(auth.uid).exists()"
+      },
+      "app_min_version_code": {
         ".read": true,
         ".write": "auth != null && root.child('teammaker/admins').child(auth.uid).exists()"
       }

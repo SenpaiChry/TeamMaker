@@ -6,6 +6,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.teammaker.app.Utility.UpdateUtility;
@@ -13,6 +14,11 @@ import com.teammaker.app.Utility.UpdateUtility;
 /**
  * Popup di conferma aggiornamento. Mostra "versione X → Y", changelog e i tasti
  * AGGIORNA / PIU' TARDI. AGGIORNA delega a {@link UpdateUtility#downloadAndInstall}.
+ *
+ * Se l'extra "mandatory" e' true (versione installata sotto teammaker/
+ * app_min_version_code), il popup diventa un muro: niente "PIU' TARDI",
+ * back disabilitato, touch fuori non chiude. L'utente non puo' usare l'app
+ * finche' non aggiorna.
  */
 public class ActivityPopUpUpdateApp extends AppCompatActivity {
 
@@ -31,6 +37,7 @@ public class ActivityPopUpUpdateApp extends AppCompatActivity {
         String newVersionName = getIntent().getStringExtra("new_version_name");
         String apkUrl = getIntent().getStringExtra("apk_url");
         String changelog = getIntent().getStringExtra("changelog");
+        boolean mandatory = getIntent().getBooleanExtra("mandatory", false);
 
         TextView txtVersion = findViewById(R.id.txtVersion);
         String currentName = BuildConfig.VERSION_NAME;
@@ -49,16 +56,33 @@ public class ActivityPopUpUpdateApp extends AppCompatActivity {
         }
 
         Button btnUpdate = findViewById(R.id.btnUpdate);
+        Button btnLater = findViewById(R.id.btnLater);
+
+        // Modalita' mandatory: niente scampo. Nasconde PIU' TARDI, disabilita back,
+        // e non chiama finish() dopo il download (l'utente vede solo la schermata
+        // dell'installer di sistema).
+        if (mandatory) {
+            btnLater.setVisibility(View.GONE);
+            setFinishOnTouchOutside(false);
+            getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    // Back consumato: non si esce.
+                }
+            });
+        }
+
         btnUpdate.setOnClickListener(v -> {
             if (apkUrl == null || apkUrl.isEmpty()) {
-                finish();
+                if (!mandatory) finish();
                 return;
             }
             UpdateUtility.downloadAndInstall(this, apkUrl, newVersionCode);
-            finish();
+            // In mandatory il popup resta aperto sotto l'installer di sistema.
+            // Se l'utente annulla l'installazione, torna qui e vede sempre solo AGGIORNA.
+            if (!mandatory) finish();
         });
 
-        Button btnLater = findViewById(R.id.btnLater);
         btnLater.setOnClickListener(v -> finish());
     }
 }
