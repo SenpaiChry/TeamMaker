@@ -18,14 +18,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.teammaker.app.TopToast.TopToast;
 import com.teammaker.app.Utility.AdminUtility;
 import com.teammaker.app.Utility.LiveMatchUtility;
-import com.teammaker.app.Utility.PlayerUtility;
 import com.teammaker.app.Utility.SoundUtility;
-import com.teammaker.app.Utility.StatsUtility;
 import com.teammaker.app.Utility.TournamentUtility;
 import com.teammaker.app.Utility.UpdateUtility;
 import com.teammaker.app.Utility.Utility;
 import com.teammaker.app.Model.Constants;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,14 +31,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(false);
 
         setContentView(R.layout.activity_main);
         mainActivity = this;
 
-        // Il catalogo statistiche va acceso PRIMA dei player: getVote() lo usa.
-        StatsUtility.startListening();
-        PlayerUtility.downloadPlayers();
+        // Init Firebase globale (persistenza off + listener stats/players/tournaments)
+        // vive in TeamMakerApplication: parte prima di qualsiasi Activity e resta su
+        // per tutta la durata del processo.
 
         // Firebase Auth persiste la sessione: se l'admin era gia' loggato in una
         // precedente esecuzione dell'app, ripristina il flag e permetti l'accesso
@@ -193,9 +189,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        // Solo il listener LiveMatch e' locale a questa Activity (aggiorna btnOpenLive).
+        // Gli altri (stats, players, tournaments) vivono in TeamMakerApplication e non
+        // vanno staccati qui: il ciclo di vita del processo li chiude gia' da solo.
         LiveMatchUtility.stopListening();
-        PlayerUtility.removePlayersListener();
-        StatsUtility.stopListening();
-        TournamentUtility.removeTournamentsListener();
     }
 }
