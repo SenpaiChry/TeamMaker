@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.bus.DataChangeBus;
 import com.teammaker.app.ui.common.VerticalSpacingItemDecoration;
 

@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.domain.TeamGenerator;
 import com.teammaker.app.ui.common.VerticalSpacingItemDecoration;
 
@@ -101,7 +100,7 @@ public class TeamsActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 TeamGenerator.setInputMaxDifference(0);
-                TeamGenerator.makeTeams(nPlayers, nAlgorithm, Constants.playersSelected);
+                TeamGenerator.makeTeams(nPlayers, nAlgorithm, GenerateActivity.getSelected());
 
                 // Se le squadre sono identiche a prima, forza uno scambio casuale
                 if (snapshotTeams().equals(previousTeams) && TeamGenerator.getGenerated().size() >= 2) {

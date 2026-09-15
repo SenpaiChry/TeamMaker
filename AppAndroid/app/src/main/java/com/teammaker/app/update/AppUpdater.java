@@ -20,7 +20,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.teammaker.app.update.UpdatePopupActivity;
 import com.teammaker.app.BuildConfig;
-import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.R;
 
 import org.json.JSONArray;

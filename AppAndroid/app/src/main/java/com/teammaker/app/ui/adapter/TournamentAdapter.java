@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.teammaker.app.data.model.Constants;
 
 import java.util.ArrayList;
 import java.util.Collections;

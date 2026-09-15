@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.data.repository.TournamentRepository;
 import com.teammaker.app.data.AppConfig;
 

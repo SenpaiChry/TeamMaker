@@ -3,7 +3,6 @@ package com.teammaker.app.data.repository;
 import static com.teammaker.app.data.AppConfig.DB_ROOT;
 import com.teammaker.app.data.model.Team;
 import com.teammaker.app.data.model.Tournament;
-import com.teammaker.app.data.model.Constants;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.teammaker.app.bus.DataChangeBus;

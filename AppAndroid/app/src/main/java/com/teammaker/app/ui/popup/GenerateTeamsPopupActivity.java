@@ -16,7 +16,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.domain.GenerationResult;
 import com.teammaker.app.domain.TeamGenerator;
 
@@ -24,6 +23,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import com.teammaker.app.ui.activity.TeamsActivity;
 import com.teammaker.app.R;
+import com.teammaker.app.ui.activity.GenerateActivity;
 
 public class GenerateTeamsPopupActivity extends AppCompatActivity {
 
@@ -55,7 +55,7 @@ public class GenerateTeamsPopupActivity extends AppCompatActivity {
         playerButtons = new Button[]{btnNPlayer2, btnNPlayer3, btnNPlayer4, btnNPlayer5};
 
         // Abilita un numero solo se ci sono abbastanza giocatori (stessa soglia del confirm: k*2-1)
-        int selectedCount = Constants.playersSelected.size();
+        int selectedCount = GenerateActivity.getSelected().size();
         for (int i = 0; i < playerButtons.length; i++) {
             int k = i + 2;
             boolean enough = selectedCount >= k * 2 - 1;
@@ -68,7 +68,7 @@ public class GenerateTeamsPopupActivity extends AppCompatActivity {
 
         Button btnConfirm = findViewById(R.id.btnConfirm);
         btnConfirm.setOnClickListener(view -> {
-            if (btnSelectedPlayer > 0 && Constants.playersSelected.size() >= btnSelectedPlayer * 2 - 1) {
+            if (btnSelectedPlayer > 0 && GenerateActivity.getSelected().size() >= btnSelectedPlayer * 2 - 1) {
 
                 // Precisione massima: differenza zero
                 TeamGenerator.setInputMaxDifference(0);
@@ -84,7 +84,7 @@ public class GenerateTeamsPopupActivity extends AppCompatActivity {
                 setEnabledAllChildren(rootLayout, false);
 
                 executor.execute(() -> {
-                    GenerationResult result = TeamGenerator.makeTeams(btnSelectedPlayer, 5, Constants.playersSelected);
+                    GenerationResult result = TeamGenerator.makeTeams(btnSelectedPlayer, 5, GenerateActivity.getSelected());
 
                     handler.post(() -> {
                         if (result.success) {
@@ -136,7 +136,7 @@ public class GenerateTeamsPopupActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     private void updateSplitPreview(int playersPerTeam) {
         TextView txtSplitPreview = findViewById(R.id.txtSplitPreview);
-        int n = Constants.playersSelected.size();
+        int n = GenerateActivity.getSelected().size();
         int nTeams = (int) Math.ceil((float) n / playersPerTeam);
         if (nTeams <= 0) {
             txtSplitPreview.setVisibility(View.GONE);

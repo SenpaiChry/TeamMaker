@@ -3,7 +3,6 @@ package com.teammaker.app.domain;
 import com.teammaker.app.data.model.Team;
 
 import java.util.List;
-import com.teammaker.app.data.model.Constants;
 
 /**
  * Esito della generazione squadre: il chiamante distingue successo, mancanza di

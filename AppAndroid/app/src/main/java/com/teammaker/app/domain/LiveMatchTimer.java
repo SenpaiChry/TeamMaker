@@ -13,7 +13,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
-import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.data.AppConfig;
 
 /**

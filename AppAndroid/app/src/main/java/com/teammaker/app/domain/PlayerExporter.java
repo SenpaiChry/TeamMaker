@@ -2,7 +2,6 @@ package com.teammaker.app.domain;
 
 import com.teammaker.app.data.model.Player;
 import com.teammaker.app.data.model.StatDefinition;
-import com.teammaker.app.data.model.Constants;
 
 import org.dhatim.fastexcel.Workbook;
 import org.dhatim.fastexcel.Worksheet;

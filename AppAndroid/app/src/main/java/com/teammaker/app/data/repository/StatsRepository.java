@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import com.teammaker.app.data.firebase.FirebaseWriteHelper;
 import com.teammaker.app.data.mapper.StatMapper;
-import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.data.AppConfig;
 
 /**

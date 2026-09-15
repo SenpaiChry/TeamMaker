@@ -21,7 +21,6 @@ import com.teammaker.app.util.Sound;
 import com.teammaker.app.data.repository.TournamentRepository;
 import com.teammaker.app.update.AppUpdater;
 import com.teammaker.app.util.NetworkUtils;
-import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.TeamMakerApplication;
 import com.teammaker.app.R;
 import com.teammaker.app.data.AppConfig;

@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.data.repository.PlayerRepository;
 import com.teammaker.app.ui.common.VerticalSpacingItemDecoration;
 
@@ -37,6 +36,11 @@ public class GenerateActivity extends AppCompatActivity {
     private static WeakReference<GenerateActivity> instance = new WeakReference<>(null);
     public static GenerateActivity get() { return instance.get(); }
 
+    // Selezione utente prima della generazione. La reference e' immutabile (final):
+    // chi aggiunge/rimuove mutano la lista, il flusso di generazione la legge.
+    private static final ArrayList<Player> selected = new ArrayList<>();
+    public static ArrayList<Player> getSelected() { return selected; }
+
     private PlayerGenerateAdapter playerGenerateAdapter;
     private ArrayList<Player> playersToSee = new ArrayList<>();
     private TextView txtNSelected;
@@ -51,7 +55,7 @@ public class GenerateActivity extends AppCompatActivity {
 
         String type = getIntent().getExtras().getString("GENERATE_FOR");
 
-        Constants.playersSelected.clear();
+        selected.clear();
         instance = new WeakReference<>(this);
         btnSelect = findViewById(R.id.btnSelect);
 
@@ -68,7 +72,7 @@ public class GenerateActivity extends AppCompatActivity {
         listViewGenerate.setAdapter(playerGenerateAdapter);
 
         txtNSelected = findViewById(R.id.txtNSelected);
-        txtNSelected.setText(String.valueOf(Constants.playersSelected.size()));
+        txtNSelected.setText(String.valueOf(selected.size()));
 
         btnSelect.setOnClickListener(v -> {
             if (btnSelect.getTag().equals(getResources().getString(R.string.select_all))) {
@@ -78,9 +82,9 @@ public class GenerateActivity extends AppCompatActivity {
             }
         });
 
-        if (Constants.playersSelected.size() == PlayerRepository.getPlayersActive(true).size()) {
+        if (selected.size() == PlayerRepository.getPlayersActive(true).size()) {
             switchSelectDeselect("SELECT");
-        } else if (Constants.playersSelected.isEmpty()) {
+        } else if (selected.isEmpty()) {
             switchSelectDeselect("DESELECT");
         }
 
@@ -144,7 +148,7 @@ public class GenerateActivity extends AppCompatActivity {
      */
     public void updateSelectedCount() {
         if (txtNSelected != null) {
-            txtNSelected.setText(String.valueOf(Constants.playersSelected.size()));
+            txtNSelected.setText(String.valueOf(selected.size()));
         }
     }
 
@@ -154,14 +158,15 @@ public class GenerateActivity extends AppCompatActivity {
         if (type.equals("SELECT")) {
             btnSelect.setTag(getResources().getString(R.string.deselect_all));
             btnSelect.setImageDrawable(getResources().getDrawable(R.drawable.deselect_all));
-            Constants.playersSelected = PlayerRepository.getPlayersActive(true);
-            txtNSelected.setText(String.valueOf(Constants.playersSelected.size()));
+            selected.clear();
+            selected.addAll(PlayerRepository.getPlayersActive(true));
+            txtNSelected.setText(String.valueOf(selected.size()));
             playerGenerateAdapter.notifyDataSetChanged();
         } else if (type.equals("DESELECT")) {
             btnSelect.setTag(getResources().getString(R.string.select_all));
             btnSelect.setImageDrawable(getResources().getDrawable(R.drawable.select_all));
-            Constants.playersSelected.clear();
-            txtNSelected.setText(String.valueOf(Constants.playersSelected.size()));
+            selected.clear();
+            txtNSelected.setText(String.valueOf(selected.size()));
             playerGenerateAdapter.notifyDataSetChanged();
         }
     }

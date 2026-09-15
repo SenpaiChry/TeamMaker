@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.data.repository.PlayerRepository;
 
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ public class PlayerGenerateAdapter extends RecyclerView.Adapter<PlayerGenerateAd
     @Override
     public void onBindViewHolder(@NonNull ViewHolder h, int position) {
         Player player = playersToSee.get(position);
-        boolean isSelected = Constants.playersSelected.contains(player);
+        boolean isSelected = GenerateActivity.getSelected().contains(player);
 
         h.txtName.setText(player.name);
         h.txtSurname.setText(player.surname);
@@ -63,15 +62,15 @@ public class PlayerGenerateAdapter extends RecyclerView.Adapter<PlayerGenerateAd
         h.btnRemove.setVisibility(isSelected ? View.VISIBLE : View.GONE);
 
         h.llPlayer.setOnClickListener(v -> {
-            boolean selected = Constants.playersSelected.contains(player);
+            boolean selected = GenerateActivity.getSelected().contains(player);
 
             if (selected) {
-                Constants.playersSelected.remove(player);
+                GenerateActivity.getSelected().remove(player);
                 h.llPlayer.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_player_card));
                 h.btnAdd.setVisibility(View.VISIBLE);
                 h.btnRemove.setVisibility(View.GONE);
             } else {
-                Constants.playersSelected.add(player);
+                GenerateActivity.getSelected().add(player);
                 h.llPlayer.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_player_card_selected));
                 h.btnAdd.setVisibility(View.GONE);
                 h.btnRemove.setVisibility(View.VISIBLE);
@@ -80,9 +79,9 @@ public class PlayerGenerateAdapter extends RecyclerView.Adapter<PlayerGenerateAd
             GenerateActivity a = GenerateActivity.get();
             if (a != null) {
                 a.updateSelectedCount();
-                if (Constants.playersSelected.isEmpty()) {
+                if (GenerateActivity.getSelected().isEmpty()) {
                     a.switchSelectDeselect("DESELECT");
-                } else if (Constants.playersSelected.size() == PlayerRepository.getPlayersActive(true).size()) {
+                } else if (GenerateActivity.getSelected().size() == PlayerRepository.getPlayersActive(true).size()) {
                     a.switchSelectDeselect("SELECT");
                 }
             }

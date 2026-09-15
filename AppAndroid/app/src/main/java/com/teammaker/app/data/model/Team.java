@@ -1,6 +1,5 @@
 package com.teammaker.app.data.model;
 
-import com.teammaker.app.data.model.Constants;
 
 import java.util.ArrayList;
 import com.teammaker.app.data.repository.PlayerRepository;

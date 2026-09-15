@@ -16,7 +16,6 @@ import java.util.Map;
 import com.teammaker.app.bus.DataChangeBus;
 import com.teammaker.app.data.firebase.FirebaseWriteHelper;
 import com.teammaker.app.data.mapper.MatchMapper;
-import com.teammaker.app.data.model.Constants;
 import com.teammaker.app.domain.FinalStageResolver;
 import com.teammaker.app.domain.Times;
 import com.teammaker.app.data.AppConfig;
