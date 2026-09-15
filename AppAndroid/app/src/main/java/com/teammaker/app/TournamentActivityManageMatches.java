@@ -11,20 +11,25 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Utility.TournamentUtility;
-import com.teammaker.app.Utility.Utility;
 import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
+
+import java.lang.ref.WeakReference;
 
 public class TournamentActivityManageMatches extends AppCompatActivity {
 
-    public static TournamentActivityManageMatches tournamentActivityManageMatches;
-    public static TournamentBracketAdminAdapter tournamentBracketAdminAdapter;
+    // WeakReference: se l'Activity viene distrutta il GC puo' liberarla.
+    // Chi ne ha bisogno usa TournamentActivityManageMatches.get() e controlla null.
+    private static WeakReference<TournamentActivityManageMatches> instance = new WeakReference<>(null);
+    public static TournamentActivityManageMatches get() { return instance.get(); }
+
+    private TournamentBracketAdminAdapter tournamentBracketAdminAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tournament_activity_manage_matches);
 
-        tournamentActivityManageMatches = this;
+        instance = new WeakReference<>(this);
 
         String tournamentKey = getIntent().getExtras().getString("tournament_key");
         Tournament tournament = TournamentUtility.getTournamentByKey(tournamentKey);
@@ -74,14 +79,24 @@ public class TournamentActivityManageMatches extends AppCompatActivity {
         listView.setAdapter(tournamentBracketAdminAdapter);
     }
 
+    /**
+     * Notifica all'adapter che i dati sono cambiati, se l'Activity e' viva.
+     * Se e' morta (utente su altra schermata), no-op: al prossimo onCreate
+     * la lista sara' ricostruita dai dati aggiornati.
+     */
+    public static void notifyMatchesChanged() {
+        TournamentActivityManageMatches a = get();
+        if (a == null || a.tournamentBracketAdminAdapter == null) return;
+        a.tournamentBracketAdminAdapter.notifyDataSetChanged();
+    }
+
     /** Rinfresca la schermata (se aperta) dopo un aggiornamento realtime dei dati. */
     public static void reloadMatches() {
-        if (tournamentActivityManageMatches == null || tournamentActivityManageMatches.isDestroyed()) {
-            return;
-        }
-        tournamentActivityManageMatches.runOnUiThread(() -> {
+        TournamentActivityManageMatches a = get();
+        if (a == null || a.isDestroyed()) return;
+        a.runOnUiThread(() -> {
             try {
-                tournamentActivityManageMatches.recreate();
+                a.recreate();
             } catch (Exception e) {
                 // Difensivo: se l'activity e' in transizione, recreate() puo' fallire.
                 // Non e' un bug: la prossima onCreate ridisegnera' comunque i dati.
@@ -91,28 +106,28 @@ public class TournamentActivityManageMatches extends AppCompatActivity {
     }
 
     private void openPopUp(String tournamentKey) {
-        Intent intent = new Intent(tournamentActivityManageMatches.getApplicationContext(), ActivityPopUp.class);
+        Intent intent = new Intent(this, ActivityPopUp.class);
         intent.putExtra("tournament_key", tournamentKey);
         intent.putExtra("pop_up_type", "DELETE_EVERY_MATCH");
-        tournamentActivityManageMatches.startActivity(intent);
+        startActivity(intent);
     }
 
     private void openActivityNewMatch(String tournamentKey) {
-        Intent intent = new Intent(tournamentActivityManageMatches.getApplicationContext(), TournamentActivityEditMatch.class);
+        Intent intent = new Intent(this, TournamentActivityEditMatch.class);
         intent.putExtra("tournament_key", tournamentKey);
         intent.putExtra("position", -1);
-        tournamentActivityManageMatches.startActivity(intent);
+        startActivity(intent);
     }
 
     private void openPopUpBracket(String tournamentKey) {
-        Intent intent = new Intent(tournamentActivityManageMatches.getApplicationContext(), ActivityPopUpGenerateBracket.class);
+        Intent intent = new Intent(this, ActivityPopUpGenerateBracket.class);
         intent.putExtra("tournament_key", tournamentKey);
-        tournamentActivityManageMatches.startActivity(intent);
+        startActivity(intent);
     }
 
     private void openPopUpFinals(String tournamentKey) {
-        Intent intent = new Intent(tournamentActivityManageMatches.getApplicationContext(), ActivityPopUpGenerateFinals.class);
+        Intent intent = new Intent(this, ActivityPopUpGenerateFinals.class);
         intent.putExtra("tournament_key", tournamentKey);
-        tournamentActivityManageMatches.startActivity(intent);
+        startActivity(intent);
     }
 }

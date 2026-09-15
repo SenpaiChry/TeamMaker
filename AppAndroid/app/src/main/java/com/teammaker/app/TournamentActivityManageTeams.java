@@ -11,18 +11,26 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Utility.TournamentUtility;
-import com.teammaker.app.Utility.Utility;
 import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
+
+import java.lang.ref.WeakReference;
 
 public class TournamentActivityManageTeams extends AppCompatActivity {
 
-    public static TournamentModifyTeamsAdapter tournamentModifyTeamsAdapter;
+    // WeakReference: se l'Activity viene distrutta il GC puo' liberarla.
+    // Chi ne ha bisogno usa TournamentActivityManageTeams.get() e controlla null.
+    private static WeakReference<TournamentActivityManageTeams> instance = new WeakReference<>(null);
+    public static TournamentActivityManageTeams get() { return instance.get(); }
+
+    private TournamentModifyTeamsAdapter tournamentModifyTeamsAdapter;
     static private final int nCharSurname = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tournament_activity_modify_teams);
+
+        instance = new WeakReference<>(this);
 
         String tournamentKey = getIntent().getExtras().getString("tournament_key");
         Tournament tournament = TournamentUtility.getTournamentByKey(tournamentKey);
@@ -40,8 +48,15 @@ public class TournamentActivityManageTeams extends AppCompatActivity {
         btnGoBack.setOnClickListener(v -> finish());
     }
 
+    /**
+     * Notifica all'adapter che i dati sono cambiati, se l'Activity e' viva.
+     * Se e' morta (utente su altra schermata), no-op: al prossimo onCreate
+     * la lista sara' ricostruita dai dati aggiornati.
+     */
     public static void notifyDataChange() {
-        tournamentModifyTeamsAdapter.notifyDataSetChanged();
+        TournamentActivityManageTeams a = get();
+        if (a == null || a.tournamentModifyTeamsAdapter == null) return;
+        a.tournamentModifyTeamsAdapter.notifyDataSetChanged();
     }
 
     public static void openPopUpNewTeam(Context context, String tournamentKey) {
@@ -52,4 +67,3 @@ public class TournamentActivityManageTeams extends AppCompatActivity {
         context.startActivity(intent);
     }
 }
-

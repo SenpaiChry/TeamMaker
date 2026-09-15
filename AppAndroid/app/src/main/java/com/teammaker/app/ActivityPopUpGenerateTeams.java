@@ -74,7 +74,7 @@ public class ActivityPopUpGenerateTeams extends AppCompatActivity {
                 executor = Executors.newSingleThreadExecutor();
                 Handler handler = new Handler(Looper.getMainLooper());
 
-                Toast.makeText(ActivityGenerate.activityGenerate, R.string.generating, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.generating, Toast.LENGTH_SHORT).show();
 
                 progressBar1.setVisibility(View.VISIBLE);
 
@@ -87,11 +87,11 @@ public class ActivityPopUpGenerateTeams extends AppCompatActivity {
                     handler.post(() -> {
                         if (result.success) {
                             // Apri Teams SOLO su successo esplicito (altrimenti mostrerebbe dati vecchi)
-                            Intent intent = new Intent(ActivityGenerate.activityGenerate.getApplicationContext(), ActivityTeams.class);
+                            Intent intent = new Intent(this, ActivityTeams.class);
                             intent.putExtra("TYPE", type);
                             intent.putExtra("nPlayers", btnSelectedPlayer);
                             intent.putExtra("nAlgorithm", 5);
-                            ActivityGenerate.activityGenerate.startActivity(intent);
+                            startActivity(intent);
 
                             finish();
                         } else {
@@ -100,7 +100,7 @@ public class ActivityPopUpGenerateTeams extends AppCompatActivity {
                             int msg = result.reason == GenerationResult.Reason.NOT_ENOUGH_PLAYERS
                                     ? R.string.select_more_players
                                     : R.string.need_more_time;
-                            Toast.makeText(ActivityGenerate.activityGenerate, msg, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
                         }
                     });
                 });

@@ -19,13 +19,17 @@ import com.teammaker.app.Model.Constants;
 import com.teammaker.app.Utility.TeamGeneratorUtility;
 import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
+import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
 public class ActivityTeams extends AppCompatActivity {
 
-    static ActivityTeams activityTeams;
+    // WeakReference: se l'Activity viene distrutta il GC puo' liberarla.
+    // Chi ne ha bisogno usa ActivityTeams.get() e controlla null.
+    private static WeakReference<ActivityTeams> instance = new WeakReference<>(null);
+    public static ActivityTeams get() { return instance.get(); }
 
     private TextView txtMaxDifference;
     private TextView txtN;
@@ -41,7 +45,7 @@ public class ActivityTeams extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_teams);
 
-        activityTeams = this;
+        instance = new WeakReference<>(this);
 
         nPlayers = getIntent().getExtras().getInt("nPlayers");
         nAlgorithm = getIntent().getExtras().getInt("nAlgorithm");

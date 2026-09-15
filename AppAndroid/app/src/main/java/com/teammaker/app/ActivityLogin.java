@@ -14,14 +14,10 @@ import com.teammaker.app.Utility.AdminUtility;
 
 public class ActivityLogin extends AppCompatActivity {
 
-    static ActivityLogin activityLogin;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        activityLogin = this;
 
         TextView txtWrongPassword = findViewById(R.id.txtWrongPassword);
         EditText txtPassword = findViewById(R.id.txtPassword);
@@ -39,8 +35,8 @@ public class ActivityLogin extends AppCompatActivity {
                 @Override
                 public void onSuccess() {
                     Constants.logged = true;
-                    Intent intent = new Intent(activityLogin.getApplicationContext(), TournamentActivityManage.class);
-                    activityLogin.startActivity(intent);
+                    Intent intent = new Intent(ActivityLogin.this, TournamentActivityManage.class);
+                    startActivity(intent);
                     finish();
                 }
 

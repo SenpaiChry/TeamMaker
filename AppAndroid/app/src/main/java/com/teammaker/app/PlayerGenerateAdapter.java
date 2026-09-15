@@ -74,12 +74,14 @@ public class PlayerGenerateAdapter extends RecyclerView.Adapter<PlayerGenerateAd
                 h.btnRemove.setVisibility(View.VISIBLE);
             }
 
-            ActivityGenerate.txtNSelected.setText(String.valueOf(Constants.playersSelected.size()));
-
-            if (Constants.playersSelected.isEmpty()) {
-                ActivityGenerate.switchSelectDeselect("DESELECT");
-            } else if (Constants.playersSelected.size() == PlayerUtility.getPlayersActive(true).size()) {
-                ActivityGenerate.switchSelectDeselect("SELECT");
+            ActivityGenerate a = ActivityGenerate.get();
+            if (a != null) {
+                a.updateSelectedCount();
+                if (Constants.playersSelected.isEmpty()) {
+                    a.switchSelectDeselect("DESELECT");
+                } else if (Constants.playersSelected.size() == PlayerUtility.getPlayersActive(true).size()) {
+                    a.switchSelectDeselect("SELECT");
+                }
             }
         });
     }

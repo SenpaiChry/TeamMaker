@@ -75,7 +75,7 @@ public class ActivityPopUp extends AppCompatActivity {
                 btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.button_danger));
                 btnConfirm.setOnClickListener(view -> {
                     TournamentUtility.deleteTournament(tournamentKey);
-                    TournamentAdapter.tournamentAdapter.notifyDataSetChanged();
+                    TournamentActivityManageTournaments.reloadTournaments();
                     finish();
                 });
                 break;
@@ -90,7 +90,7 @@ public class ActivityPopUp extends AppCompatActivity {
                 btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.button_confirm));
                 btnConfirm.setOnClickListener(view -> {
                     TournamentUtility.setActiveTournament(tournamentKey);
-                    TournamentAdapter.tournamentAdapter.notifyDataSetChanged();
+                    TournamentActivityManageTournaments.reloadTournaments();
                     ActivityPopUpManageTournament.updateButtons();
                     finish();
                 });
@@ -106,7 +106,7 @@ public class ActivityPopUp extends AppCompatActivity {
                 btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.button_warning));
                 btnConfirm.setOnClickListener(view -> {
                     TournamentUtility.deactivateAllTournaments();
-                    TournamentAdapter.tournamentAdapter.notifyDataSetChanged();
+                    TournamentActivityManageTournaments.reloadTournaments();
                     ActivityPopUpManageTournament.updateButtons();
                     finish();
                 });

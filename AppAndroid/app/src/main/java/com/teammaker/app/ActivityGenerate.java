@@ -22,16 +22,21 @@ import com.teammaker.app.Model.Constants;
 import com.teammaker.app.Utility.PlayerUtility;
 import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Comparator;
 
 public class ActivityGenerate extends AppCompatActivity {
 
-    static PlayerGenerateAdapter playerGenerateAdapter;
+    // WeakReference: se l'Activity viene distrutta il GC puo' liberarla.
+    // Chi ne ha bisogno usa ActivityGenerate.get() e controlla null.
+    private static WeakReference<ActivityGenerate> instance = new WeakReference<>(null);
+    public static ActivityGenerate get() { return instance.get(); }
+
+    private PlayerGenerateAdapter playerGenerateAdapter;
     private ArrayList<Player> playersToSee = new ArrayList<>();
-    static ActivityGenerate activityGenerate;
-    static TextView txtNSelected;
-    static ImageView btnSelect;
+    private TextView txtNSelected;
+    private ImageView btnSelect;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint({"UseCompatLoadingForDrawables", "ClickableViewAccessibility"})
@@ -43,7 +48,7 @@ public class ActivityGenerate extends AppCompatActivity {
         String type = getIntent().getExtras().getString("GENERATE_FOR");
 
         Constants.playersSelected.clear();
-        activityGenerate = this;
+        instance = new WeakReference<>(this);
         btnSelect = findViewById(R.id.btnSelect);
 
         playersToSee = PlayerUtility.getPlayersActive(true);
@@ -124,22 +129,33 @@ public class ActivityGenerate extends AppCompatActivity {
     }
 
     void openActivityPopUpGenerate(String type) {
-        Intent intent = new Intent(activityGenerate.getApplicationContext(), ActivityPopUpGenerateTeams.class);
+        Intent intent = new Intent(this, ActivityPopUpGenerateTeams.class);
         intent.putExtra("GENERATE_FOR", type);
-        activityGenerate.startActivity(intent);
+        startActivity(intent);
+    }
+
+    /**
+     * Aggiorna il contatore giocatori selezionati mostrato in alto.
+     * Chiamato dall'adapter quando l'utente tocca una card.
+     */
+    void updateSelectedCount() {
+        if (txtNSelected != null) {
+            txtNSelected.setText(String.valueOf(Constants.playersSelected.size()));
+        }
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    static void switchSelectDeselect(String type) {
+    void switchSelectDeselect(String type) {
+        if (btnSelect == null || playerGenerateAdapter == null) return;
         if (type.equals("SELECT")) {
-            btnSelect.setTag(activityGenerate.getResources().getString(R.string.deselect_all));
-            btnSelect.setImageDrawable(activityGenerate.getResources().getDrawable(R.drawable.deselect_all));
+            btnSelect.setTag(getResources().getString(R.string.deselect_all));
+            btnSelect.setImageDrawable(getResources().getDrawable(R.drawable.deselect_all));
             Constants.playersSelected = PlayerUtility.getPlayersActive(true);
             txtNSelected.setText(String.valueOf(Constants.playersSelected.size()));
             playerGenerateAdapter.notifyDataSetChanged();
         } else if (type.equals("DESELECT")) {
-            btnSelect.setTag(activityGenerate.getResources().getString(R.string.select_all));
-            btnSelect.setImageDrawable(activityGenerate.getResources().getDrawable(R.drawable.select_all));
+            btnSelect.setTag(getResources().getString(R.string.select_all));
+            btnSelect.setImageDrawable(getResources().getDrawable(R.drawable.select_all));
             Constants.playersSelected.clear();
             txtNSelected.setText(String.valueOf(Constants.playersSelected.size()));
             playerGenerateAdapter.notifyDataSetChanged();

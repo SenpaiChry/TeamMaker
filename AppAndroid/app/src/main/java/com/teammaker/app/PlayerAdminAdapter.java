@@ -93,21 +93,21 @@ public class PlayerAdminAdapter extends RecyclerView.Adapter<PlayerAdminAdapter.
     }
 
     void openActivityPopUp(int position, PopUpType type) {
-        Intent intent = new Intent(ActivityAdmin.activityAdmin.getApplicationContext(), ActivityPopUp.class);
+        Intent intent = new Intent(context, ActivityPopUp.class);
         intent.putExtra("player_key", playersToSee.get(position).key);
         intent.putExtra("pop_up_type", type);
-        ActivityAdmin.activityAdmin.startActivity(intent);
+        context.startActivity(intent);
     }
 
     void openActivityEditPlayer(int position) {
-        Intent intent = new Intent(ActivityAdmin.activityAdmin.getApplicationContext(), ActivityEditPlayer.class);
+        Intent intent = new Intent(context, ActivityEditPlayer.class);
         intent.putExtra("player_key", playersToSee.get(position).key);
-        ActivityAdmin.activityAdmin.startActivity(intent);
+        context.startActivity(intent);
     }
 
     void openActivityInfo(int position) {
-        Intent intent = new Intent(ActivityAdmin.activityAdmin.getApplicationContext(), ActivityInfoPlayer.class);
+        Intent intent = new Intent(context, ActivityInfoPlayer.class);
         intent.putExtra("player_key", playersToSee.get(position).key);
-        ActivityAdmin.activityAdmin.startActivity(intent);
+        context.startActivity(intent);
     }
 }

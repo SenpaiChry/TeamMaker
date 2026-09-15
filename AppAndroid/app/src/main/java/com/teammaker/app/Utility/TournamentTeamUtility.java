@@ -31,7 +31,7 @@ public class TournamentTeamUtility {
                 DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key + "/teams/" + team.key);
 
                 tournament.teams.remove(team);
-                TournamentActivityManageTeams.tournamentModifyTeamsAdapter.notifyDataSetChanged();
+                TournamentActivityManageTeams.notifyDataChange();
                 TournamentActivityManageTournaments.reloadTournaments();
 
                 FirebaseWriteHelper.attach(null, "deleteTeam", dbRef.removeValue());

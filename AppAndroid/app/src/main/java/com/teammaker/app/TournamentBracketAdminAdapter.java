@@ -78,28 +78,31 @@ public class TournamentBracketAdminAdapter extends RecyclerView.Adapter<Tourname
         }
 
         h.btnPlay.setOnClickListener(v -> {
-            String orientation = h.itemView.getContext().getResources().getConfiguration().orientation
+            android.content.Context ctx = h.itemView.getContext();
+            String orientation = ctx.getResources().getConfiguration().orientation
                     == android.content.res.Configuration.ORIENTATION_LANDSCAPE ? "landscape" : "portrait";
-            Intent intent = new Intent(TournamentActivityManageMatches.tournamentActivityManageMatches, ActivityNextMatch.class);
+            Intent intent = new Intent(ctx, ActivityNextMatch.class);
             intent.putExtra("tournament_key", tournament.key);
             intent.putExtra("position", position - 1);
             intent.putExtra("orientation", orientation);
-            TournamentActivityManageMatches.tournamentActivityManageMatches.startActivity(intent);
+            ctx.startActivity(intent);
         });
 
         h.btnEdit.setOnClickListener(v -> {
-            Intent intent = new Intent(TournamentActivityManageMatches.tournamentActivityManageMatches, TournamentActivityEditMatch.class);
+            android.content.Context ctx = h.itemView.getContext();
+            Intent intent = new Intent(ctx, TournamentActivityEditMatch.class);
             intent.putExtra("tournament_key", tournament.key);
             intent.putExtra("position", position);
-            TournamentActivityManageMatches.tournamentActivityManageMatches.startActivity(intent);
+            ctx.startActivity(intent);
         });
 
         h.btnDelete.setOnClickListener(v -> {
-            Intent intent = new Intent(TournamentActivityManageMatches.tournamentActivityManageMatches, ActivityPopUp.class);
+            android.content.Context ctx = h.itemView.getContext();
+            Intent intent = new Intent(ctx, ActivityPopUp.class);
             intent.putExtra("tournament_key", tournament.key);
             intent.putExtra("match_key", match.key);
             intent.putExtra("pop_up_type", PopUpType.DELETE_MATCH);
-            TournamentActivityManageMatches.tournamentActivityManageMatches.startActivity(intent);
+            ctx.startActivity(intent);
         });
     }
 

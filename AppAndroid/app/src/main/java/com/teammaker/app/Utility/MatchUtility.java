@@ -47,7 +47,7 @@ public class MatchUtility {
         }
 
         FirebaseWriteHelper.attach(
-                TournamentActivityManageMatches.tournamentActivityManageMatches,
+                TournamentActivityManageMatches.get(),
                 "saveMatches",
                 dbRef.updateChildren(updates));
     }
@@ -59,16 +59,16 @@ public class MatchUtility {
         match.key = dbRef.push().getKey();
         // Scrittura atomica del nodo completo (era una sequenza di 8 setValue distinte)
         FirebaseWriteHelper.attach(
-                TournamentActivityManageMatches.tournamentActivityManageMatches,
+                TournamentActivityManageMatches.get(),
                 "addNewMatch",
                 dbRef.child(match.key).setValue(MatchMapper.toMap(match)));
 
         tournament.matches.add(match);
         Collections.sort(tournament.matches, BY_DAY_TIME);
 
-        TournamentActivityManageMatches.tournamentBracketAdminAdapter.notifyDataSetChanged();
+        TournamentActivityManageMatches.notifyMatchesChanged();
         TournamentActivityManageTournaments.reloadTournaments();
-        TournamentActivityManageMatches.tournamentActivityManageMatches.recreate();
+        TournamentActivityManageMatches.reloadMatches();
     }
 
     public static void editMatch(String tournamentKey, Match match) {
@@ -79,7 +79,7 @@ public class MatchUtility {
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key + "/matches/" + tournament.matches.get(i).key);
                 // Scrittura atomica del nodo (era una sequenza di 8 setValue distinte)
                 FirebaseWriteHelper.attach(
-                        TournamentActivityManageMatches.tournamentActivityManageMatches,
+                        TournamentActivityManageMatches.get(),
                         "editMatch",
                         databaseReference.setValue(MatchMapper.toMap(match)));
 
@@ -94,7 +94,7 @@ public class MatchUtility {
 
                 Collections.sort(tournament.matches, BY_DAY_TIME);
 
-                TournamentActivityManageMatches.tournamentBracketAdminAdapter.refresh();
+                TournamentActivityManageMatches.notifyMatchesChanged();
 
                 // Propaga il vincente/perdente alle fasi finali che dipendono da questa partita
                 FinalStageResolver.resolveAll(tournamentKey);
@@ -112,10 +112,10 @@ public class MatchUtility {
                 DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournamentKey + "/matches/" + match.key);
 
                 tournament.matches.remove(match);
-                TournamentActivityManageMatches.tournamentBracketAdminAdapter.notifyDataSetChanged();
+                TournamentActivityManageMatches.notifyMatchesChanged();
 
                 FirebaseWriteHelper.attach(
-                        TournamentActivityManageMatches.tournamentActivityManageMatches,
+                        TournamentActivityManageMatches.get(),
                         "deleteMatch",
                         dbRef.removeValue());
 
@@ -141,11 +141,11 @@ public class MatchUtility {
 
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournamentKey);
         FirebaseWriteHelper.attach(
-                TournamentActivityManageMatches.tournamentActivityManageMatches,
+                TournamentActivityManageMatches.get(),
                 "deleteEveryMatch",
                 dbRef.updateChildren(updates));
 
-        TournamentActivityManageMatches.tournamentBracketAdminAdapter.notifyDataSetChanged();
-        TournamentActivityManageMatches.tournamentActivityManageMatches.recreate();
+        TournamentActivityManageMatches.notifyMatchesChanged();
+        TournamentActivityManageMatches.reloadMatches();
     }
 }

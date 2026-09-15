@@ -12,20 +12,25 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.teammaker.app.Model.Constants;
 import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Comparator;
 
 public class TournamentActivityManageTournaments extends AppCompatActivity {
 
-    static TournamentActivityManageTournaments tournamentActivityManageTournaments;
-    static private TournamentAdapter tournamentAdapter;
+    // WeakReference: se l'Activity viene distrutta il GC puo' liberarla.
+    // Chi ne ha bisogno usa TournamentActivityManageTournaments.get() e controlla null.
+    private static WeakReference<TournamentActivityManageTournaments> instance = new WeakReference<>(null);
+    public static TournamentActivityManageTournaments get() { return instance.get(); }
+
+    private TournamentAdapter tournamentAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tournament_activity_manage_tournaments);
 
-        tournamentActivityManageTournaments = this;
+        instance = new WeakReference<>(this);
 
         RecyclerView listViewTournaments = findViewById(R.id.listViewTournaments);
         listViewTournaments.setLayoutManager(new LinearLayoutManager(this));
@@ -40,6 +45,11 @@ public class TournamentActivityManageTournaments extends AppCompatActivity {
         btnGoBack.setOnClickListener(v -> finish());
     }
 
+    /**
+     * Riordina la lista dei tornei per data (desc) e notifica l'adapter se l'Activity
+     * e' viva. Se e' morta (utente su altra schermata), no-op: al prossimo onCreate
+     * la lista sara' ricostruita dai dati aggiornati di Constants.
+     */
     public static void reloadTournaments() {
         Collections.sort(Constants.tournaments, new Comparator<Tournament>() {
             @Override
@@ -51,14 +61,14 @@ public class TournamentActivityManageTournaments extends AppCompatActivity {
             }
         });
 
-        tournamentAdapter.notifyDataSetChanged();
+        TournamentActivityManageTournaments a = get();
+        if (a == null || a.tournamentAdapter == null) return;
+        a.tournamentAdapter.notifyDataSetChanged();
     }
 
     public void openTournamentActivityGenerate() {
-        Intent intent = new Intent(tournamentActivityManageTournaments.getApplicationContext(), ActivityGenerate.class);
+        Intent intent = new Intent(this, ActivityGenerate.class);
         intent.putExtra("GENERATE_FOR", "TOURNAMENT");
-        tournamentActivityManageTournaments.startActivity(intent);
+        startActivity(intent);
     }
 }
-
-

@@ -175,10 +175,8 @@ public class PlayerUtility {
                     TournamentUtility.downloadTournaments();
                 }
 
-                // Aggiorna la lista admin se aperta
-                if (ActivityAdmin.playerAdminAdapter != null) {
-                    ActivityAdmin.reloadPlayers();
-                }
+                // Aggiorna la lista admin se aperta (reloadPlayers e' gia' null-safe)
+                ActivityAdmin.reloadPlayers();
 
                 Log.d("Firebase", "Players aggiornati in tempo reale: " + Constants.players.size());
             }
@@ -208,9 +206,7 @@ public class PlayerUtility {
             }
         }
 
-        if (ActivityAdmin.playerAdminAdapter != null) {
-            ActivityAdmin.playerAdminAdapter.notifyDataSetChanged();
-        }
+        ActivityAdmin.reloadPlayers();
 
         return players;
     }

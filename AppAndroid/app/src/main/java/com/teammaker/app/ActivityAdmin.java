@@ -23,6 +23,7 @@ import com.teammaker.app.Utility.PlayerExportUtility;
 import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,9 +32,13 @@ import java.util.Locale;
 
 public class ActivityAdmin extends AppCompatActivity {
 
-    private static ArrayList<Player> playersToSee;
-    public static ActivityAdmin activityAdmin;
-    public static PlayerAdminAdapter playerAdminAdapter;
+    // WeakReference: se l'Activity viene distrutta il GC puo' liberarla.
+    // Chi ne ha bisogno usa ActivityAdmin.get() e controlla null.
+    private static WeakReference<ActivityAdmin> instance = new WeakReference<>(null);
+    public static ActivityAdmin get() { return instance.get(); }
+
+    private ArrayList<Player> playersToSee;
+    private PlayerAdminAdapter playerAdminAdapter;
     RecyclerView listViewAdmin;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -42,7 +47,7 @@ public class ActivityAdmin extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
 
-        activityAdmin = this;
+        instance = new WeakReference<>(this);
         listViewAdmin = findViewById(R.id.listViewAdmin);
         listViewAdmin.setLayoutManager(new LinearLayoutManager(this));
         listViewAdmin.addItemDecoration(new VerticalSpacingItemDecoration(this, 8));
@@ -56,9 +61,9 @@ public class ActivityAdmin extends AppCompatActivity {
 
         Button btnAddNewPlayer = findViewById(R.id.btnAddNewPlayer);
         btnAddNewPlayer.setOnClickListener(v -> {
-            Intent intent = new Intent(activityAdmin.getApplicationContext(), ActivityEditPlayer.class);
+            Intent intent = new Intent(this, ActivityEditPlayer.class);
             intent.putExtra("player_key", "null");
-            activityAdmin.startActivity(intent);
+            startActivity(intent);
         });
 
         Button btnExport = findViewById(R.id.btnExportPlayers);
@@ -130,11 +135,18 @@ public class ActivityAdmin extends AppCompatActivity {
         }
     }
 
+    /**
+     * Chiamato da PlayerUtility.downloadPlayers dopo un aggiornamento realtime.
+     * Se l'Activity non e' live (utente su altra schermata), no-op: al prossimo
+     * onCreate la lista sara' ricostruita dai dati aggiornati di Constants.
+     */
     public static void reloadPlayers() {
-        playersToSee.clear();
-        playersToSee.addAll(Constants.players);
-        sortActiveFirst(playersToSee);
-        playerAdminAdapter.notifyDataSetChanged();
+        ActivityAdmin a = get();
+        if (a == null || a.playerAdminAdapter == null) return;
+        a.playersToSee.clear();
+        a.playersToSee.addAll(Constants.players);
+        sortActiveFirst(a.playersToSee);
+        a.playerAdminAdapter.notifyDataSetChanged();
     }
 
     /**

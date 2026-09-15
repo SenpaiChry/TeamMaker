@@ -60,8 +60,9 @@ public class ActivityPopUpSaveNewTournament extends AppCompatActivity {
                 TournamentUtility.saveNewTournamentTeams(String.valueOf(txtName.getText()), newDate);
                 Toast.makeText(this, R.string.saving_tournament, Toast.LENGTH_SHORT).show();
 
-                ActivityTeams.activityTeams.finish();
-//              TODO PER QUANDO SI VORRA' FARE SALVA E GENERA ANCORA  ActivityGenerate.activityGenerate.finish();
+                ActivityTeams a = ActivityTeams.get();
+                if (a != null) a.finish();
+//              TODO PER QUANDO SI VORRA' FARE SALVA E GENERA ANCORA  ActivityGenerate g = ActivityGenerate.get(); if (g != null) g.finish();
                 TournamentActivityManageTournaments.reloadTournaments();
                 finish();
             } else {

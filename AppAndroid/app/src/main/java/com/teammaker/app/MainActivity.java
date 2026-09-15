@@ -26,14 +26,11 @@ import com.teammaker.app.Model.Constants;
 
 public class MainActivity extends AppCompatActivity {
 
-    static MainActivity mainActivity;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        mainActivity = this;
 
         // Init Firebase globale (persistenza off + listener stats/players/tournaments)
         // vive in TeamMakerApplication: parte prima di qualsiasi Activity e resta su

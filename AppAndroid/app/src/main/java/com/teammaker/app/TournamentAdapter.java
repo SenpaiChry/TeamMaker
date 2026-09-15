@@ -21,7 +21,6 @@ import java.util.Collections;
 
 public class TournamentAdapter extends RecyclerView.Adapter<TournamentAdapter.ViewHolder> {
 
-    static TournamentAdapter tournamentAdapter;
     private final Context context;
     private final ArrayList<Tournament> tournaments;
 
@@ -51,7 +50,6 @@ public class TournamentAdapter extends RecyclerView.Adapter<TournamentAdapter.Vi
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder h, int position) {
-        tournamentAdapter = this;
         Tournament tournament = tournaments.get(position);
 
         h.llTournament.setBackground(ContextCompat.getDrawable(context,
@@ -60,16 +58,18 @@ public class TournamentAdapter extends RecyclerView.Adapter<TournamentAdapter.Vi
         // Torneo bloccato: nascondo il 🗑 (l'eliminazione avviene solo dopo lo sblocco).
         h.btnDelete.setVisibility(tournament.locked ? View.GONE : View.VISIBLE);
         h.btnDelete.setOnClickListener(v -> {
-            Intent intent = new Intent(TournamentActivityManageTournaments.tournamentActivityManageTournaments.getApplicationContext(), ActivityPopUp.class);
+            Context ctx = h.itemView.getContext();
+            Intent intent = new Intent(ctx, ActivityPopUp.class);
             intent.putExtra("tournament_key", tournament.key);
             intent.putExtra("pop_up_type", PopUpType.DELETE_TOURNAMENT);
-            TournamentActivityManageTournaments.tournamentActivityManageTournaments.startActivity(intent);
+            ctx.startActivity(intent);
         });
 
         h.btnEdit.setOnClickListener(v -> {
-            Intent intent = new Intent(TournamentActivityManageTournaments.tournamentActivityManageTournaments.getApplicationContext(), ActivityPopUpManageTournament.class);
+            Context ctx = h.itemView.getContext();
+            Intent intent = new Intent(ctx, ActivityPopUpManageTournament.class);
             intent.putExtra("tournament_key", tournament.key);
-            TournamentActivityManageTournaments.tournamentActivityManageTournaments.startActivity(intent);
+            ctx.startActivity(intent);
         });
 
         if (tournament.name == null || tournament.name.isEmpty()) {
