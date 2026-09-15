@@ -1,6 +1,7 @@
 package com.teammaker.app;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.google.firebase.database.FirebaseDatabase;
 import com.teammaker.app.Utility.PlayerUtility;
@@ -20,9 +21,20 @@ import com.teammaker.app.Utility.StatsUtility;
  */
 public class TeamMakerApplication extends Application {
 
+    private static Context appContext;
+
+    /**
+     * Application context globale, utile alle Utility per mostrare Toast
+     * senza dover conoscere l'Activity corrente. Non usarlo mai come Context
+     * di un componente UI (Dialog, inflater di layout non tema-aware, ecc.).
+     */
+    public static Context getAppContext() { return appContext; }
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        appContext = getApplicationContext();
 
         // Deve stare qui (non in MainActivity): setPersistenceEnabled crasha
         // se chiamato dopo che qualcuno ha gia' fatto FirebaseDatabase.getInstance().

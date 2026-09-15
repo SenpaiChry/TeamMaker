@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.teammaker.app.Utility.DataChangeBus;
 import com.teammaker.app.Utility.TournamentUtility;
 import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
@@ -24,6 +25,8 @@ public class TournamentActivityManageTeams extends AppCompatActivity {
 
     private TournamentModifyTeamsAdapter tournamentModifyTeamsAdapter;
     static private final int nCharSurname = 5;
+
+    private final Runnable onTeamsChanged = this::notifyDataChangeInternal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,15 +51,20 @@ public class TournamentActivityManageTeams extends AppCompatActivity {
         btnGoBack.setOnClickListener(v -> finish());
     }
 
-    /**
-     * Notifica all'adapter che i dati sono cambiati, se l'Activity e' viva.
-     * Se e' morta (utente su altra schermata), no-op: al prossimo onCreate
-     * la lista sara' ricostruita dai dati aggiornati.
-     */
-    public static void notifyDataChange() {
-        TournamentActivityManageTeams a = get();
-        if (a == null || a.tournamentModifyTeamsAdapter == null) return;
-        a.tournamentModifyTeamsAdapter.notifyDataSetChanged();
+    @Override
+    protected void onStart() {
+        super.onStart();
+        DataChangeBus.register(DataChangeBus.Event.TEAMS, onTeamsChanged);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        DataChangeBus.unregister(DataChangeBus.Event.TEAMS, onTeamsChanged);
+    }
+
+    private void notifyDataChangeInternal() {
+        if (tournamentModifyTeamsAdapter != null) tournamentModifyTeamsAdapter.notifyDataSetChanged();
     }
 
     public static void openPopUpNewTeam(Context context, String tournamentKey) {

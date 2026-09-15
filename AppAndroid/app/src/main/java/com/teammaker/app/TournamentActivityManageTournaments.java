@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Model.Constants;
+import com.teammaker.app.Utility.DataChangeBus;
 import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
 import java.lang.ref.WeakReference;
@@ -24,6 +25,8 @@ public class TournamentActivityManageTournaments extends AppCompatActivity {
     public static TournamentActivityManageTournaments get() { return instance.get(); }
 
     private TournamentAdapter tournamentAdapter;
+
+    private final Runnable onTournamentsChanged = this::reloadTournamentsInternal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,12 +48,20 @@ public class TournamentActivityManageTournaments extends AppCompatActivity {
         btnGoBack.setOnClickListener(v -> finish());
     }
 
-    /**
-     * Riordina la lista dei tornei per data (desc) e notifica l'adapter se l'Activity
-     * e' viva. Se e' morta (utente su altra schermata), no-op: al prossimo onCreate
-     * la lista sara' ricostruita dai dati aggiornati di Constants.
-     */
-    public static void reloadTournaments() {
+    @Override
+    protected void onStart() {
+        super.onStart();
+        DataChangeBus.register(DataChangeBus.Event.TOURNAMENTS, onTournamentsChanged);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        DataChangeBus.unregister(DataChangeBus.Event.TOURNAMENTS, onTournamentsChanged);
+    }
+
+    /** Riordina i tornei per data (desc) e notifica l'adapter se aperto. */
+    private void reloadTournamentsInternal() {
         Collections.sort(Constants.tournaments, new Comparator<Tournament>() {
             @Override
             public int compare(Tournament t1, Tournament t2) {
@@ -61,9 +72,7 @@ public class TournamentActivityManageTournaments extends AppCompatActivity {
             }
         });
 
-        TournamentActivityManageTournaments a = get();
-        if (a == null || a.tournamentAdapter == null) return;
-        a.tournamentAdapter.notifyDataSetChanged();
+        if (tournamentAdapter != null) tournamentAdapter.notifyDataSetChanged();
     }
 
     public void openTournamentActivityGenerate() {

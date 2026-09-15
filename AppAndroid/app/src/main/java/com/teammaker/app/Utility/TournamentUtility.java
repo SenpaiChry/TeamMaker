@@ -9,8 +9,6 @@ import androidx.annotation.NonNull;
 import com.teammaker.app.Match;
 import com.teammaker.app.Team;
 import com.teammaker.app.Tournament;
-import com.teammaker.app.TournamentActivityManageMatches;
-import com.teammaker.app.TournamentActivityManageTournaments;
 import com.teammaker.app.Model.Constants;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -106,21 +104,9 @@ public class TournamentUtility {
 
                 Constants.downloadEnd = true;
 
-                // Aggiorna la lista tornei se la schermata e' aperta
-                try {
-                    TournamentActivityManageTournaments.reloadTournaments();
-                } catch (Exception e) {
-                    // Difensivo: se la schermata non e' allo stato giusto (finished / non ancora
-                    // creata) il refresh puo' fallire. Log warning, ma non blocca il download.
-                    Log.w("TournamentUtility", "reloadTournaments fallito", e);
-                }
-
-                // Aggiorna la lista partite se la schermata e' aperta
-                try {
-                    TournamentActivityManageMatches.reloadMatches();
-                } catch (Exception e) {
-                    Log.w("TournamentUtility", "reloadMatches fallito", e);
-                }
+                // Notifica chi mostra tornei/partite (l'Activity visibile lo raccoglie)
+                DataChangeBus.emit(DataChangeBus.Event.TOURNAMENTS);
+                DataChangeBus.emit(DataChangeBus.Event.MATCHES);
 
                 Log.d("Firebase", "Tournaments aggiornati in tempo reale: " + Constants.tournaments.size());
             }

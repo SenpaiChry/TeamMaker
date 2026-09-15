@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.teammaker.app.Utility.DataChangeBus;
 import com.teammaker.app.Utility.TournamentUtility;
 import com.teammaker.app.Utility.Utility;
 
@@ -63,7 +64,7 @@ public class ActivityPopUpSaveNewTournament extends AppCompatActivity {
                 ActivityTeams a = ActivityTeams.get();
                 if (a != null) a.finish();
 //              TODO PER QUANDO SI VORRA' FARE SALVA E GENERA ANCORA  ActivityGenerate g = ActivityGenerate.get(); if (g != null) g.finish();
-                TournamentActivityManageTournaments.reloadTournaments();
+                DataChangeBus.emit(DataChangeBus.Event.TOURNAMENTS);
                 finish();
             } else {
                 Toast.makeText(this, getResources().getString(R.string.missing_name), Toast.LENGTH_SHORT).show();

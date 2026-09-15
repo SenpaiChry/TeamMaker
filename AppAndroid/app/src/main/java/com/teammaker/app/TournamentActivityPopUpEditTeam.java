@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.teammaker.app.Utility.DataChangeBus;
 import com.teammaker.app.Utility.PlayerUtility;
 import com.teammaker.app.Utility.TournamentTeamUtility;
 import com.teammaker.app.Utility.TournamentUtility;
@@ -113,8 +114,8 @@ public class TournamentActivityPopUpEditTeam extends AppCompatActivity {
 
                 if (checkEditedTeam(tournament, teamEdited, teamOriginal)) {
                     TournamentTeamUtility.editTeamsTournament(tournament);
-                    TournamentActivityManageTeams.notifyDataChange();
-                    TournamentActivityManageTournaments.reloadTournaments();
+                    DataChangeBus.emit(DataChangeBus.Event.TEAMS);
+                    DataChangeBus.emit(DataChangeBus.Event.TOURNAMENTS);
 
                     finish();
                 }

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.teammaker.app.Utility.DataChangeBus;
 import com.teammaker.app.Utility.MatchUtility;
 import com.teammaker.app.Utility.PlayerUtility;
 import com.teammaker.app.Utility.TournamentTeamUtility;
@@ -75,7 +76,7 @@ public class ActivityPopUp extends AppCompatActivity {
                 btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.button_danger));
                 btnConfirm.setOnClickListener(view -> {
                     TournamentUtility.deleteTournament(tournamentKey);
-                    TournamentActivityManageTournaments.reloadTournaments();
+                    DataChangeBus.emit(DataChangeBus.Event.TOURNAMENTS);
                     finish();
                 });
                 break;
@@ -90,7 +91,7 @@ public class ActivityPopUp extends AppCompatActivity {
                 btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.button_confirm));
                 btnConfirm.setOnClickListener(view -> {
                     TournamentUtility.setActiveTournament(tournamentKey);
-                    TournamentActivityManageTournaments.reloadTournaments();
+                    DataChangeBus.emit(DataChangeBus.Event.TOURNAMENTS);
                     ActivityPopUpManageTournament.updateButtons();
                     finish();
                 });
@@ -106,7 +107,7 @@ public class ActivityPopUp extends AppCompatActivity {
                 btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.button_warning));
                 btnConfirm.setOnClickListener(view -> {
                     TournamentUtility.deactivateAllTournaments();
-                    TournamentActivityManageTournaments.reloadTournaments();
+                    DataChangeBus.emit(DataChangeBus.Event.TOURNAMENTS);
                     ActivityPopUpManageTournament.updateButtons();
                     finish();
                 });

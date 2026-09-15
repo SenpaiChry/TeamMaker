@@ -4,8 +4,6 @@ import static com.teammaker.app.Model.Constants.dbRoot;
 
 import com.teammaker.app.Team;
 import com.teammaker.app.Tournament;
-import com.teammaker.app.TournamentActivityManageTeams;
-import com.teammaker.app.TournamentActivityManageTournaments;
 import com.teammaker.app.Model.Constants;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -31,8 +29,8 @@ public class TournamentTeamUtility {
                 DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key + "/teams/" + team.key);
 
                 tournament.teams.remove(team);
-                TournamentActivityManageTeams.notifyDataChange();
-                TournamentActivityManageTournaments.reloadTournaments();
+                DataChangeBus.emit(DataChangeBus.Event.TEAMS);
+                DataChangeBus.emit(DataChangeBus.Event.TOURNAMENTS);
 
                 FirebaseWriteHelper.attach(null, "deleteTeam", dbRef.removeValue());
 
@@ -70,7 +68,7 @@ public class TournamentTeamUtility {
 
         newTeam.key = key;
         tournament.teams.add(newTeam);
-        TournamentActivityManageTeams.notifyDataChange();
+        DataChangeBus.emit(DataChangeBus.Event.TEAMS);
 
         // Scrittura atomica del nodo (era una sequenza di setValue distinte per ogni player)
         FirebaseWriteHelper.attach(null, "addTeamToTournament", dbRef.setValue(TeamMapper.toMap(newTeam)));

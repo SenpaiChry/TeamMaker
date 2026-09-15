@@ -6,7 +6,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.teammaker.app.ActivityAdmin;
 import com.teammaker.app.Player;
 import com.teammaker.app.PlayerStats;
 import com.teammaker.app.StatDefinition;
@@ -175,8 +174,8 @@ public class PlayerUtility {
                     TournamentUtility.downloadTournaments();
                 }
 
-                // Aggiorna la lista admin se aperta (reloadPlayers e' gia' null-safe)
-                ActivityAdmin.reloadPlayers();
+                // Notifica chi mostra la lista giocatori (Activity visibile lo raccoglie)
+                DataChangeBus.emit(DataChangeBus.Event.PLAYERS);
 
                 Log.d("Firebase", "Players aggiornati in tempo reale: " + Constants.players.size());
             }
@@ -205,9 +204,6 @@ public class PlayerUtility {
                 players.add(p);
             }
         }
-
-        ActivityAdmin.reloadPlayers();
-
         return players;
     }
 

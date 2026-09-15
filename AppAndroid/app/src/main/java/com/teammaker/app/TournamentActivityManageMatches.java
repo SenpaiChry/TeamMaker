@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.teammaker.app.Utility.DataChangeBus;
 import com.teammaker.app.Utility.TournamentUtility;
 import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
@@ -23,6 +24,8 @@ public class TournamentActivityManageMatches extends AppCompatActivity {
     public static TournamentActivityManageMatches get() { return instance.get(); }
 
     private TournamentBracketAdminAdapter tournamentBracketAdminAdapter;
+
+    private final Runnable onMatchesChanged = this::onMatchesChangedInternal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,30 +82,30 @@ public class TournamentActivityManageMatches extends AppCompatActivity {
         listView.setAdapter(tournamentBracketAdminAdapter);
     }
 
-    /**
-     * Notifica all'adapter che i dati sono cambiati, se l'Activity e' viva.
-     * Se e' morta (utente su altra schermata), no-op: al prossimo onCreate
-     * la lista sara' ricostruita dai dati aggiornati.
-     */
-    public static void notifyMatchesChanged() {
-        TournamentActivityManageMatches a = get();
-        if (a == null || a.tournamentBracketAdminAdapter == null) return;
-        a.tournamentBracketAdminAdapter.notifyDataSetChanged();
+    @Override
+    protected void onStart() {
+        super.onStart();
+        DataChangeBus.register(DataChangeBus.Event.MATCHES, onMatchesChanged);
     }
 
-    /** Rinfresca la schermata (se aperta) dopo un aggiornamento realtime dei dati. */
-    public static void reloadMatches() {
-        TournamentActivityManageMatches a = get();
-        if (a == null || a.isDestroyed()) return;
-        a.runOnUiThread(() -> {
-            try {
-                a.recreate();
-            } catch (Exception e) {
-                // Difensivo: se l'activity e' in transizione, recreate() puo' fallire.
-                // Non e' un bug: la prossima onCreate ridisegnera' comunque i dati.
-                android.util.Log.w("ManageMatches", "reloadMatches.recreate fallito", e);
-            }
-        });
+    @Override
+    protected void onStop() {
+        super.onStop();
+        DataChangeBus.unregister(DataChangeBus.Event.MATCHES, onMatchesChanged);
+    }
+
+    /**
+     * Rinfresca la schermata dopo un cambio dei dati. Usa recreate() perche' i
+     * bottoni in cima cambiano in base allo stato (GENERA CALENDARIO vs GENERA
+     * FINALI + CANCELLA TUTTE), non basta notifyDataSetChanged sull'adapter.
+     */
+    private void onMatchesChangedInternal() {
+        if (isDestroyed()) return;
+        try {
+            recreate();
+        } catch (Exception e) {
+            android.util.Log.w("ManageMatches", "recreate fallito", e);
+        }
     }
 
     private void openPopUp(String tournamentKey) {

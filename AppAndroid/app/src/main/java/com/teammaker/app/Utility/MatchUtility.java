@@ -4,9 +4,8 @@ import static com.teammaker.app.Model.Constants.dbRoot;
 
 import com.teammaker.app.Match;
 import com.teammaker.app.Team;
+import com.teammaker.app.TeamMakerApplication;
 import com.teammaker.app.Tournament;
-import com.teammaker.app.TournamentActivityManageMatches;
-import com.teammaker.app.TournamentActivityManageTournaments;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -47,7 +46,7 @@ public class MatchUtility {
         }
 
         FirebaseWriteHelper.attach(
-                TournamentActivityManageMatches.get(),
+                TeamMakerApplication.getAppContext(),
                 "saveMatches",
                 dbRef.updateChildren(updates));
     }
@@ -59,16 +58,15 @@ public class MatchUtility {
         match.key = dbRef.push().getKey();
         // Scrittura atomica del nodo completo (era una sequenza di 8 setValue distinte)
         FirebaseWriteHelper.attach(
-                TournamentActivityManageMatches.get(),
+                TeamMakerApplication.getAppContext(),
                 "addNewMatch",
                 dbRef.child(match.key).setValue(MatchMapper.toMap(match)));
 
         tournament.matches.add(match);
         Collections.sort(tournament.matches, BY_DAY_TIME);
 
-        TournamentActivityManageMatches.notifyMatchesChanged();
-        TournamentActivityManageTournaments.reloadTournaments();
-        TournamentActivityManageMatches.reloadMatches();
+        DataChangeBus.emit(DataChangeBus.Event.MATCHES);
+        DataChangeBus.emit(DataChangeBus.Event.TOURNAMENTS);
     }
 
     public static void editMatch(String tournamentKey, Match match) {
@@ -79,7 +77,7 @@ public class MatchUtility {
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournament.key + "/matches/" + tournament.matches.get(i).key);
                 // Scrittura atomica del nodo (era una sequenza di 8 setValue distinte)
                 FirebaseWriteHelper.attach(
-                        TournamentActivityManageMatches.get(),
+                        TeamMakerApplication.getAppContext(),
                         "editMatch",
                         databaseReference.setValue(MatchMapper.toMap(match)));
 
@@ -94,7 +92,7 @@ public class MatchUtility {
 
                 Collections.sort(tournament.matches, BY_DAY_TIME);
 
-                TournamentActivityManageMatches.notifyMatchesChanged();
+                DataChangeBus.emit(DataChangeBus.Event.MATCHES);
 
                 // Propaga il vincente/perdente alle fasi finali che dipendono da questa partita
                 FinalStageResolver.resolveAll(tournamentKey);
@@ -112,10 +110,10 @@ public class MatchUtility {
                 DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournamentKey + "/matches/" + match.key);
 
                 tournament.matches.remove(match);
-                TournamentActivityManageMatches.notifyMatchesChanged();
+                DataChangeBus.emit(DataChangeBus.Event.MATCHES);
 
                 FirebaseWriteHelper.attach(
-                        TournamentActivityManageMatches.get(),
+                        TeamMakerApplication.getAppContext(),
                         "deleteMatch",
                         dbRef.removeValue());
 
@@ -141,11 +139,10 @@ public class MatchUtility {
 
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(dbRoot + "tournaments/" + tournamentKey);
         FirebaseWriteHelper.attach(
-                TournamentActivityManageMatches.get(),
+                TeamMakerApplication.getAppContext(),
                 "deleteEveryMatch",
                 dbRef.updateChildren(updates));
 
-        TournamentActivityManageMatches.notifyMatchesChanged();
-        TournamentActivityManageMatches.reloadMatches();
+        DataChangeBus.emit(DataChangeBus.Event.MATCHES);
     }
 }

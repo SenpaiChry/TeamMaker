@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.Model.Constants;
+import com.teammaker.app.Utility.DataChangeBus;
 import com.teammaker.app.Utility.PlayerExportUtility;
 import com.teammaker.app.Utility.VerticalSpacingItemDecoration;
 
@@ -40,6 +41,8 @@ public class ActivityAdmin extends AppCompatActivity {
     private ArrayList<Player> playersToSee;
     private PlayerAdminAdapter playerAdminAdapter;
     RecyclerView listViewAdmin;
+
+    private final Runnable onPlayersChanged = this::reloadPlayersInternal;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -135,18 +138,25 @@ public class ActivityAdmin extends AppCompatActivity {
         }
     }
 
-    /**
-     * Chiamato da PlayerUtility.downloadPlayers dopo un aggiornamento realtime.
-     * Se l'Activity non e' live (utente su altra schermata), no-op: al prossimo
-     * onCreate la lista sara' ricostruita dai dati aggiornati di Constants.
-     */
-    public static void reloadPlayers() {
-        ActivityAdmin a = get();
-        if (a == null || a.playerAdminAdapter == null) return;
-        a.playersToSee.clear();
-        a.playersToSee.addAll(Constants.players);
-        sortActiveFirst(a.playersToSee);
-        a.playerAdminAdapter.notifyDataSetChanged();
+    @Override
+    protected void onStart() {
+        super.onStart();
+        DataChangeBus.register(DataChangeBus.Event.PLAYERS, onPlayersChanged);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        DataChangeBus.unregister(DataChangeBus.Event.PLAYERS, onPlayersChanged);
+    }
+
+    /** Aggiorna la lista con i dati correnti di Constants. */
+    private void reloadPlayersInternal() {
+        if (playerAdminAdapter == null) return;
+        playersToSee.clear();
+        playersToSee.addAll(Constants.players);
+        sortActiveFirst(playersToSee);
+        playerAdminAdapter.notifyDataSetChanged();
     }
 
     /**
