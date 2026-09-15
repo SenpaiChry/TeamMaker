@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -184,7 +183,9 @@ public class UpdateUtility {
         req.setDescription(activity.getString(R.string.downloading_update));
         req.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
         req.setMimeType("application/vnd.android.package-archive");
-        req.setDestinationInExternalFilesDir(activity, Environment.DIRECTORY_DOWNLOADS, "apk/" + fileName);
+        // Salviamo esattamente dove poi il FileProvider si aspetta di trovare l'apk
+        // (file_paths.xml mappa <external-files-path name="apk" path="apk/">).
+        req.setDestinationUri(Uri.fromFile(apkFile));
 
         long downloadId = dm.enqueue(req);
 
