@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.graphics.drawable.GradientDrawable;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
@@ -108,7 +107,6 @@ public class ScorecardActivity extends AppCompatActivity {
 
             String key1 = tournament.matches.get(position).keyTeam1;
             String key2 = tournament.matches.get(position).keyTeam2;
-            Log.d("FATAL", "key " + tournamentKey + " position " + position + " k1 " + key1 + " k2 " + key2);
 
             titleA = buildTitle(tournament, key1, R.string.team_1);
             titleB = buildTitle(tournament, key2, R.string.team_2);

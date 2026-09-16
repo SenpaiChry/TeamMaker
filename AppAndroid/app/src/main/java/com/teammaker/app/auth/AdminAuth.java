@@ -35,7 +35,6 @@ public class AdminAuth {
         FirebaseAuth.getInstance()
                 .signInWithEmailAndPassword(ADMIN_EMAIL, password)
                 .addOnSuccessListener(result -> {
-                    Log.d("AdminAuth", "Login admin ok: " + result.getUser().getUid());
                     cb.onSuccess();
                 })
                 .addOnFailureListener(e -> {
