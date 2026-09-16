@@ -44,6 +44,10 @@ database-debug.log*
 # ---------- Claude Code ----------
 .claude/settings.local.json
 
+# ---------- File di lavoro locali (NON pubblicare) ----------
+# Contiene dettagli di vulnerabilita' non ancora fixate: repo pubblico, resta locale.
+AUDIT_TODO.md
+
 # ---------- Sistema / editor ----------
 .DS_Store
 Thumbs.db
