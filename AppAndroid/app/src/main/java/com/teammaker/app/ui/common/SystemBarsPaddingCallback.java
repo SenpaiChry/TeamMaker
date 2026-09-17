@@ -7,22 +7,29 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.teammaker.app.R;
+
 /**
  * Con targetSdk 36 Android 15/16 forza l'edge-to-edge: il contenuto va sotto
  * status bar e nav bar se non lo diciamo esplicitamente. Registrato in
- * TeamMakerApplication, applica automaticamente a ogni Activity un padding
- * top pari all'altezza della status bar (variabile per notch/dynamic island)
- * e un padding bottom fisso "minimo" — cosi' non tocchiamo le 27 Activity a mano.
+ * TeamMakerApplication, applica automaticamente a ogni Activity:
+ *
+ *   - padding top    = altezza status bar (dinamico: adatta a notch / dynamic island)
+ *   - padding bottom = insets.bottom del sistema (gesture nav ~24dp, 3-button ~48dp)
+ *   - background     = scorecard_bg_top, cosi' le aree di padding sono colorate
+ *                      come il resto dell'app (prima lo faceva il tema con
+ *                      android:statusBarColor / android:navigationBarColor, che
+ *                      edge-to-edge ignora).
+ *
+ * Non serve toccare le 27 Activity a mano.
  */
 public class SystemBarsPaddingCallback implements Application.ActivityLifecycleCallbacks {
-
-    /** Padding sotto in dp: appena visibile per staccare i contenuti dalla nav bar. */
-    private static final int BOTTOM_PADDING_DP = 4;
 
     @Override
     public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
@@ -31,13 +38,12 @@ public class SystemBarsPaddingCallback implements Application.ActivityLifecycleC
         View content = activity.findViewById(android.R.id.content);
         if (content == null) return;
 
-        final int bottomPaddingPx = (int) (BOTTOM_PADDING_DP
-                * activity.getResources().getDisplayMetrics().density);
+        content.setBackgroundColor(
+                ContextCompat.getColor(activity, R.color.scorecard_bg_top));
 
         ViewCompat.setOnApplyWindowInsetsListener(content, (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            // top = insets.top pieni; bottom = 4dp fisso, ignorando la nav bar reale.
-            v.setPadding(bars.left, bars.top, bars.right, bottomPaddingPx);
+            v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
             return insets;
         });
     }
