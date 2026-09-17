@@ -6,9 +6,7 @@ import android.content.Context;
 import com.google.firebase.database.FirebaseDatabase;
 import com.teammaker.app.data.repository.PlayerRepository;
 import com.teammaker.app.data.repository.StatsRepository;
-import com.teammaker.app.data.repository.TournamentRepository;
-import com.teammaker.app.ui.activity.MainActivity;
-import com.teammaker.app.util.NetworkUtils;
+import com.teammaker.app.ui.common.SystemBarsPaddingCallback;
 
 /**
  * Classe Application: e' il primo pezzo di codice che Android istanzia quando
@@ -38,6 +36,10 @@ public class TeamMakerApplication extends Application {
         super.onCreate();
 
         appContext = getApplicationContext();
+
+        // Padding automatico status bar / minimo nav bar per ogni Activity (edge-to-edge
+        // di target 36). Vedi SystemBarsPaddingCallback.
+        registerActivityLifecycleCallbacks(new SystemBarsPaddingCallback());
 
         // Deve stare qui (non in MainActivity): setPersistenceEnabled crasha
         // se chiamato dopo che qualcuno ha gia' fatto FirebaseDatabase.getInstance().
