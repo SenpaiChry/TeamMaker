@@ -7,7 +7,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
@@ -38,8 +37,11 @@ public class SystemBarsPaddingCallback implements Application.ActivityLifecycleC
         View content = activity.findViewById(android.R.id.content);
         if (content == null) return;
 
-        content.setBackgroundColor(
-                ContextCompat.getColor(activity, R.color.scorecard_bg_top));
+        // Gradiente top -> bottom (scorecard_bg_top -> scorecard_bg_bottom, gia' definito
+        // in drawable/bg_scoreboard.xml): la fascia sotto la status bar prende il colore
+        // top, quella sotto la nav bar il colore bottom, con transizione morbida in mezzo
+        // (che di solito e' coperta dal layout dell'Activity).
+        content.setBackgroundResource(R.drawable.bg_scoreboard);
 
         ViewCompat.setOnApplyWindowInsetsListener(content, (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
