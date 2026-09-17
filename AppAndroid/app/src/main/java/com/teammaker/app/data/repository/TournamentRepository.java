@@ -178,41 +178,57 @@ public class TournamentRepository {
         });
     }
 
+    /** Aggiornamento atomico: nome e data vanno o entrambi o nessuno. */
     public static void updateNameAndDateTournament(String key, String name, Calendar date) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         String formattedDate = sdf.format(date.getTime());
 
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("name", name);
+        updates.put("date", formattedDate);
+
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + key);
-        dbRef.child("name").setValue(name);
-        dbRef.child("date").setValue(formattedDate);
+        FirebaseWriteHelper.attach(null, "updateNameAndDateTournament", dbRef.updateChildren(updates));
     }
 
+    /**
+     * Creazione atomica di un nuovo torneo con le squadre gia' generate. Prima
+     * erano ~20 setValue indipendenti: una rete che cadeva a meta' lasciava un
+     * torneo mezzo salvato (nome senza data, 3 squadre invece di 5, ...). Adesso
+     * un'unica updateChildren multi-path: o passa tutto, o niente.
+     */
     public static void saveNewTournamentTeams(String tournamentName, Calendar date) {
-        String key = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/").push().getKey();
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + key);
-        DatabaseReference dbRefTeam;
+        DatabaseReference tournamentsRoot = FirebaseDatabase.getInstance()
+                .getReference(DB_ROOT + "tournaments/");
+        String key = tournamentsRoot.push().getKey();
+        if (key == null) return;
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         String formattedDate = sdf.format(date.getTime());
 
         deactivateAllTournaments();
 
-        dbRef.child("is_valid").setValue(true);
-        dbRef.child("name").setValue(tournamentName);
-        dbRef.child("nBracket").setValue(0);
-        dbRef.child("date").setValue(formattedDate);
+        Map<String, Object> updates = new HashMap<>();
+        updates.put(key + "/is_valid", true);
+        updates.put(key + "/name", tournamentName);
+        updates.put(key + "/nBracket", 0);
+        updates.put(key + "/date", formattedDate);
 
+        DatabaseReference teamsRef = tournamentsRoot.child(key).child("teams");
         for (Team team : TeamGenerator.getGenerated()) {
-            String keyTeam = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + key + "/teams/").push().getKey();
-            dbRefTeam = dbRef.child("teams").child(keyTeam);
+            String keyTeam = teamsRef.push().getKey();
+            if (keyTeam == null) continue;
             team.key = keyTeam;
 
-            dbRefTeam.child("bracket").setValue("");
-
+            updates.put(key + "/teams/" + keyTeam + "/bracket", "");
             for (int i = 0; i < team.players.size(); i++) {
-                dbRefTeam.child("player" + (i + 1)).setValue(team.players.get(i).key);
+                updates.put(key + "/teams/" + keyTeam + "/player" + (i + 1),
+                        team.players.get(i).key);
             }
         }
+
+        FirebaseWriteHelper.attach(null, "saveNewTournamentTeams",
+                tournamentsRoot.updateChildren(updates));
     }
 
     public static void updateNBracketsTournament(String tournamentKey, int nBrackets) {
