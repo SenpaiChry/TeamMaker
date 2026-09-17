@@ -18,12 +18,12 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.teammaker.app"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.teammaker.app"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 6
         versionName = "0.5"
 
