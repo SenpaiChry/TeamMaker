@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.Map;
 import com.teammaker.app.bus.DataChangeBus;
 import com.teammaker.app.data.firebase.FirebaseWriteHelper;
+import com.teammaker.app.data.mapper.MapperUtils;
 import com.teammaker.app.data.mapper.MatchMapper;
 import com.teammaker.app.data.mapper.TeamMapper;
 import com.teammaker.app.data.AppConfig;
@@ -71,18 +72,16 @@ public class TournamentRepository {
                 for (DataSnapshot tournamentSnapshot : snapshot.getChildren()) {
                     try {
                     Tournament tournament = new Tournament();
-                    tournament.setValid(tournamentSnapshot.child("is_valid").getValue(String.class));
-                    tournament.name = tournamentSnapshot.child("name").getValue(String.class);
-                    tournament.nBracket = tournamentSnapshot.child("nBracket").getValue(Integer.class) != null
-                            ? tournamentSnapshot.child("nBracket").getValue(Integer.class) : 0;
-                    Boolean lockedRaw = tournamentSnapshot.child("locked").getValue(Boolean.class);
-                    tournament.locked = lockedRaw != null && lockedRaw;
+                    tournament.setValid(MapperUtils.boolOr(tournamentSnapshot, "is_valid", false));
+                    tournament.name = MapperUtils.str(tournamentSnapshot, "name");
+                    tournament.nBracket = MapperUtils.intOr(tournamentSnapshot, "nBracket", 0);
+                    tournament.locked = MapperUtils.boolOr(tournamentSnapshot, "locked", false);
                     tournament.key = tournamentSnapshot.getKey();
 
-                    String dateString = tournamentSnapshot.child("date").getValue(String.class);
+                    String dateString = MapperUtils.str(tournamentSnapshot, "date");
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
-                    if (dateString != null && !dateString.isEmpty()) {
+                    if (!dateString.isEmpty()) {
                         try {
                             Date parsedDate = sdf.parse(dateString);
                             if (parsedDate != null) {
@@ -152,7 +151,7 @@ public class TournamentRepository {
             if (tournament.isValid) {
                 tournament.isValid = false;
                 DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournament.key);
-                FirebaseWriteHelper.attach(null, "deactivateAllTournaments", dbRef.child("is_valid").setValue("false"));
+                FirebaseWriteHelper.attach(null, "deactivateAllTournaments", dbRef.child("is_valid").setValue(false));
                 return;
             }
         }
@@ -198,7 +197,7 @@ public class TournamentRepository {
 
         deactivateAllTournaments();
 
-        dbRef.child("is_valid").setValue("true");
+        dbRef.child("is_valid").setValue(true);
         dbRef.child("name").setValue(tournamentName);
         dbRef.child("nBracket").setValue(0);
         dbRef.child("date").setValue(formattedDate);
@@ -217,9 +216,11 @@ public class TournamentRepository {
     }
 
     public static void updateNBracketsTournament(String tournamentKey, int nBrackets) {
-        Tournament tournament = getTournamentByKey(tournamentKey);
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournament.key);
-        dbRef.child("nBracket").setValue(nBrackets);
+        // Scrittura diretta col path: evita l'NPE di quando il torneo non e' piu'
+        // in cache locale (race col listener) e ci evita una lookup inutile.
+        FirebaseDatabase.getInstance()
+                .getReference(DB_ROOT + "tournaments/" + tournamentKey + "/nBracket")
+                .setValue(nBrackets);
     }
 
     public static Tournament getActiveTournament() {
@@ -240,11 +241,11 @@ public class TournamentRepository {
         Map<String, Object> updates = new HashMap<>();
         for (Tournament tournament : TournamentRepository.getAll()) {
             if (tournament.isValid && !tournament.key.equals(key)) {
-                updates.put(tournament.key + "/is_valid", "false");
+                updates.put(tournament.key + "/is_valid", false);
                 tournament.isValid = false;
             }
         }
-        updates.put(key + "/is_valid", "true");
+        updates.put(key + "/is_valid", true);
 
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/");
         FirebaseWriteHelper.attach(null, "setActiveTournament", dbRef.updateChildren(updates));

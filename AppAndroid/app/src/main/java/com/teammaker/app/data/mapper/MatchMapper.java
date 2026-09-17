@@ -24,37 +24,34 @@ public class MatchMapper {
         }
 
         Match match = new Match(
-                snapshot.child("team1").getValue(String.class),
-                snapshot.child("team2").getValue(String.class),
-                parseIntOrZero(snapshot.child("day").getValue(String.class)),
-                snapshot.child("time").getValue(String.class),
-                parseIntOrZero(snapshot.child("points1").getValue(String.class)),
-                parseIntOrZero(snapshot.child("points2").getValue(String.class))
+                MapperUtils.str(snapshot, "team1"),
+                MapperUtils.str(snapshot, "team2"),
+                MapperUtils.intOr(snapshot, "day", 0),
+                MapperUtils.str(snapshot, "time"),
+                MapperUtils.intOr(snapshot, "points1", 0),
+                MapperUtils.intOr(snapshot, "points2", 0)
         );
         match.key = snapshot.getKey();
 
         if (snapshot.hasChild("type")) {
-            match.type = MatchPhases.normalize(
-                    String.valueOf(snapshot.child("type").getValue(String.class)));
+            match.type = MatchPhases.normalize(MapperUtils.str(snapshot, "type"));
         }
 
-        String s1t = snapshot.child("source1_type").getValue(String.class);
-        if (s1t != null && !s1t.isEmpty()) {
+        String s1t = MapperUtils.str(snapshot, "source1_type");
+        if (!s1t.isEmpty()) {
             match.source1Type = s1t;
-            String s1r = snapshot.child("source1_ref").getValue(String.class);
-            match.source1Ref = s1r != null ? s1r : "";
+            match.source1Ref = MapperUtils.str(snapshot, "source1_ref");
         }
-        String s2t = snapshot.child("source2_type").getValue(String.class);
-        if (s2t != null && !s2t.isEmpty()) {
+        String s2t = MapperUtils.str(snapshot, "source2_type");
+        if (!s2t.isEmpty()) {
             match.source2Type = s2t;
-            String s2r = snapshot.child("source2_ref").getValue(String.class);
-            match.source2Ref = s2r != null ? s2r : "";
+            match.source2Ref = MapperUtils.str(snapshot, "source2_ref");
         }
 
         for (DataSnapshot setSnap : snapshot.child("detail").getChildren()) {
             match.detail.add(new int[]{
-                    parseIntOrZero(setSnap.child("points1").getValue(String.class)),
-                    parseIntOrZero(setSnap.child("points2").getValue(String.class))
+                    MapperUtils.intOr(setSnap, "points1", 0),
+                    MapperUtils.intOr(setSnap, "points2", 0)
             });
         }
 
@@ -100,12 +97,4 @@ public class MatchMapper {
         return detailList;
     }
 
-    private static int parseIntOrZero(String value) {
-        if (value == null || value.isEmpty()) return 0;
-        try {
-            return Integer.parseInt(value.trim());
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
 }

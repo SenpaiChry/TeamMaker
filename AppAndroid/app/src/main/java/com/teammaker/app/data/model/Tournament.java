@@ -20,8 +20,8 @@ public class Tournament {
 
     public Tournament() { }
 
-    public void setValid(String valid) {
-        isValid = valid.equals("true");
+    public void setValid(boolean valid) {
+        isValid = valid;
     }
 
     @Override

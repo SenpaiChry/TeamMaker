@@ -25,8 +25,9 @@ public class Team {
     }
 
     public void addPlayerByKey(String key) {
+        if (key == null || key.isEmpty()) return;
         for (Player p : PlayerRepository.getAll()) {
-            if (p.key.equals(key)) {
+            if (key.equals(p.key)) {
                 Player temp = new Player();
                 temp.setTo(p);
                 addPlayer(temp);

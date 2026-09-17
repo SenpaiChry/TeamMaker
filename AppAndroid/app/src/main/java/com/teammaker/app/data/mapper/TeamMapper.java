@@ -19,11 +19,17 @@ public class TeamMapper {
 
         Team team = new Team();
         team.key = snapshot.getKey();
-        team.bracket = snapshot.child("bracket").getValue(String.class);
+        team.bracket = MapperUtils.str(snapshot, "bracket");
 
-        // I giocatori sono in player1, player2, ... (bracket incluso nel count)
-        for (int i = 1; i < snapshot.getChildrenCount() + 1; i++) {
-            team.addPlayerByKey(snapshot.child("player" + i).getValue(String.class));
+        // Itero solo i figli con chiave "playerN": prima usavamo getChildrenCount()
+        // che comprendeva anche il nodo "bracket", con due bug conseguenti — se
+        // bracket mancava si perdeva l'ultimo giocatore, se comparivano campi extra
+        // finivano passati ad addPlayerByKey come chiavi. Iteriamo direttamente.
+        for (DataSnapshot child : snapshot.getChildren()) {
+            String childKey = child.getKey();
+            if (childKey != null && childKey.matches("^player\\d+$")) {
+                team.addPlayerByKey(child.getValue(String.class));
+            }
         }
         return team;
     }
