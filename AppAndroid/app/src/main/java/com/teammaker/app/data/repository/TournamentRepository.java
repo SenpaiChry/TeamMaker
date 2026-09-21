@@ -32,9 +32,13 @@ import com.teammaker.app.data.mapper.MapperUtils;
 import com.teammaker.app.data.mapper.MatchMapper;
 import com.teammaker.app.data.mapper.TeamMapper;
 import com.teammaker.app.data.AppConfig;
+import com.teammaker.app.data.InputSanitizer;
 import com.teammaker.app.domain.TeamGenerator;
 
 public class TournamentRepository {
+
+    /** Lunghezza massima per il nome torneo. */
+    private static final int TOURNAMENT_NAME_MAX = 60;
 
     /** Cache in memoria dei tornei (sincronizzata dal listener realtime). */
     private static final ArrayList<Tournament> tournaments = new ArrayList<>();
@@ -190,7 +194,7 @@ public class TournamentRepository {
         String formattedDate = sdf.format(date.getTime());
 
         Map<String, Object> updates = new HashMap<>();
-        updates.put("name", name);
+        updates.put("name", InputSanitizer.clean(name, TOURNAMENT_NAME_MAX));
         updates.put("date", formattedDate);
 
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + key);
@@ -217,7 +221,7 @@ public class TournamentRepository {
 
         Map<String, Object> updates = new HashMap<>();
         updates.put(key + "/is_valid", true);
-        updates.put(key + "/name", tournamentName);
+        updates.put(key + "/name", InputSanitizer.clean(tournamentName, TOURNAMENT_NAME_MAX));
         updates.put(key + "/nBracket", 0);
         updates.put(key + "/date", formattedDate);
 

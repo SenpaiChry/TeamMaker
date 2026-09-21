@@ -21,6 +21,7 @@ import java.util.Map;
 import com.teammaker.app.data.firebase.FirebaseWriteHelper;
 import com.teammaker.app.data.mapper.StatMapper;
 import com.teammaker.app.data.AppConfig;
+import com.teammaker.app.data.InputSanitizer;
 
 /**
  * Catalogo delle statistiche: prima era una lista hardcoded in Constants, ora
@@ -30,6 +31,9 @@ import com.teammaker.app.data.AppConfig;
 public class StatsRepository {
 
     private static final String NODE = DB_ROOT + "stats";
+
+    /** Lunghezza massima per label e per ogni valore del RANGE. */
+    private static final int STAT_LABEL_MAX = 40;
 
     private static final List<StatDefinition> DEFINITIONS = new ArrayList<>();
     private static final List<Runnable> LISTENERS = new ArrayList<>();
@@ -91,6 +95,7 @@ public class StatsRepository {
     /** Aggiunge una nuova stat: genera la push-key, la scrive e la restituisce. */
     public static String addStat(StatDefinition def) {
         if (!AdminAuth.requireAdmin()) return null;
+        sanitizeInPlace(def);
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(NODE);
         String key = dbRef.push().getKey();
         def.key = key;
@@ -101,8 +106,19 @@ public class StatsRepository {
     /** Aggiorna una stat esistente (la key non cambia mai). */
     public static void updateStat(StatDefinition def) {
         if (!AdminAuth.requireAdmin()) return;
+        sanitizeInPlace(def);
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(NODE + "/" + def.key);
         FirebaseWriteHelper.attach(null, "updateStat", dbRef.setValue(StatMapper.toMap(def)));
+    }
+
+    /** Ripulisce label e values (RANGE) prima della scrittura. Mutazione in loco. */
+    private static void sanitizeInPlace(StatDefinition def) {
+        def.label = InputSanitizer.clean(def.label, STAT_LABEL_MAX);
+        if (def.values != null) {
+            for (int i = 0; i < def.values.size(); i++) {
+                def.values.set(i, InputSanitizer.clean(def.values.get(i), STAT_LABEL_MAX));
+            }
+        }
     }
 
     /**
