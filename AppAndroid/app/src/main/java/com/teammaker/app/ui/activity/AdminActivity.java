@@ -120,6 +120,24 @@ public class AdminActivity extends AppCompatActivity {
             String timestamp = new SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault()).format(new Date());
             File exportDir = new File(getCacheDir(), "exports");
             if (!exportDir.exists()) exportDir.mkdirs();
+
+            // GDPR hygiene: prima di creare il nuovo export, pulisco quelli
+            // vecchi. Contengono nome/cognome/nickname di persone reali e non
+            // devono restare piu' del necessario. Non posso cancellare subito
+            // dopo il share (Intent.createChooser non da' callback di fine),
+            // quindi pulisco al giro successivo, con soglia di 5 minuti per
+            // dare tempo all'app scelta di leggere il file via FileProvider.
+            long ageThresholdMs = 5 * 60 * 1000L;
+            long now = System.currentTimeMillis();
+            File[] old = exportDir.listFiles();
+            if (old != null) {
+                for (File f : old) {
+                    if (f.isFile() && now - f.lastModified() > ageThresholdMs) {
+                        f.delete();
+                    }
+                }
+            }
+
             File file = new File(exportDir, "teammaker_giocatori_" + timestamp + ".xlsx");
 
             PlayerExporter.exportToXlsx(file);
