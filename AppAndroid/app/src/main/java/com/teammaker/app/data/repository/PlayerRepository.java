@@ -1,5 +1,7 @@
 package com.teammaker.app.data.repository;
 
+
+import com.teammaker.app.auth.AdminAuth;
 import static com.teammaker.app.data.AppConfig.DB_ROOT;
 
 import android.util.Log;
@@ -54,6 +56,7 @@ public class PlayerRepository {
     private static final int PLAYER_TEXT_MAX = 40;
 
     public static void addPlayer(Player player, NetworkUtils.FirebaseCallback callback) {
+        if (!AdminAuth.requireAdmin()) return;
         String key = FirebaseDatabase.getInstance().getReference(DB_ROOT + "players/").push().getKey();
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "players/" + key);
 
@@ -95,6 +98,7 @@ public class PlayerRepository {
     }
 
     public static void addEditPlayer(Player playerChanged, String playerKey) {
+        if (!AdminAuth.requireAdmin()) return;
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "players/" + playerChanged.key);
 
         playerChanged.name     = sanitize(playerChanged.name,     PLAYER_TEXT_MAX);
@@ -135,6 +139,7 @@ public class PlayerRepository {
     }
 
     public static void deletePlayer(String playerKey) {
+        if (!AdminAuth.requireAdmin()) return;
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "players/" + playerKey);
         dbRef.removeValue().addOnSuccessListener(aVoid -> {
             Log.d("Firebase", "Giocatore eliminato: " + playerKey);
@@ -144,11 +149,13 @@ public class PlayerRepository {
     }
 
     public static void archivePlayer(String playerKey) {
+        if (!AdminAuth.requireAdmin()) return;
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "players/" + playerKey);
         dbRef.child("is_active").setValue(false);
     }
 
     public static void unarchivePlayer(String playerKey) {
+        if (!AdminAuth.requireAdmin()) return;
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "players/" + playerKey);
         dbRef.child("is_active").setValue(true);
     }

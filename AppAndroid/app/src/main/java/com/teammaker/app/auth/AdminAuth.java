@@ -1,11 +1,15 @@
 package com.teammaker.app.auth;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.teammaker.app.R;
+import com.teammaker.app.TeamMakerApplication;
 
 /**
  * Gate admin via Firebase Authentication.
@@ -47,6 +51,24 @@ public class AdminAuth {
     public static boolean isAdmin() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         return user != null && ADMIN_EMAIL.equalsIgnoreCase(user.getEmail());
+    }
+
+    /**
+     * Difesa in profondita' per le scritture: usato all'inizio di ogni metodo
+     * di scrittura nei repository. Se l'utente NON e' admin, mostra un Toast
+     * e ritorna false — il chiamante fa return immediato e la scrittura non
+     * parte nemmeno. Le Firebase Rules restano il gate primario, questo e' il
+     * secondo lucchetto (se le rules avessero un buco, o se l'admin logga
+     * out mentre un'Activity resta aperta).
+     */
+    public static boolean requireAdmin() {
+        if (isAdmin()) return true;
+        Context ctx = TeamMakerApplication.getAppContext();
+        if (ctx != null) {
+            Toast.makeText(ctx, R.string.action_not_allowed, Toast.LENGTH_SHORT).show();
+        }
+        Log.w("AdminAuth", "Scrittura rifiutata: utente non admin");
+        return false;
     }
 
     /** Esce dalla sessione admin. */

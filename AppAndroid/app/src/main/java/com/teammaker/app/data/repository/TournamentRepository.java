@@ -1,5 +1,7 @@
 package com.teammaker.app.data.repository;
 
+
+import com.teammaker.app.auth.AdminAuth;
 import static com.teammaker.app.data.AppConfig.DB_ROOT;
 
 import android.util.Log;
@@ -147,6 +149,7 @@ public class TournamentRepository {
     }
 
     public static void deactivateAllTournaments() {
+        if (!AdminAuth.requireAdmin()) return;
         for (Tournament tournament : TournamentRepository.getAll()) {
             if (tournament.isValid) {
                 tournament.isValid = false;
@@ -163,6 +166,7 @@ public class TournamentRepository {
      * solo SBLOCCA e ATTIVA/DISATTIVA. Non e' una guardia server-side.
      */
     public static void setLocked(String key, boolean locked) {
+        if (!AdminAuth.requireAdmin()) return;
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + key);
         FirebaseWriteHelper.attach(null, "setLocked", dbRef.child("locked").setValue(locked));
         Tournament tournament = getTournamentByKey(key);
@@ -170,6 +174,7 @@ public class TournamentRepository {
     }
 
     public static void deleteTournament(String key) {
+        if (!AdminAuth.requireAdmin()) return;
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + key);
         dbRef.removeValue().addOnSuccessListener(aVoid -> {
             Log.d("Firebase", "Torneo eliminato: " + key);
@@ -180,6 +185,7 @@ public class TournamentRepository {
 
     /** Aggiornamento atomico: nome e data vanno o entrambi o nessuno. */
     public static void updateNameAndDateTournament(String key, String name, Calendar date) {
+        if (!AdminAuth.requireAdmin()) return;
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         String formattedDate = sdf.format(date.getTime());
 
@@ -198,6 +204,7 @@ public class TournamentRepository {
      * un'unica updateChildren multi-path: o passa tutto, o niente.
      */
     public static void saveNewTournamentTeams(String tournamentName, Calendar date) {
+        if (!AdminAuth.requireAdmin()) return;
         DatabaseReference tournamentsRoot = FirebaseDatabase.getInstance()
                 .getReference(DB_ROOT + "tournaments/");
         String key = tournamentsRoot.push().getKey();
@@ -232,6 +239,7 @@ public class TournamentRepository {
     }
 
     public static void updateNBracketsTournament(String tournamentKey, int nBrackets) {
+        if (!AdminAuth.requireAdmin()) return;
         // Scrittura diretta col path: evita l'NPE di quando il torneo non e' piu'
         // in cache locale (race col listener) e ci evita una lookup inutile.
         FirebaseDatabase.getInstance()
@@ -254,6 +262,7 @@ public class TournamentRepository {
      * seconda falliva poteva restare NESSUN torneo attivo.
      */
     public static void setActiveTournament(String key) {
+        if (!AdminAuth.requireAdmin()) return;
         Map<String, Object> updates = new HashMap<>();
         for (Tournament tournament : TournamentRepository.getAll()) {
             if (tournament.isValid && !tournament.key.equals(key)) {

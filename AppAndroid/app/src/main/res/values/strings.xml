@@ -203,6 +203,7 @@
     <string name="phase">PHASE</string>
     <string name="go_back">GO BACK</string>
     <string name="error_while_saving_data">ERROR WHILE SAVING DATA</string>
+    <string name="action_not_allowed">Solo l\'amministratore puo\' modificare i dati</string>
     <string name="saving">SAVING</string>
     <string name="no_internet_connection">NO INTERNET CONNECTION</string>
     <string name="data_saved_with_success">DATA SAVED WITH SUCCESS</string>

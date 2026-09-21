@@ -1,5 +1,7 @@
 package com.teammaker.app.data.repository;
 
+
+import com.teammaker.app.auth.AdminAuth;
 import static com.teammaker.app.data.AppConfig.DB_ROOT;
 import android.util.Log;
 
@@ -88,6 +90,7 @@ public class StatsRepository {
 
     /** Aggiunge una nuova stat: genera la push-key, la scrive e la restituisce. */
     public static String addStat(StatDefinition def) {
+        if (!AdminAuth.requireAdmin()) return null;
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(NODE);
         String key = dbRef.push().getKey();
         def.key = key;
@@ -97,6 +100,7 @@ public class StatsRepository {
 
     /** Aggiorna una stat esistente (la key non cambia mai). */
     public static void updateStat(StatDefinition def) {
+        if (!AdminAuth.requireAdmin()) return;
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(NODE + "/" + def.key);
         FirebaseWriteHelper.attach(null, "updateStat", dbRef.setValue(StatMapper.toMap(def)));
     }
@@ -106,12 +110,14 @@ public class StatsRepository {
      * (safe, recuperabile se sbagli). Semplicemente non verranno piu' mostrati.
      */
     public static void deleteStat(String key) {
+        if (!AdminAuth.requireAdmin()) return;
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(NODE + "/" + key);
         FirebaseWriteHelper.attach(null, "deleteStat", dbRef.removeValue());
     }
 
     /** Aggiorna l'ordine di piu' stat in un'unica scrittura atomica. */
     public static void reorder(List<StatDefinition> newOrder) {
+        if (!AdminAuth.requireAdmin()) return;
         Map<String, Object> updates = new HashMap<>();
         for (int i = 0; i < newOrder.size(); i++) {
             updates.put(newOrder.get(i).key + "/order", i);

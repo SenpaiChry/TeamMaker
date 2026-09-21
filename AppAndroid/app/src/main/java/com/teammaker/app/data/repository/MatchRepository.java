@@ -1,5 +1,7 @@
 package com.teammaker.app.data.repository;
 
+
+import com.teammaker.app.auth.AdminAuth;
 import static com.teammaker.app.data.AppConfig.DB_ROOT;
 import com.teammaker.app.data.model.Match;
 import com.teammaker.app.data.model.Team;
@@ -38,6 +40,7 @@ public class MatchRepository {
      * calendario, al posto di tanti addNewMatch in loop (fragili e frammentati).
      */
     public static void saveMatches(String tournamentKey, List<Match> matches) {
+        if (!AdminAuth.requireAdmin()) return;
         Tournament tournament = TournamentRepository.getTournamentByKey(tournamentKey);
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournament.key + "/matches/");
 
@@ -57,6 +60,7 @@ public class MatchRepository {
     }
 
     public static void addNewMatch(String tournamentKey, Match match) {
+        if (!AdminAuth.requireAdmin()) return;
         Tournament tournament = TournamentRepository.getTournamentByKey(tournamentKey);
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournament.key + "/matches/");
 
@@ -75,6 +79,7 @@ public class MatchRepository {
     }
 
     public static void editMatch(String tournamentKey, Match match) {
+        if (!AdminAuth.requireAdmin()) return;
         Tournament tournament = TournamentRepository.getTournamentByKey(tournamentKey);
 
         for (int i = 0; i < tournament.matches.size(); i++) {
@@ -108,6 +113,7 @@ public class MatchRepository {
     }
 
     public static void deleteMatch(String tournamentKey, String matchKey) {
+        if (!AdminAuth.requireAdmin()) return;
         Tournament tournament = TournamentRepository.getTournamentByKey(tournamentKey);
 
         for (Match match : tournament.matches) {
@@ -128,6 +134,7 @@ public class MatchRepository {
     }
 
     public static void deleteEveryMatch(String tournamentKey) {
+        if (!AdminAuth.requireAdmin()) return;
         Tournament tournament = TournamentRepository.getTournamentByKey(tournamentKey);
 
         // Reset atomico: nBracket=0, tutte le partite via, bracket delle squadre svuotato

@@ -1,5 +1,7 @@
 package com.teammaker.app.data.repository;
 
+
+import com.teammaker.app.auth.AdminAuth;
 import static com.teammaker.app.data.AppConfig.DB_ROOT;
 import com.teammaker.app.data.model.Team;
 import com.teammaker.app.data.model.Tournament;
@@ -13,6 +15,7 @@ import com.teammaker.app.data.AppConfig;
 public class TeamRepository {
 
     public static void saveBracketForTeams(String tournamentKey) {
+        if (!AdminAuth.requireAdmin()) return;
         Tournament tournament = TournamentRepository.getTournamentByKey(tournamentKey);
 
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournament.key + "/teams/");
@@ -24,6 +27,7 @@ public class TeamRepository {
     }
 
     public static void deleteTeam(String teamKey) {
+        if (!AdminAuth.requireAdmin()) return;
         Team team = getTeamByKey(teamKey);
 
         for (Tournament tournament : TournamentRepository.getAll()) {
@@ -42,6 +46,7 @@ public class TeamRepository {
     }
 
     public static void editTeamsTournament(Tournament tournament) {
+        if (!AdminAuth.requireAdmin()) return;
         // Mappa completa via TeamMapper: setValue sostituisce il nodo per intero,
         // così i playerN residui (es. player4 quando la squadra passa da 4 a 3) spariscono.
         for (Team team : tournament.teams) {
@@ -63,6 +68,7 @@ public class TeamRepository {
     }
 
     public static void addTeamToTournament(String tournamentKey, Team newTeam) {
+        if (!AdminAuth.requireAdmin()) return;
         Tournament tournament = TournamentRepository.getTournamentByKey(tournamentKey);
 
         String key = FirebaseDatabase.getInstance().getReference(DB_ROOT + "tournaments/" + tournament.key + "/teams/").push().getKey();
