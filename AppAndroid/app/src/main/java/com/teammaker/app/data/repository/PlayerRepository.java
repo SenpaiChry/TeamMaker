@@ -37,11 +37,30 @@ public class PlayerRepository {
     private static ValueEventListener playersListener;
     private static DatabaseReference playersRef;
 
+    /**
+     * Ripulisce una stringa in ingresso da EditText prima di scriverla in DB:
+     * trim, collassa gli spazi/tab/newline multipli in uno, rimuove i caratteri
+     * di controllo (Unicode Cntrl), tronca a maxLen. Difesa contro spazi extra,
+     * emoji/tabs incollati, e stringhe kilobyte da paste sfortunati.
+     */
+    private static String sanitize(String raw, int maxLen) {
+        if (raw == null) return "";
+        String s = raw.replaceAll("\\p{Cntrl}+", " ").replaceAll("\\s+", " ").trim();
+        if (s.length() > maxLen) s = s.substring(0, maxLen);
+        return s;
+    }
+
+    /** Lunghezza massima per name / surname / nickname del giocatore. */
+    private static final int PLAYER_TEXT_MAX = 40;
+
     public static void addPlayer(Player player, NetworkUtils.FirebaseCallback callback) {
         String key = FirebaseDatabase.getInstance().getReference(DB_ROOT + "players/").push().getKey();
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "players/" + key);
 
         player.key = key;
+        player.name     = sanitize(player.name,     PLAYER_TEXT_MAX);
+        player.surname  = sanitize(player.surname,  PLAYER_TEXT_MAX);
+        player.nickname = sanitize(player.nickname, PLAYER_TEXT_MAX);
         // Non aggiorniamo la lista locale: il listener in tempo reale se ne occupa
 
         Map<String, Object> playerData = new HashMap<>();
@@ -77,6 +96,10 @@ public class PlayerRepository {
 
     public static void addEditPlayer(Player playerChanged, String playerKey) {
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(DB_ROOT + "players/" + playerChanged.key);
+
+        playerChanged.name     = sanitize(playerChanged.name,     PLAYER_TEXT_MAX);
+        playerChanged.surname  = sanitize(playerChanged.surname,  PLAYER_TEXT_MAX);
+        playerChanged.nickname = sanitize(playerChanged.nickname, PLAYER_TEXT_MAX);
 
         dbRef.child("name").setValue(playerChanged.name);
         dbRef.child("surname").setValue(playerChanged.surname);
