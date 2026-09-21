@@ -43,7 +43,10 @@ public class TeamMakerApplication extends Application {
 
         // Deve stare qui (non in MainActivity): setPersistenceEnabled crasha
         // se chiamato dopo che qualcuno ha gia' fatto FirebaseDatabase.getInstance().
-        FirebaseDatabase.getInstance().setPersistenceEnabled(false);
+        // true = cache locale su disco + coda scritture offline (utile in palestra/
+        // campo con rete scarsa: apri app, vedi dati cached; scrivi offline, la
+        // modifica va al server appena torni online).
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         // Catalogo statistiche PRIMA dei player (getVote() lo usa).
         StatsRepository.startListening();

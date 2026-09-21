@@ -64,6 +64,7 @@ public class TournamentRepository {
     public static void downloadTournaments() {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         tournamentsRef = firebaseDatabase.getReference(DB_ROOT + "tournaments/");
+        tournamentsRef.keepSynced(true);   // cache sempre fresca, disponibile offline
 
         tournamentsListener = new ValueEventListener() {
             @Override

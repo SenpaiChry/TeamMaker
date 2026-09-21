@@ -155,6 +155,7 @@ public class PlayerRepository {
     public static void downloadPlayers() {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         playersRef = firebaseDatabase.getReference(DB_ROOT + "players/");
+        playersRef.keepSynced(true);   // cache sempre fresca, disponibile offline
 
         playersListener = new ValueEventListener() {
             @Override

@@ -65,6 +65,7 @@ public class StatsRepository {
 
     public static void startListening() {
         remoteRef = FirebaseDatabase.getInstance().getReference(NODE);
+        remoteRef.keepSynced(true);   // cache sempre fresca, disponibile offline
         remoteListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
