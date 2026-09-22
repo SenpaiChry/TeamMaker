@@ -10,19 +10,6 @@
         <item name="android:windowMinWidthMajor">90%</item>
         <item name="android:windowMinWidthMinor">90%</item>
     </style>
-
-    <style name="spinnerItemStyle" parent="android:Widget.TextView.SpinnerItem">
-    </style>
-
-    <style name="spinnerDropDownItemStyle" parent="android:TextAppearance.Widget.TextView.SpinnerItem">
-    </style>
-
-    <style name="SpinnerTheme" parent="Theme.AppCompat.Light">
-        <item name="android:spinnerDropDownItemStyle">@style/SpinnerDropDownItem</item>
-    </style>
-
-    <style name="SpinnerDropDownItem" parent="Widget.AppCompat.DropDownItem.Spinner">
-        <item name="android:textColor">@color/black</item>
-        <item name="android:background">@drawable/women_icon_background</item>
+<style name="spinnerDropDownItemStyle" parent="android:TextAppearance.Widget.TextView.SpinnerItem">
     </style>
 </resources>
