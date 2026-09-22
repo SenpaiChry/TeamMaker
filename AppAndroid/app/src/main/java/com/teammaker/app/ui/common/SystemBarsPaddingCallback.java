@@ -2,6 +2,7 @@ package com.teammaker.app.ui.common;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.view.View;
 
@@ -32,6 +33,12 @@ public class SystemBarsPaddingCallback implements Application.ActivityLifecycleC
 
     @Override
     public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+        // I popup usano @style/NoTitleDialog che ha windowIsFloating=true: NON sono
+        // schermate a tutta finestra ma dialog centrati, con background arrotondato
+        // proprio (bg_modal_dark). Sovrascrivere il loro content view col gradiente
+        // squadrato del tema li rovinerebbe (angoli rettangolari). Skip.
+        if (isFloatingWindow(activity)) return;
+
         WindowCompat.setDecorFitsSystemWindows(activity.getWindow(), false);
 
         View content = activity.findViewById(android.R.id.content);
@@ -48,6 +55,16 @@ public class SystemBarsPaddingCallback implements Application.ActivityLifecycleC
             v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
             return insets;
         });
+    }
+
+    private static boolean isFloatingWindow(Activity activity) {
+        TypedArray ta = activity.getTheme()
+                .obtainStyledAttributes(new int[]{android.R.attr.windowIsFloating});
+        try {
+            return ta.getBoolean(0, false);
+        } finally {
+            ta.recycle();
+        }
     }
 
     @Override public void onActivityStarted(@NonNull Activity activity) { }
