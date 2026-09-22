@@ -79,52 +79,37 @@
         android:clickable="true"
         android:focusable="true">
 
-        <!-- Header: nome+giocatori a sx, dot indicator a dx -->
+        <!-- Header: nome + giocatori -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/txtTeam1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/helvetica_black"
-                    android:textStyle="bold|italic"
-                    android:textColor="@color/scorecard_team_a"
-                    android:text="@string/team_1"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/txtTeam1Players"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/helvetica_black"
-                    android:textStyle="bold|italic"
-                    android:textColor="@color/list_text_secondary"
-                    android:textSize="13sp"
-                    android:maxLines="2"
-                    android:ellipsize="end"
-                    android:layout_marginTop="2dp"
-                    tools:text="Luca · Marco · Chiara · Sara" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/dotsTeam1"
+            <TextView
+                android:id="@+id/txtTeam1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical" />
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/scorecard_team_a"
+                android:text="@string/team_1"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/txtTeam1Players"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_secondary"
+                android:textSize="13sp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_marginTop="2dp"
+                tools:text="Luca · Marco · Chiara · Sara" />
         </LinearLayout>
 
         <!-- Punteggio grande centrato -->
@@ -145,17 +130,32 @@
             app:autoSizeMaxTextSize="200sp"
             tools:text="16" />
 
-        <!-- Tasto "-" in basso a sinistra -->
-        <ImageButton
-            android:id="@+id/btnMinusPoint1"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:layout_gravity="bottom|start"
-            android:background="@drawable/score_button"
-            android:contentDescription="@string/remove_point"
-            android:src="@drawable/score_remove"
-            android:scaleType="fitCenter"
-            android:padding="8dp" />
+        <!-- Footer: tasto "-" a sinistra, dot set a destra -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/btnMinusPoint1"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/score_button"
+                android:contentDescription="@string/remove_point"
+                android:src="@drawable/score_remove"
+                android:scaleType="fitCenter"
+                android:padding="8dp" />
+
+            <LinearLayout
+                android:id="@+id/dotsTeam1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center_vertical|end" />
+        </LinearLayout>
     </FrameLayout>
 
     <!-- ============================ BAND SET ============================ -->
@@ -260,7 +260,7 @@
         android:clickable="true"
         android:focusable="true">
 
-        <!-- Header: dot indicator a sx, tasto "-" a dx -->
+        <!-- Header: dot set a sinistra, tasto "-" a destra -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

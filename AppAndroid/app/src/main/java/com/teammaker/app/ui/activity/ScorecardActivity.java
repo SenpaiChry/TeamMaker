@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.util.TypedValue;
 import android.widget.*;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,9 @@ public class ScorecardActivity extends AppCompatActivity {
 
     // Punti dei set completati, in ordine {puntiTeam1, puntiTeam2}. Costruisce il "detail" della partita.
     private final ArrayList<int[]> detail = new ArrayList<>();
+
+    // Quale squadra ha vinto ogni set, in ordine cronologico (1=teamA, 2=teamB).
+    private final ArrayList<Integer> setWinners = new ArrayList<>();
 
     // Timer per scrivere il punteggio live su Firebase ogni 30 secondi
     private final android.os.Handler liveHandler = new android.os.Handler(android.os.Looper.getMainLooper());
@@ -78,6 +82,13 @@ public class ScorecardActivity extends AppCompatActivity {
             if (savedDetail != null) {
                 detail.clear();
                 detail.addAll(savedDetail);
+            }
+
+            @SuppressWarnings("unchecked")
+            ArrayList<Integer> savedWinners = (ArrayList<Integer>) savedInstanceState.getSerializable("setWinners");
+            if (savedWinners != null) {
+                setWinners.clear();
+                setWinners.addAll(savedWinners);
             }
         }
 
@@ -216,6 +227,7 @@ public class ScorecardActivity extends AppCompatActivity {
         outState.putInt("sets2", sets2);
         outState.putBoolean("swapped", swapped);
         outState.putSerializable("detail", detail);
+        outState.putSerializable("setWinners", setWinners);
     }
 
     private void writeLiveScore() {
@@ -226,7 +238,7 @@ public class ScorecardActivity extends AppCompatActivity {
                 titleA, titleB,
                 String.join(", ", playersA),
                 String.join(", ", playersB),
-                points1, points2, sets1, sets2, swapped
+                points1, points2, sets1, sets2, swapped, setWinners
         );
     }
 
@@ -257,6 +269,7 @@ public class ScorecardActivity extends AppCompatActivity {
                 detail.add(new int[]{points1, points2});
             }
             if (team == 1) sets1++; else sets2++;
+            setWinners.add(team);
             points1 = points2 = 0;
         } else {
             if (team == 1) {
@@ -265,6 +278,9 @@ public class ScorecardActivity extends AppCompatActivity {
             } else {
                 if (sets2 == 0) return;
                 sets2--;
+            }
+            for (int i = setWinners.size() - 1; i >= 0; i--) {
+                if (setWinners.get(i) == team) { setWinners.remove(i); break; }
             }
             if (!detail.isEmpty()) {
                 int[] last = detail.remove(detail.size() - 1);
@@ -317,51 +333,41 @@ public class ScorecardActivity extends AppCompatActivity {
         txtSets2.setTextColor(side2Team == 1 ? colA : colB);
     }
 
-    /**
-     * Badge "● LIVE · SET N" visibile solo se la partita e' realmente in corso:
-     * dev'essere una partita di torneo (chi apre la scorecard base non e' "live")
-     * e almeno un punto/set deve essere gia' stato segnato (0-0 = non ancora iniziata).
-     */
     private void renderBadgeLive() {
         boolean started = points1 + points2 + sets1 + sets2 > 0;
         if (!isTournament || !started) {
             badgeLive.setVisibility(View.GONE);
+            txtStatusSubtitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
             return;
         }
         int currentSet = sets1 + sets2 + 1;
         badgeLive.setVisibility(View.VISIBLE);
         badgeLive.setText("● LIVE · SET " + currentSet);
+        txtStatusSubtitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
     }
 
-    /**
-     * Pallini indicatori dei set vinti in cima ad ogni card. Numero totale di dot
-     * dinamico: max(3, sets giocati + 1) — cresce di 1 ad ogni set finito, senza
-     * scatti (la vecchia formula max*2-1 aggiungeva 2 dot per volta).
-     */
     private void renderDots() {
-        int totalDots = Math.max(3, sets1 + sets2 + 1);
-
         int side1Team = teamOnSide(1);
         int side2Team = teamOnSide(2);
-        int wins1 = side1Team == 1 ? sets1 : sets2;
-        int wins2 = side2Team == 1 ? sets1 : sets2;
-
-        buildDots(dotsTeam1, totalDots, wins1, side1Team == 1 ? R.drawable.bg_dot_a : R.drawable.bg_dot_b);
-        buildDots(dotsTeam2, totalDots, wins2, side2Team == 1 ? R.drawable.bg_dot_a : R.drawable.bg_dot_b);
+        buildDots(dotsTeam1, side1Team);
+        buildDots(dotsTeam2, side2Team);
     }
 
-    private void buildDots(LinearLayout container, int total, int filled, int filledDrawable) {
+    private void buildDots(LinearLayout container, int forTeam) {
         container.removeAllViews();
         int size = dpToPx(8);
         int margin = dpToPx(3);
-        for (int i = 0; i < total; i++) {
+        for (int i = 0; i < setWinners.size(); i++) {
             View dot = new View(this);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
             lp.leftMargin = margin;
             lp.rightMargin = margin;
             lp.gravity = Gravity.CENTER_VERTICAL;
             dot.setLayoutParams(lp);
-            dot.setBackgroundResource(i < filled ? filledDrawable : R.drawable.bg_dot_empty);
+            int winner = setWinners.get(i);
+            dot.setBackgroundResource(winner == forTeam
+                    ? (forTeam == 1 ? R.drawable.bg_dot_a : R.drawable.bg_dot_b)
+                    : R.drawable.bg_dot_empty);
             container.addView(dot);
         }
     }

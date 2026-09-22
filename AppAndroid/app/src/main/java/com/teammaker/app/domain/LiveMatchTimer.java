@@ -11,6 +11,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import com.teammaker.app.data.AppConfig;
@@ -27,13 +28,13 @@ public class LiveMatchTimer {
 
     // ---- Scrittura (dal segnapunti) ----
 
-    /** Scrive lo stato corrente della partita nel nodo live. */
     public static void writeLiveMatch(String tournamentKey, int matchPosition,
                                       String team1Name, String team2Name,
                                       String team1Players, String team2Players,
                                       int points1, int points2,
                                       int sets1, int sets2,
-                                      boolean swapped) {
+                                      boolean swapped,
+                                      ArrayList<Integer> setWinners) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(LIVE_NODE);
 
         Map<String, Object> data = new HashMap<>();
@@ -48,10 +49,30 @@ public class LiveMatchTimer {
         data.put("points2", points2);
         data.put("sets1", sets1);
         data.put("sets2", sets2);
-        data.put("swapped", swapped); // cambio campo: la diretta inverte i lati
+        data.put("swapped", swapped);
+        data.put("set_winners", encodeSetWinners(setWinners));
         data.put("timestamp", System.currentTimeMillis());
 
         ref.updateChildren(data);
+    }
+
+    private static String encodeSetWinners(ArrayList<Integer> winners) {
+        if (winners == null || winners.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < winners.size(); i++) {
+            if (i > 0) sb.append(",");
+            sb.append(winners.get(i));
+        }
+        return sb.toString();
+    }
+
+    public static ArrayList<Integer> decodeSetWinners(String encoded) {
+        ArrayList<Integer> list = new ArrayList<>();
+        if (encoded == null || encoded.isEmpty()) return list;
+        for (String s : encoded.split(",")) {
+            try { list.add(Integer.parseInt(s.trim())); } catch (NumberFormatException ignored) {}
+        }
+        return list;
     }
 
     /**

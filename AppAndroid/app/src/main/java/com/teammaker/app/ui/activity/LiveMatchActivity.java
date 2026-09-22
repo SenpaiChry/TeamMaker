@@ -2,9 +2,10 @@ package com.teammaker.app.ui.activity;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,75 +15,57 @@ import com.teammaker.app.domain.LiveMatchTimer;
 import com.google.firebase.database.DataSnapshot;
 import com.teammaker.app.R;
 
-/**
- * Schermata di sola lettura che mostra la partita in corso in tempo reale.
- * Non ha tasti per modificare il punteggio: si aggiorna automaticamente
- * quando il segnapunti scrive su Firebase.
- */
+import java.util.ArrayList;
+
 public class LiveMatchActivity extends AppCompatActivity {
+
+    private TextView txtPoints1, txtPoints2, txtSets1, txtSets2,
+            txtTeam1, txtTeam2, txtTeam1Players, txtTeam2Players,
+            badgeLive;
+    private LinearLayout dotsTeam1, dotsTeam2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_live_match);
+        setContentView(R.layout.activity_scorecard);
 
-        TextView txtTeam1Name = findViewById(R.id.txtTeam1Name);
-        TextView txtTeam2Name = findViewById(R.id.txtTeam2Name);
-        TextView txtTeam1Players = findViewById(R.id.txtTeam1Players);
-        TextView txtTeam2Players = findViewById(R.id.txtTeam2Players);
-        TextView txtPoints1 = findViewById(R.id.txtPoints1);
-        TextView txtPoints2 = findViewById(R.id.txtPoints2);
-        TextView txtSets1 = findViewById(R.id.txtSets1);
-        TextView txtSets2 = findViewById(R.id.txtSets2);
-        View panelPoints1 = findViewById(R.id.panelPoints1);
-        View panelPoints2 = findViewById(R.id.panelPoints2);
+        txtPoints1 = findViewById(R.id.txtPoints1);
+        txtPoints2 = findViewById(R.id.txtPoints2);
+        txtSets1 = findViewById(R.id.txtSets1);
+        txtSets2 = findViewById(R.id.txtSets2);
+        txtTeam1 = findViewById(R.id.txtTeam1);
+        txtTeam2 = findViewById(R.id.txtTeam2);
+        txtTeam1Players = findViewById(R.id.txtTeam1Players);
+        txtTeam2Players = findViewById(R.id.txtTeam2Players);
+        dotsTeam1 = findViewById(R.id.dotsTeam1);
+        dotsTeam2 = findViewById(R.id.dotsTeam2);
+        badgeLive = findViewById(R.id.badgeLive);
 
-        // Pulsazione del badge LIVE
-        TextView liveIndicator = findViewById(R.id.txtLiveIndicator);
-        ObjectAnimator pulse = ObjectAnimator.ofFloat(liveIndicator, "alpha", 1f, 0.3f);
+        hide(R.id.btnMinusPoint1, R.id.btnMinusPoint2,
+                R.id.btnPlusSet1, R.id.btnMinusSet1,
+                R.id.btnPlusSet2, R.id.btnMinusSet2,
+                R.id.btnSwap, R.id.btnNextMatch);
+
+        findViewById(R.id.cardTeam1).setClickable(false);
+        findViewById(R.id.cardTeam2).setClickable(false);
+
+        TextView txtStatusSubtitle = findViewById(R.id.txtStatusSubtitle);
+        txtStatusSubtitle.setVisibility(View.GONE);
+
+        ObjectAnimator pulse = ObjectAnimator.ofFloat(badgeLive, "alpha", 1f, 0.3f);
         pulse.setDuration(800);
         pulse.setRepeatMode(ValueAnimator.REVERSE);
         pulse.setRepeatCount(ValueAnimator.INFINITE);
         pulse.start();
 
-        // Colora i pannelli
-        applyPanelColor(panelPoints1, ContextCompat.getColor(this, R.color.scorecard_team_a));
-        applyPanelColor(panelPoints2, ContextCompat.getColor(this, R.color.scorecard_team_b));
+        showNoMatch();
 
-        // Ascolta il nodo live in tempo reale
         LiveMatchTimer.startListening((active, snapshot) -> {
             if (!active) {
-                txtTeam1Name.setText(R.string.no_live_match);
-                txtTeam2Name.setText("");
-                txtTeam1Players.setText("");
-                txtTeam2Players.setText("");
-                txtPoints1.setText("-");
-                txtPoints2.setText("-");
-                txtSets1.setText("-");
-                txtSets2.setText("-");
-                liveIndicator.setVisibility(View.GONE);
+                showNoMatch();
                 return;
             }
-
-            liveIndicator.setVisibility(View.VISIBLE);
-
-            boolean swapped = getBoolValue(snapshot, "swapped");
-
-            String[] names = { getStringValue(snapshot, "team1_name"), getStringValue(snapshot, "team2_name") };
-            String[] players = { getStringValue(snapshot, "team1_players"), getStringValue(snapshot, "team2_players") };
-            int[] points = { getIntValue(snapshot, "points1"), getIntValue(snapshot, "points2") };
-            int[] sets = { getIntValue(snapshot, "sets1"), getIntValue(snapshot, "sets2") };
-            int[] colors = { ContextCompat.getColor(this, R.color.scorecard_team_a),
-                    ContextCompat.getColor(this, R.color.scorecard_team_b) };
-
-            // Lato fisico 1 (sopra) = squadra A, oppure B dopo il cambio campo
-            int side1Team = swapped ? 1 : 0;
-            int side2Team = swapped ? 0 : 1;
-
-            fillSide(side1Team, names, players, points, sets, colors,
-                    txtTeam1Name, txtTeam1Players, txtPoints1, txtSets1, panelPoints1);
-            fillSide(side2Team, names, players, points, sets, colors,
-                    txtTeam2Name, txtTeam2Players, txtPoints2, txtSets2, panelPoints2);
+            showMatch(snapshot);
         });
 
         findViewById(R.id.btnGoBack).setOnClickListener(v -> finish());
@@ -94,31 +77,88 @@ public class LiveMatchActivity extends AppCompatActivity {
         LiveMatchTimer.stopListening();
     }
 
-    /** Riempie un lato fisico con i dati della squadra indicata (0=A, 1=B): il colore la segue. */
-    private void fillSide(int team, String[] names, String[] players, int[] points, int[] sets, int[] colors,
-                          TextView name, TextView playersTv, TextView pointsTv, TextView setsTv, View panel) {
-        name.setText(names[team]);
-        playersTv.setText(players[team]);
-        pointsTv.setText(String.valueOf(points[team]));
-        setsTv.setText(String.valueOf(sets[team]));
-
-        int color = colors[team];
-        name.setTextColor(color);
-        pointsTv.setTextColor(color);
-        setsTv.setTextColor(color);
-        applyPanelColor(panel, color);
+    private void showNoMatch() {
+        txtTeam1.setText(R.string.no_live_match);
+        txtTeam2.setText("");
+        txtTeam1Players.setText("");
+        txtTeam2Players.setText("");
+        txtPoints1.setText("-");
+        txtPoints2.setText("-");
+        txtSets1.setText("-");
+        txtSets2.setText("-");
+        badgeLive.setVisibility(View.GONE);
+        dotsTeam1.removeAllViews();
+        dotsTeam2.removeAllViews();
     }
 
-    private boolean getBoolValue(DataSnapshot s, String key) {
-        Boolean v = s.child(key).getValue(Boolean.class);
-        return v != null && v;
+    private void showMatch(DataSnapshot snapshot) {
+        badgeLive.setVisibility(View.VISIBLE);
+        int currentSet = getIntValue(snapshot, "sets1") + getIntValue(snapshot, "sets2") + 1;
+        badgeLive.setText("● LIVE · SET " + currentSet);
+
+        boolean swapped = getBoolValue(snapshot, "swapped");
+
+        String nameA = getStringValue(snapshot, "team1_name");
+        String nameB = getStringValue(snapshot, "team2_name");
+        String playersA = getStringValue(snapshot, "team1_players");
+        String playersB = getStringValue(snapshot, "team2_players");
+        int ptsA = getIntValue(snapshot, "points1");
+        int ptsB = getIntValue(snapshot, "points2");
+        int setsA = getIntValue(snapshot, "sets1");
+        int setsB = getIntValue(snapshot, "sets2");
+        ArrayList<Integer> winners = LiveMatchTimer.decodeSetWinners(
+                getStringValue(snapshot, "set_winners"));
+        if (winners.isEmpty() && (setsA + setsB) > 0) {
+            for (int i = 0; i < setsA; i++) winners.add(1);
+            for (int i = 0; i < setsB; i++) winners.add(2);
+        }
+
+        int side1Team = swapped ? 2 : 1;
+        int side2Team = swapped ? 1 : 2;
+
+        txtTeam1.setText(side1Team == 1 ? nameA : nameB);
+        txtTeam2.setText(side2Team == 1 ? nameA : nameB);
+        txtTeam1Players.setText(side1Team == 1 ? playersA : playersB);
+        txtTeam2Players.setText(side2Team == 1 ? playersA : playersB);
+        txtPoints1.setText(String.valueOf(side1Team == 1 ? ptsA : ptsB));
+        txtPoints2.setText(String.valueOf(side2Team == 1 ? ptsA : ptsB));
+        txtSets1.setText(String.valueOf(side1Team == 1 ? setsA : setsB));
+        txtSets2.setText(String.valueOf(side2Team == 1 ? setsA : setsB));
+
+        int colA = ContextCompat.getColor(this, R.color.scorecard_team_a);
+        int colB = ContextCompat.getColor(this, R.color.scorecard_team_b);
+        txtTeam1.setTextColor(side1Team == 1 ? colA : colB);
+        txtSets1.setTextColor(side1Team == 1 ? colA : colB);
+        txtTeam2.setTextColor(side2Team == 1 ? colA : colB);
+        txtSets2.setTextColor(side2Team == 1 ? colA : colB);
+
+        buildDots(dotsTeam1, side1Team, winners);
+        buildDots(dotsTeam2, side2Team, winners);
     }
 
-    private void applyPanelColor(View panel, int color) {
-        if (panel != null && panel.getBackground() instanceof GradientDrawable) {
-            GradientDrawable shape = (GradientDrawable) panel.getBackground().mutate();
-            shape.setColor((color & 0x00FFFFFF) | 0x14000000);
-            shape.setStroke(dpToPx(2), (color & 0x00FFFFFF) | 0x55000000);
+    private void buildDots(LinearLayout container, int forTeam, ArrayList<Integer> winners) {
+        container.removeAllViews();
+        int size = dpToPx(8);
+        int margin = dpToPx(3);
+        for (int i = 0; i < winners.size(); i++) {
+            View dot = new View(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
+            lp.leftMargin = margin;
+            lp.rightMargin = margin;
+            lp.gravity = Gravity.CENTER_VERTICAL;
+            dot.setLayoutParams(lp);
+            int winner = winners.get(i);
+            dot.setBackgroundResource(winner == forTeam
+                    ? (forTeam == 1 ? R.drawable.bg_dot_a : R.drawable.bg_dot_b)
+                    : R.drawable.bg_dot_empty);
+            container.addView(dot);
+        }
+    }
+
+    private void hide(int... ids) {
+        for (int id : ids) {
+            View v = findViewById(id);
+            if (v != null) v.setVisibility(View.GONE);
         }
     }
 
@@ -126,13 +166,18 @@ public class LiveMatchActivity extends AppCompatActivity {
         return Math.round(dp * getResources().getDisplayMetrics().density);
     }
 
+    private boolean getBoolValue(DataSnapshot s, String key) {
+        Boolean v = s.child(key).getValue(Boolean.class);
+        return v != null && v;
+    }
+
     private String getStringValue(DataSnapshot s, String key) {
-        return s.child(key).getValue(String.class) != null
-                ? s.child(key).getValue(String.class) : "";
+        String v = s.child(key).getValue(String.class);
+        return v != null ? v : "";
     }
 
     private int getIntValue(DataSnapshot s, String key) {
-        return s.child(key).getValue(Integer.class) != null
-                ? s.child(key).getValue(Integer.class) : 0;
+        Integer v = s.child(key).getValue(Integer.class);
+        return v != null ? v : 0;
     }
 }
