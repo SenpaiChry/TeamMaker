@@ -2,8 +2,6 @@ package com.teammaker.app.ui.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -146,14 +144,6 @@ public class ScorecardActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.btnGoBack).setOnClickListener(v -> finish());
-
-        // ---- Tasto rotazione ----
-        findViewById(R.id.btnRotate).setOnClickListener(v -> {
-            int orientation = getResources().getConfiguration().orientation;
-            setRequestedOrientation(orientation == Configuration.ORIENTATION_LANDSCAPE
-                    ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                    : ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        });
 
         // ---- Prossima partita / marquee ----
         Button btnNextMatch = findViewById(R.id.btnNextMatch);

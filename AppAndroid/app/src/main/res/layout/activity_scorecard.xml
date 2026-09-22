@@ -42,17 +42,6 @@
             android:layout_marginHorizontal="4dp"
             android:padding="10dp" />
 
-        <ImageButton
-            android:id="@+id/btnRotate"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:background="@drawable/buttons_main"
-            android:src="@drawable/ic_rotate"
-            android:contentDescription="@string/rotate"
-            android:scaleType="fitCenter"
-            android:layout_marginHorizontal="4dp"
-            android:padding="9dp" />
-
         <Button
             android:id="@+id/btnNextMatch"
             android:layout_width="wrap_content"
