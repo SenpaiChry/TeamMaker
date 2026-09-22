@@ -177,6 +177,8 @@
     <string name="copy_matches">COPY MATCHES</string>
 <string name="rotate">ROTATE</string>
     <string name="swap">SWAP</string>
+    <string name="swap_button" translatable="false">⇄  SWAP</string>
+    <string name="scorecard_base_status">SEGNAPUNTI</string>
     <string name="dot" translatable="false">.</string>
 <string name="no_live_match" translatable="false">NO LIVE MATCH</string>
     <string name="lock_tournament">BLOCCA TORNEO</string>

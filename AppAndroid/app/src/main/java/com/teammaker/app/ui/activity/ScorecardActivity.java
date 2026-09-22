@@ -5,9 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.graphics.drawable.GradientDrawable;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.*;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.teammaker.app.domain.LiveMatchTimer;
+import com.teammaker.app.domain.MatchPhases;
 import com.teammaker.app.data.repository.MatchRepository;
 import com.teammaker.app.data.repository.TeamRepository;
 import com.teammaker.app.data.repository.TournamentRepository;
@@ -52,15 +54,11 @@ public class ScorecardActivity extends AppCompatActivity {
     private final ArrayList<String> playersA = new ArrayList<>();
     private final ArrayList<String> playersB = new ArrayList<>();
 
-    // Riferimenti alle view fisiche (lato 1 = sx/sopra, lato 2 = dx/sotto)
-    private TextView txtPoints1, txtPoints2, txtSets1, txtSets2, txtTeam1, txtTeam2;
-    private LinearLayout llTeam1, llTeam2, llTeam1Player34, llTeam2Player34;
-    private View panelPoints1, panelPoints2;
-
-    private final int[] side1PlayerIds = {R.id.txtTeam1Player1Name, R.id.txtTeam1Player2Name,
-            R.id.txtTeam1Player3Name, R.id.txtTeam1Player4Name, R.id.txtTeam1Player5Name};
-    private final int[] side2PlayerIds = {R.id.txtTeam2Player1Name, R.id.txtTeam2Player2Name,
-            R.id.txtTeam2Player3Name, R.id.txtTeam2Player4Name, R.id.txtTeam2Player5Name};
+    // View (lato 1 = card in alto, lato 2 = card in basso)
+    private TextView txtPoints1, txtPoints2, txtSets1, txtSets2,
+            txtTeam1, txtTeam2, txtTeam1Players, txtTeam2Players,
+            badgeLive, txtStatusSubtitle;
+    private LinearLayout dotsTeam1, dotsTeam2;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -89,46 +87,49 @@ public class ScorecardActivity extends AppCompatActivity {
         txtSets2 = findViewById(R.id.txtSets2);
         txtTeam1 = findViewById(R.id.txtTeam1);
         txtTeam2 = findViewById(R.id.txtTeam2);
-        llTeam1 = findViewById(R.id.llTeam1);
-        llTeam2 = findViewById(R.id.llTeam2);
-        llTeam1Player34 = findViewById(R.id.llTeam1Player34);
-        llTeam2Player34 = findViewById(R.id.llTeam2Player34);
-        panelPoints1 = findViewById(R.id.panelPoints1);
-        panelPoints2 = findViewById(R.id.panelPoints2);
+        txtTeam1Players = findViewById(R.id.txtTeam1Players);
+        txtTeam2Players = findViewById(R.id.txtTeam2Players);
+        dotsTeam1 = findViewById(R.id.dotsTeam1);
+        dotsTeam2 = findViewById(R.id.dotsTeam2);
+        badgeLive = findViewById(R.id.badgeLive);
+        txtStatusSubtitle = findViewById(R.id.txtStatusSubtitle);
 
         // ---- Costruzione dati squadre ----
-        if (getIntent().getExtras() != null) {
+        String matchType = "";
+        String matchTime = "";
+        if (getIntent().getExtras() != null && getIntent().hasExtra("tournament_key")) {
             position = getIntent().getIntExtra("position", 0);
             String tournamentKey = getIntent().getExtras().getString("tournament_key", "null");
             Tournament tournament = TournamentRepository.getTournamentByKey(tournamentKey);
-            isTournament = true;
+            if (tournament != null && position < tournament.matches.size()) {
+                isTournament = true;
+                Match match = tournament.matches.get(position);
+                matchType = match.type;
+                matchTime = match.time;
 
-            String key1 = tournament.matches.get(position).keyTeam1;
-            String key2 = tournament.matches.get(position).keyTeam2;
+                String key1 = match.keyTeam1;
+                String key2 = match.keyTeam2;
 
-            titleA = buildTitle(tournament, key1, R.string.team_1);
-            titleB = buildTitle(tournament, key2, R.string.team_2);
-            buildPlayers(key1, playersA);
-            buildPlayers(key2, playersB);
-        } else {
+                titleA = buildTitle(tournament, key1, R.string.team_1);
+                titleB = buildTitle(tournament, key2, R.string.team_2);
+                buildPlayers(key1, playersA);
+                buildPlayers(key2, playersB);
+            }
+        }
+        if (!isTournament) {
             titleA = getString(R.string.team_1);
             titleB = getString(R.string.team_2);
         }
 
-        // ---- Tasti punti: click = +1, tenuto premuto = ripete finche' non rilasci ----
-        View.OnClickListener plus1 = v -> changePoints(1, +1);
+        // ---- Tasti "-" ripetibili (tenendo premuto continua a scalare) ----
         View.OnClickListener minus1 = v -> changePoints(1, -1);
-        View.OnClickListener plus2 = v -> changePoints(2, +1);
         View.OnClickListener minus2 = v -> changePoints(2, -1);
-
-        findViewById(R.id.btnPlusPoint1).setOnTouchListener(new RepeatListener(plus1));
         findViewById(R.id.btnMinusPoint1).setOnTouchListener(new RepeatListener(minus1));
-        findViewById(R.id.btnPlusPoint2).setOnTouchListener(new RepeatListener(plus2));
         findViewById(R.id.btnMinusPoint2).setOnTouchListener(new RepeatListener(minus2));
 
-        // ---- Tap direttamente sul numero = +1 ----
-        txtPoints1.setOnClickListener(v -> changePoints(1, +1));
-        txtPoints2.setOnClickListener(v -> changePoints(2, +1));
+        // ---- Tap sulla card = +1 (pattern classico segnapunti) ----
+        findViewById(R.id.cardTeam1).setOnClickListener(v -> changePoints(1, +1));
+        findViewById(R.id.cardTeam2).setOnClickListener(v -> changePoints(2, +1));
 
         // ---- Set ----
         findViewById(R.id.btnPlusSet1).setOnClickListener(v -> changeSet(1, +1));
@@ -136,7 +137,7 @@ public class ScorecardActivity extends AppCompatActivity {
         findViewById(R.id.btnPlusSet2).setOnClickListener(v -> changeSet(2, +1));
         findViewById(R.id.btnMinusSet2).setOnClickListener(v -> changeSet(2, -1));
 
-        // ---- Swap dei due team (sx/dx e sopra/sotto) ----
+        // ---- Swap dei due team ----
         findViewById(R.id.btnSwap).setOnClickListener(v -> {
             swapped = !swapped;
             renderAll();
@@ -145,44 +146,56 @@ public class ScorecardActivity extends AppCompatActivity {
 
         findViewById(R.id.btnGoBack).setOnClickListener(v -> finish());
 
-        // ---- Prossima partita / marquee ----
-        Button btnNextMatch = findViewById(R.id.btnNextMatch);
-        TextView txtNextMatchMarquee = findViewById(R.id.txtNextMatchMarquee);
+        // ---- Subtitle (sotto il badge LIVE) ----
+        setupStatusSubtitle(matchType, matchTime);
 
-        if (isTournament) {
-            String tournamentKey = getIntent().getExtras().getString("tournament_key", "null");
-            Tournament tournament = TournamentRepository.getTournamentByKey(tournamentKey);
-
-            boolean isLastMatch = position >= tournament.matches.size() - 1;
-
-            if (isLastMatch) {
-                // Ultima partita: salva e torna alla gestione
-                btnNextMatch.setText(R.string.save);
-                btnNextMatch.setVisibility(View.VISIBLE);
-                btnNextMatch.setOnClickListener(v -> saveAndOpenActivity(tournament.key));
-                txtNextMatchMarquee.setVisibility(View.GONE);
-            } else {
-                // Ci sono altre partite: mostra "prossima partita" e il marquee
-                btnNextMatch.setText(R.string.next_match);
-                btnNextMatch.setVisibility(View.VISIBLE);
-                btnNextMatch.setOnClickListener(v -> saveAndOpenActivity(tournament.key));
-                txtNextMatchMarquee.setText(tournament.matches.get(position + 1).toStringForNextMatch(this));
-                txtNextMatchMarquee.setSelected(true);
-            }
-        } else {
-            // Segnapunti base senza squadre: niente tasto e niente marquee
-            btnNextMatch.setVisibility(View.GONE);
-            txtNextMatchMarquee.setVisibility(View.GONE);
-        }
+        // ---- Bottone destro (Next Match / Save) ----
+        setupNextMatchButton();
 
         renderAll();
 
         // Se e' una partita del torneo, inizia a trasmettere il punteggio live
         if (isTournament) {
-            LiveMatchTimer.registerOnDisconnect(); // pulizia automatica in caso di crash/kill
-            writeLiveScore(); // scrivi subito
-            liveHandler.postDelayed(liveWriter, LIVE_INTERVAL_MS); // poi ogni 30s
+            LiveMatchTimer.registerOnDisconnect();
+            writeLiveScore();
+            liveHandler.postDelayed(liveWriter, LIVE_INTERVAL_MS);
         }
+    }
+
+    private void setupStatusSubtitle(String matchType, String matchTime) {
+        if (!isTournament) {
+            txtStatusSubtitle.setText(R.string.scorecard_base_status);
+            return;
+        }
+        String phase = MatchPhases.label(this, matchType);
+        String time = matchTime != null ? matchTime : "";
+        String subtitle;
+        if (phase.isEmpty()) {
+            subtitle = time;
+        } else if (time.isEmpty()) {
+            subtitle = phase;
+        } else {
+            subtitle = phase + " · " + time;
+        }
+        txtStatusSubtitle.setText(subtitle);
+    }
+
+    private void setupNextMatchButton() {
+        Button btnNextMatch = findViewById(R.id.btnNextMatch);
+        if (!isTournament) {
+            btnNextMatch.setVisibility(View.GONE);
+            return;
+        }
+        String tournamentKey = getIntent().getExtras().getString("tournament_key", "null");
+        Tournament tournament = TournamentRepository.getTournamentByKey(tournamentKey);
+        if (tournament == null) {
+            btnNextMatch.setVisibility(View.GONE);
+            return;
+        }
+        boolean isLastMatch = position >= tournament.matches.size() - 1;
+        btnNextMatch.setText(isLastMatch ? R.string.save : R.string.next_match);
+        btnNextMatch.setVisibility(View.VISIBLE);
+        btnNextMatch.setOnClickListener(v -> saveAndOpenActivity(tournament.key));
     }
 
     @Override
@@ -205,7 +218,6 @@ public class ScorecardActivity extends AppCompatActivity {
         outState.putSerializable("detail", detail);
     }
 
-    /** Scrive il punteggio attuale su Firebase per la visualizzazione live. */
     private void writeLiveScore() {
         if (!isTournament || getIntent().getExtras() == null) return;
         String tournamentKey = getIntent().getExtras().getString("tournament_key", "");
@@ -218,7 +230,7 @@ public class ScorecardActivity extends AppCompatActivity {
         );
     }
 
-    // Quale squadra logica (1=A, 2=B) e' mostrata su un lato fisico (1=sx/sopra, 2=dx/sotto)
+    // Quale squadra logica (1=A, 2=B) e' mostrata su un lato fisico (1=sopra, 2=sotto)
     private int teamOnSide(int side) {
         if (side == 1) return swapped ? 2 : 1;
         return swapped ? 1 : 2;
@@ -234,20 +246,19 @@ public class ScorecardActivity extends AppCompatActivity {
             points2 += delta;
         }
         renderPoints();
+        renderBadgeLive();
         if (isTournament) writeLiveScore();
     }
 
     private void changeSet(int side, int delta) {
         int team = teamOnSide(side);
         if (delta > 0) {
-            // Set vinto: registra i punti del set corrente (se giocato) e riparte da 0
             if (points1 > 0 || points2 > 0) {
                 detail.add(new int[]{points1, points2});
             }
             if (team == 1) sets1++; else sets2++;
             points1 = points2 = 0;
         } else {
-            // Annulla l'ultimo set: ripristina i punti registrati
             if (team == 1) {
                 if (sets1 == 0) return;
                 sets1--;
@@ -263,6 +274,8 @@ public class ScorecardActivity extends AppCompatActivity {
         }
         renderPoints();
         renderSets();
+        renderBadgeLive();
+        renderDots();
         if (isTournament) writeLiveScore();
     }
 
@@ -271,7 +284,9 @@ public class ScorecardActivity extends AppCompatActivity {
     private void renderAll() {
         renderPoints();
         renderSets();
-        renderTitlesAndPlayers();
+        renderTeams();
+        renderBadgeLive();
+        renderDots();
     }
 
     private void renderPoints() {
@@ -284,69 +299,70 @@ public class ScorecardActivity extends AppCompatActivity {
         txtSets2.setText(String.valueOf(teamOnSide(2) == 1 ? sets1 : sets2));
     }
 
-    private void renderTitlesAndPlayers() {
-        fillSide(1, teamOnSide(1));
-        fillSide(2, teamOnSide(2));
-    }
+    private void renderTeams() {
+        int side1Team = teamOnSide(1);
+        int side2Team = teamOnSide(2);
 
-    private void fillSide(int side, int team) {
-        TextView title = side == 1 ? txtTeam1 : txtTeam2;
-        LinearLayout llTeam = side == 1 ? llTeam1 : llTeam2;
-        LinearLayout ll34 = side == 1 ? llTeam1Player34 : llTeam2Player34;
-        int[] ids = side == 1 ? side1PlayerIds : side2PlayerIds;
-        ArrayList<String> players = team == 1 ? playersA : playersB;
-
-        title.setText(team == 1 ? titleA : titleB);
+        txtTeam1.setText(side1Team == 1 ? titleA : titleB);
+        txtTeam2.setText(side2Team == 1 ? titleA : titleB);
+        txtTeam1Players.setText(joinPlayers(side1Team == 1 ? playersA : playersB));
+        txtTeam2Players.setText(joinPlayers(side2Team == 1 ? playersA : playersB));
 
         // Il colore segue la squadra, non il lato: dopo lo swap si sposta con lei
-        applySideColors(side, team);
+        int colA = ContextCompat.getColor(this, R.color.scorecard_team_a);
+        int colB = ContextCompat.getColor(this, R.color.scorecard_team_b);
+        txtTeam1.setTextColor(side1Team == 1 ? colA : colB);
+        txtSets1.setTextColor(side1Team == 1 ? colA : colB);
+        txtTeam2.setTextColor(side2Team == 1 ? colA : colB);
+        txtSets2.setTextColor(side2Team == 1 ? colA : colB);
+    }
 
-        if (players.isEmpty()) {
-            llTeam.setVisibility(View.GONE);
-            return;
-        }
-
-        llTeam.setVisibility(View.VISIBLE);
-        // reset: 2 giocatori = solo prima riga; nascondo il resto
-        ll34.setVisibility(View.GONE);
-        findViewById(ids[1]).setVisibility(View.GONE);
-        findViewById(ids[4]).setVisibility(View.GONE);
-
-        for (int i = 0; i < players.size() && i < ids.length; i++) {
-            TextView playerView = findViewById(ids[i]);
-            playerView.setText(players.get(i));
-            playerView.setVisibility(View.VISIBLE);
-            if (i == 2) ll34.setVisibility(View.VISIBLE);
-            if (i == 3) findViewById(ids[3]).setVisibility(View.VISIBLE);
-        }
+    /** Badge "● LIVE · SET N" con N = set corrente (sets1 + sets2 + 1). */
+    private void renderBadgeLive() {
+        int currentSet = sets1 + sets2 + 1;
+        badgeLive.setText("● LIVE · SET " + currentSet);
     }
 
     /**
-     * Colora titolo, punteggio, set e pannello del lato indicato con il colore della squadra
-     * che vi e' attualmente mostrata.
+     * Pallini indicatori dei set vinti in cima ad ogni card. Numero totale di dot
+     * dinamico: max(3, max(sets1, sets2) * 2 - 1) — cresce se qualcuno arriva a 3.
      */
-    private void applySideColors(int side, int team) {
-        int color = ContextCompat.getColor(this,
-                team == 1 ? R.color.scorecard_team_a : R.color.scorecard_team_b);
+    private void renderDots() {
+        int totalDots = Math.max(3, Math.max(sets1, sets2) * 2 - 1);
 
-        TextView title = side == 1 ? txtTeam1 : txtTeam2;
-        TextView points = side == 1 ? txtPoints1 : txtPoints2;
-        TextView sets = side == 1 ? txtSets1 : txtSets2;
-        View panel = side == 1 ? panelPoints1 : panelPoints2;
+        int side1Team = teamOnSide(1);
+        int side2Team = teamOnSide(2);
+        int wins1 = side1Team == 1 ? sets1 : sets2;
+        int wins2 = side2Team == 1 ? sets1 : sets2;
 
-        title.setTextColor(color);
-        points.setTextColor(color);
-        sets.setTextColor(color);
+        buildDots(dotsTeam1, totalDots, wins1, side1Team == 1 ? R.drawable.bg_dot_a : R.drawable.bg_dot_b);
+        buildDots(dotsTeam2, totalDots, wins2, side2Team == 1 ? R.drawable.bg_dot_a : R.drawable.bg_dot_b);
+    }
 
-        if (panel != null && panel.getBackground() instanceof GradientDrawable) {
-            GradientDrawable shape = (GradientDrawable) panel.getBackground().mutate();
-            shape.setColor(withAlpha(color, 0x14));                        // riempimento velato
-            shape.setStroke(dpToPx(2), withAlpha(color, 0x55));            // bordo piu' marcato
+    private void buildDots(LinearLayout container, int total, int filled, int filledDrawable) {
+        container.removeAllViews();
+        int size = dpToPx(8);
+        int margin = dpToPx(3);
+        for (int i = 0; i < total; i++) {
+            View dot = new View(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
+            lp.leftMargin = margin;
+            lp.rightMargin = margin;
+            lp.gravity = Gravity.CENTER_VERTICAL;
+            dot.setLayoutParams(lp);
+            dot.setBackgroundResource(i < filled ? filledDrawable : R.drawable.bg_dot_empty);
+            container.addView(dot);
         }
     }
 
-    private int withAlpha(int color, int alpha) {
-        return (alpha << 24) | (color & 0x00FFFFFF);
+    private String joinPlayers(ArrayList<String> players) {
+        if (players == null || players.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < players.size(); i++) {
+            if (i > 0) sb.append(" · ");
+            sb.append(players.get(i));
+        }
+        return sb.toString();
     }
 
     private int dpToPx(int dp) {
@@ -370,7 +386,6 @@ public class ScorecardActivity extends AppCompatActivity {
     private void saveAndOpenActivity(String tournamentKey) {
         Tournament tournament = TournamentRepository.getTournamentByKey(tournamentKey);
 
-        // Finalizza l'eventuale set in corso non ancora confermato (es. partita a set unico)
         if (points1 > 0 || points2 > 0) {
             detail.add(new int[]{points1, points2});
             if (points1 > points2) sets1++;
@@ -378,9 +393,6 @@ public class ScorecardActivity extends AppCompatActivity {
             points1 = points2 = 0;
         }
 
-        // Nota: points1/sets1 sono SEMPRE del team keyTeam1, points2/sets2 di keyTeam2,
-        // indipendentemente dallo swap visivo -> il salvataggio resta corretto.
-        // points1/points2 salvati = set vinti (headline); detail = punti dei set.
         Match match = new Match(tournament.matches.get(position).keyTeam1, tournament.matches.get(position).keyTeam2,
                 tournament.matches.get(position).day, tournament.matches.get(position).time, sets1, sets2, tournament.matches.get(position).type);
         match.detail = new ArrayList<>(detail);
@@ -405,8 +417,8 @@ public class ScorecardActivity extends AppCompatActivity {
      * regolari finche' il tasto resta premuto (rilasciando si ferma).
      */
     private static class RepeatListener implements View.OnTouchListener {
-        private static final int INITIAL_DELAY = 400; // ms prima di iniziare a ripetere
-        private static final int REPEAT_INTERVAL = 80; // ms tra una ripetizione e l'altra
+        private static final int INITIAL_DELAY = 400;
+        private static final int REPEAT_INTERVAL = 80;
 
         private final Handler handler = new Handler(Looper.getMainLooper());
         private final View.OnClickListener action;
@@ -433,7 +445,7 @@ public class ScorecardActivity extends AppCompatActivity {
                 case MotionEvent.ACTION_DOWN:
                     downView = v;
                     v.setPressed(true);
-                    action.onClick(v);                     // primo incremento immediato
+                    action.onClick(v);
                     handler.removeCallbacks(repeater);
                     handler.postDelayed(repeater, INITIAL_DELAY);
                     return true;
