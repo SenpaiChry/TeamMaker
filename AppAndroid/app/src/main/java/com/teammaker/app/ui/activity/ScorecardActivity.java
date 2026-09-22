@@ -317,18 +317,29 @@ public class ScorecardActivity extends AppCompatActivity {
         txtSets2.setTextColor(side2Team == 1 ? colA : colB);
     }
 
-    /** Badge "● LIVE · SET N" con N = set corrente (sets1 + sets2 + 1). */
+    /**
+     * Badge "● LIVE · SET N" visibile solo se la partita e' realmente in corso:
+     * dev'essere una partita di torneo (chi apre la scorecard base non e' "live")
+     * e almeno un punto/set deve essere gia' stato segnato (0-0 = non ancora iniziata).
+     */
     private void renderBadgeLive() {
+        boolean started = points1 + points2 + sets1 + sets2 > 0;
+        if (!isTournament || !started) {
+            badgeLive.setVisibility(View.GONE);
+            return;
+        }
         int currentSet = sets1 + sets2 + 1;
+        badgeLive.setVisibility(View.VISIBLE);
         badgeLive.setText("● LIVE · SET " + currentSet);
     }
 
     /**
      * Pallini indicatori dei set vinti in cima ad ogni card. Numero totale di dot
-     * dinamico: max(3, max(sets1, sets2) * 2 - 1) — cresce se qualcuno arriva a 3.
+     * dinamico: max(3, sets giocati + 1) — cresce di 1 ad ogni set finito, senza
+     * scatti (la vecchia formula max*2-1 aggiungeva 2 dot per volta).
      */
     private void renderDots() {
-        int totalDots = Math.max(3, Math.max(sets1, sets2) * 2 - 1);
+        int totalDots = Math.max(3, sets1 + sets2 + 1);
 
         int side1Team = teamOnSide(1);
         int side2Team = teamOnSide(2);
