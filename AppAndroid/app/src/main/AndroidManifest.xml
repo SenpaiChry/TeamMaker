@@ -19,7 +19,6 @@
             <activity
                 android:name=".ui.activity.MainActivity"
                 android:exported="true"
-                android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication">
                 <intent-filter>
                     <action android:name="android.intent.action.MAIN" />
@@ -29,7 +28,6 @@
 
             <activity
                 android:name=".ui.activity.InfoPlayerActivity"
-                android:screenOrientation="portrait"
                 android:theme="@style/NoTitleDialog" />
 
             <activity android:name=".ui.activity.LiveMatchActivity"
@@ -37,22 +35,18 @@
 
             <activity
                 android:name=".ui.activity.GenerateActivity"
-                android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
                 android:name=".ui.activity.LoginActivity"
-                android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
                 android:name=".ui.activity.AdminActivity"
-                android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
                 android:name=".ui.activity.TeamsActivity"
-                android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
@@ -65,27 +59,22 @@
 
             <activity
                 android:name=".ui.activity.ManageTournamentActivity"
-                android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
                 android:name=".ui.activity.TeamsBracketsTableActivity"
-                android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
                 android:name=".ui.activity.ManageTeamsActivity"
-                android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
                 android:name=".ui.activity.ManageMatchesActivity"
-                android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
                 android:name=".ui.activity.ManageTournamentsActivity"
-                android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
@@ -140,7 +129,6 @@
 
             <activity
                 android:name=".ui.activity.ManageStatsActivity"
-                android:screenOrientation="portrait"
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
