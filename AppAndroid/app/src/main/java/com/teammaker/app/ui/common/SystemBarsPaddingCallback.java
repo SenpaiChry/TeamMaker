@@ -13,19 +13,17 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.teammaker.app.R;
-
 /**
  * Con targetSdk 36 Android 15/16 forza l'edge-to-edge: il contenuto va sotto
  * status bar e nav bar se non lo diciamo esplicitamente. Registrato in
- * TeamMakerApplication, applica automaticamente a ogni Activity:
+ * TeamMakerApplication, applica automaticamente a ogni Activity full-screen:
  *
  *   - padding top    = altezza status bar (dinamico: adatta a notch / dynamic island)
  *   - padding bottom = insets.bottom del sistema (gesture nav ~24dp, 3-button ~48dp)
- *   - background     = scorecard_bg_top, cosi' le aree di padding sono colorate
- *                      come il resto dell'app (prima lo faceva il tema con
- *                      android:statusBarColor / android:navigationBarColor, che
- *                      edge-to-edge ignora).
+ *
+ * Il colore delle aree di padding lo mette il tema (windowBackground =
+ * bg_scoreboard), cosi' c'e' UN solo gradient continuo dalla status bar
+ * alla nav bar, senza stacchi.
  *
  * Non serve toccare le 27 Activity a mano.
  */
@@ -33,22 +31,15 @@ public class SystemBarsPaddingCallback implements Application.ActivityLifecycleC
 
     @Override
     public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-        // I popup usano @style/NoTitleDialog che ha windowIsFloating=true: NON sono
-        // schermate a tutta finestra ma dialog centrati, con background arrotondato
-        // proprio (bg_modal_dark). Sovrascrivere il loro content view col gradiente
-        // squadrato del tema li rovinerebbe (angoli rettangolari). Skip.
+        // I popup usano @style/NoTitleDialog con windowIsFloating=true: dialog
+        // centrati con background arrotondato proprio (bg_modal_dark). Nessun
+        // padding di sistema da applicare. Skip.
         if (isFloatingWindow(activity)) return;
 
         WindowCompat.setDecorFitsSystemWindows(activity.getWindow(), false);
 
         View content = activity.findViewById(android.R.id.content);
         if (content == null) return;
-
-        // Gradiente top -> bottom (scorecard_bg_top -> scorecard_bg_bottom, gia' definito
-        // in drawable/bg_scoreboard.xml): la fascia sotto la status bar prende il colore
-        // top, quella sotto la nav bar il colore bottom, con transizione morbida in mezzo
-        // (che di solito e' coperta dal layout dell'Activity).
-        content.setBackgroundResource(R.drawable.bg_scoreboard);
 
         ViewCompat.setOnApplyWindowInsetsListener(content, (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());

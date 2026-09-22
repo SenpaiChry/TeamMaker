@@ -4,8 +4,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="35dp"
-    android:background="@drawable/bg_scoreboard">
+    android:padding="35dp">
 
     <ImageView
         android:id="@+id/imgLogo"
