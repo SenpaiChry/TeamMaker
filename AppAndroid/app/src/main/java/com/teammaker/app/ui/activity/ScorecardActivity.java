@@ -342,7 +342,7 @@ public class ScorecardActivity extends AppCompatActivity {
         }
         int currentSet = sets1 + sets2 + 1;
         badgeLive.setVisibility(View.VISIBLE);
-        badgeLive.setText("● LIVE · SET " + currentSet);
+        badgeLive.setText(getString(R.string.live_set, currentSet));
         txtStatusSubtitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
     }
 

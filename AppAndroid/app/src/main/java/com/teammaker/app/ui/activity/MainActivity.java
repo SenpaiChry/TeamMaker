@@ -46,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (!NetworkUtils.isNetworkAvailable(this)) {
             TopToast.show(this,
-                    "Nessuna connessione",
-                    "Errore nella connessione a internet",
+                    getString(R.string.no_connection_title),
+                    getString(R.string.no_connection_message),
                     TopToast.MessageType.DANGER);
         } else {
             // Controllo aggiornamenti in silenzio: nessun feedback se non c'e' nulla.

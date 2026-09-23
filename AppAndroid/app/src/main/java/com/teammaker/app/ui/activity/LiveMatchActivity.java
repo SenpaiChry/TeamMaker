@@ -94,7 +94,7 @@ public class LiveMatchActivity extends AppCompatActivity {
     private void showMatch(DataSnapshot snapshot) {
         badgeLive.setVisibility(View.VISIBLE);
         int currentSet = getIntValue(snapshot, "sets1") + getIntValue(snapshot, "sets2") + 1;
-        badgeLive.setText("● LIVE · SET " + currentSet);
+        badgeLive.setText(getString(R.string.live_set, currentSet));
 
         boolean swapped = getBoolValue(snapshot, "swapped");
 

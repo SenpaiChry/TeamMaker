@@ -20,7 +20,7 @@
         android:id="@+id/txtDB"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="STAGING"
+        android:text="@string/staging_label"
         android:background="@color/main_orange"
         android:fontFamily="@font/helvetica_black"
         android:textStyle="bold|italic"

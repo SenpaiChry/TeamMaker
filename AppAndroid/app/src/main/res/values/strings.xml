@@ -181,6 +181,10 @@
     <string name="scorecard_base_status">SEGNAPUNTI</string>
     <string name="dot" translatable="false">.</string>
 <string name="no_live_match" translatable="false">NO LIVE MATCH</string>
+    <string name="live_set" translatable="false">● LIVE · SET %d</string>
+    <string name="staging_label" translatable="false">STAGING</string>
+    <string name="no_connection_title">NESSUNA CONNESSIONE</string>
+    <string name="no_connection_message">Errore nella connessione a internet</string>
     <string name="lock_tournament">BLOCCA TORNEO</string>
     <string name="unlock_tournament">SBLOCCA TORNEO</string>
 <string name="update_available">AGGIORNAMENTO DISPONIBILE</string>
