@@ -157,9 +157,11 @@ public class TeamGenerator {
 
         executor.shutdown();
         try {
-            executor.awaitTermination(5, TimeUnit.MINUTES);
+            if (!executor.awaitTermination(30, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
         } catch (InterruptedException e) {
-            Log.w("TeamGenerator", "Attesa executor interrotta", e);
+            executor.shutdownNow();
             Thread.currentThread().interrupt();
         }
 
