@@ -69,4 +69,7 @@
     <color name="player_archived_fill">#0DFFFFFF</color>
     <color name="player_archived_border">#40FFFFFF</color>
     <color name="icon_action_bg">#18FFFFFF</color>
+
+    <!--    ADAPTIVE ICON    -->
+    <color name="ic_launcher_background">#1B2C34</color>
 </resources>
