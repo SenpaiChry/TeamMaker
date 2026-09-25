@@ -144,7 +144,7 @@ public class StatAdapter extends RecyclerView.Adapter<StatAdapter.StatViewHolder
 
             TextView bonus = new TextView(activity);
             bonus.setText("★");
-            bonus.setTextColor(starColor);
+            bonus.setTextColor(ContextCompat.getColor(activity, R.color.main_blue));
             bonus.setTextSize(12);
             container.addView(bonus);
         }

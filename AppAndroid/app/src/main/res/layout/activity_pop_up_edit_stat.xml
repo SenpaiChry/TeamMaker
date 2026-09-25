@@ -93,10 +93,12 @@
                 android:fontFamily="@font/helvetica_black"
                 android:textStyle="bold|italic"
                 android:textColor="@color/white"
-                android:text="☆  Stelle"
+                android:text="Stelle"
                 android:textAlignment="center"
                 android:textSize="14sp"
-                android:background="@drawable/bg_segment_selected" />
+                android:background="@drawable/bg_segment_selected"
+                android:drawableStart="@drawable/ic_stat_star"
+                android:drawablePadding="6dp" />
 
             <TextView
                 android:id="@+id/btnTypeRange"
@@ -107,9 +109,11 @@
                 android:fontFamily="@font/helvetica_black"
                 android:textStyle="bold|italic"
                 android:textColor="@color/list_text_muted"
-                android:text="⊞  Fasce"
+                android:text="Fasce"
                 android:textAlignment="center"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:drawableStart="@drawable/ic_stat_bars"
+                android:drawablePadding="6dp" />
         </LinearLayout>
 
         <!-- ======== Steppers row (visible for both types) ======== -->
@@ -273,6 +277,8 @@
                     android:textColor="@color/stars"
                     android:textSize="16sp"
                     android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:paddingTop="2dp"
                     android:layout_marginEnd="10dp" />
 
                 <TextView

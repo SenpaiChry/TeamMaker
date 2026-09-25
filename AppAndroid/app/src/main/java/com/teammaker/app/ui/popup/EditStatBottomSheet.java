@@ -263,8 +263,11 @@ public class EditStatBottomSheet extends BottomSheetDialogFragment {
     private void styleSegment(TextView segment, boolean selected) {
         segment.setBackground(selected
                 ? ContextCompat.getDrawable(requireContext(), R.drawable.bg_segment_selected) : null);
-        segment.setTextColor(ContextCompat.getColor(requireContext(),
-                selected ? R.color.white : R.color.list_text_muted));
+        int color = ContextCompat.getColor(requireContext(),
+                selected ? R.color.white : R.color.list_text_muted);
+        segment.setTextColor(color);
+        androidx.core.widget.TextViewCompat.setCompoundDrawableTintList(
+                segment, android.content.res.ColorStateList.valueOf(color));
     }
 
     private void styleSwitchColors() {
