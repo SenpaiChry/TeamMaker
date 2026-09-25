@@ -84,36 +84,56 @@
             android:padding="4dp"
             android:background="@drawable/bg_field_secondary">
 
-            <TextView
+            <LinearLayout
                 android:id="@+id/btnTypeStars"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:paddingVertical="10dp"
-                android:fontFamily="@font/helvetica_black"
-                android:textStyle="bold|italic"
-                android:textColor="@color/white"
-                android:text="Stelle"
+                android:orientation="horizontal"
                 android:gravity="center"
-                android:textSize="14sp"
-                android:background="@drawable/bg_segment_selected"
-                android:drawableStart="@drawable/ic_stat_star"
-                android:drawablePadding="6dp" />
+                android:paddingVertical="10dp"
+                android:background="@drawable/bg_segment_selected">
 
-            <TextView
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_stat_star"
+                    android:layout_marginEnd="6dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/white"
+                    android:text="@string/stat_stars_type"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/btnTypeRange"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:paddingVertical="10dp"
-                android:fontFamily="@font/helvetica_black"
-                android:textStyle="bold|italic"
-                android:textColor="@color/list_text_muted"
-                android:text="Fasce"
+                android:orientation="horizontal"
                 android:gravity="center"
-                android:textSize="14sp"
-                android:drawableStart="@drawable/ic_stat_bars"
-                android:drawablePadding="6dp" />
+                android:paddingVertical="10dp">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_stat_bars"
+                    android:layout_marginEnd="6dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/list_text_muted"
+                    android:text="@string/stat_range_type"
+                    android:textSize="14sp" />
+            </LinearLayout>
         </LinearLayout>
 
         <!-- ======== Steppers row (visible for both types) ======== -->

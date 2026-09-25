@@ -37,7 +37,8 @@ public class EditStatBottomSheet extends BottomSheetDialogFragment {
 
     private static final String ARG_STAT_KEY = "stat_key";
 
-    private TextView btnTypeStars, btnTypeRange, txtStepLabel;
+    private View btnTypeStars, btnTypeRange;
+    private TextView txtStepLabel;
     private LinearLayout llStarsSection, llValues, llMaxStepper;
     private SwitchCompat switchBonus;
     private RangeValuesAdapter valuesAdapter;
@@ -260,14 +261,23 @@ public class EditStatBottomSheet extends BottomSheetDialogFragment {
         llValues.setVisibility(isStars ? View.GONE : View.VISIBLE);
     }
 
-    private void styleSegment(TextView segment, boolean selected) {
+    private void styleSegment(View segment, boolean selected) {
         segment.setBackground(selected
                 ? ContextCompat.getDrawable(requireContext(), R.drawable.bg_segment_selected) : null);
         int color = ContextCompat.getColor(requireContext(),
                 selected ? R.color.white : R.color.list_text_muted);
-        segment.setTextColor(color);
-        androidx.core.widget.TextViewCompat.setCompoundDrawableTintList(
-                segment, android.content.res.ColorStateList.valueOf(color));
+        if (segment instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) segment;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                View child = group.getChildAt(i);
+                if (child instanceof TextView) {
+                    ((TextView) child).setTextColor(color);
+                } else if (child instanceof ImageView) {
+                    ((ImageView) child).setImageTintList(
+                            android.content.res.ColorStateList.valueOf(color));
+                }
+            }
+        }
     }
 
     private void styleSwitchColors() {
