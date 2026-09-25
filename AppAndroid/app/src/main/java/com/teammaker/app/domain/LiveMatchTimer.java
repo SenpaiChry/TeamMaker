@@ -99,6 +99,8 @@ public class LiveMatchTimer {
         void onLiveMatchChanged(boolean active, DataSnapshot snapshot);
     }
 
+    private static final long STALE_THRESHOLD_MS = 5 * 60 * 1000L;
+
     /** Inizia ad ascoltare il nodo live in tempo reale. */
     public static void startListening(LiveMatchCallback callback) {
         liveRef = FirebaseDatabase.getInstance().getReference(LIVE_NODE);
@@ -109,6 +111,15 @@ public class LiveMatchTimer {
                 boolean active = snapshot.exists()
                         && snapshot.child("active").getValue(Boolean.class) != null
                         && Boolean.TRUE.equals(snapshot.child("active").getValue(Boolean.class));
+
+                if (active && snapshot.hasChild("timestamp")) {
+                    Long ts = snapshot.child("timestamp").getValue(Long.class);
+                    if (ts != null && System.currentTimeMillis() - ts > STALE_THRESHOLD_MS) {
+                        active = false;
+                        liveRef.child("active").setValue(false);
+                    }
+                }
+
                 callback.onLiveMatchChanged(active, snapshot);
             }
 
