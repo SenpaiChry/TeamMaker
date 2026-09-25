@@ -94,7 +94,7 @@
                 android:textStyle="bold|italic"
                 android:textColor="@color/white"
                 android:text="Stelle"
-                android:textAlignment="center"
+                android:gravity="center"
                 android:textSize="14sp"
                 android:background="@drawable/bg_segment_selected"
                 android:drawableStart="@drawable/ic_stat_star"
@@ -110,7 +110,7 @@
                 android:textStyle="bold|italic"
                 android:textColor="@color/list_text_muted"
                 android:text="Fasce"
-                android:textAlignment="center"
+                android:gravity="center"
                 android:textSize="14sp"
                 android:drawableStart="@drawable/ic_stat_bars"
                 android:drawablePadding="6dp" />
