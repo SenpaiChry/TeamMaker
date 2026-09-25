@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -8,18 +7,38 @@
     android:gravity="center_vertical"
     android:background="@drawable/bg_list_card">
 
+    <!-- Drag handle (6 dots) -->
     <TextView
         android:id="@+id/btnDrag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="≡"
+        android:text="⠿"
         android:textColor="@color/list_text_muted"
-        android:textSize="22sp"
-        android:fontFamily="@font/helvetica_black"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="4dp"
-        android:layout_marginEnd="2dp" />
+        android:textSize="20sp"
+        android:paddingEnd="8dp" />
 
+    <!-- Type badge icon -->
+    <FrameLayout
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_marginEnd="10dp">
+
+        <View
+            android:id="@+id/badgeBg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_badge_stars" />
+
+        <ImageView
+            android:id="@+id/badgeIcon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_stat_star"
+            android:contentDescription="@string/stat_type_label" />
+    </FrameLayout>
+
+    <!-- Name + meta + preview -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -33,10 +52,9 @@
             android:fontFamily="@font/helvetica_black"
             android:textStyle="bold|italic"
             android:textColor="@color/list_text_primary"
-            android:textAllCaps="true"
             android:maxLines="1"
             android:ellipsize="end"
-            android:textSize="17sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/txtStatMeta"
@@ -45,31 +63,27 @@
             android:fontFamily="@font/helvetica_black"
             android:textStyle="italic"
             android:textColor="@color/list_text_secondary"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="1dp"
             android:maxLines="1"
             android:ellipsize="end"
-            android:textSize="13sp" />
+            android:textSize="12sp" />
+
+        <!-- Star/range preview -->
+        <LinearLayout
+            android:id="@+id/previewContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical" />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/btnEdit"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@drawable/player_edit"
-        android:background="@drawable/bg_icon_action"
-        android:padding="5dp"
-        app:tint="@color/list_text_primary"
-        android:contentDescription="@string/edit"
-        android:layout_marginHorizontal="3dp" />
-
-    <ImageView
-        android:id="@+id/btnDelete"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@drawable/player_delete"
-        android:background="@drawable/bg_icon_action"
-        android:padding="5dp"
-        app:tint="@color/list_text_primary"
-        android:contentDescription="@string/delete"
-        android:layout_marginHorizontal="3dp" />
+    <!-- Chevron -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="›"
+        android:textColor="@color/list_text_muted"
+        android:textSize="24sp"
+        android:paddingStart="8dp" />
 </LinearLayout>

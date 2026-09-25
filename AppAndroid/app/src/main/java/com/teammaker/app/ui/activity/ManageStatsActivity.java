@@ -1,6 +1,5 @@
 package com.teammaker.app.ui.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -13,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.teammaker.app.data.repository.StatsRepository;
 import com.teammaker.app.ui.adapter.StatAdapter;
-import com.teammaker.app.ui.popup.EditStatPopupActivity;
+import com.teammaker.app.ui.popup.EditStatBottomSheet;
 import com.teammaker.app.R;
 
 public class ManageStatsActivity extends AppCompatActivity {
@@ -77,10 +76,9 @@ public class ManageStatsActivity extends AppCompatActivity {
         btnGoBack.setOnClickListener(v -> finish());
 
         Button btnAdd = findViewById(R.id.btnAddNewStat);
-        btnAdd.setOnClickListener(v -> {
-            Intent intent = new Intent(this, EditStatPopupActivity.class);
-            startActivity(intent);
-        });
+        btnAdd.setOnClickListener(v ->
+            EditStatBottomSheet.newInstance(null).show(getSupportFragmentManager(), "newStat")
+        );
     }
 
     private void refreshAdapter() {

@@ -145,11 +145,6 @@
                 android:theme="@style/Theme.MyApplication" />
 
             <activity
-                android:name=".ui.popup.EditStatPopupActivity"
-                android:screenOrientation="portrait"
-                android:theme="@style/NoTitleDialog" />
-
-            <activity
                 android:name=".update.UpdatePopupActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/NoTitleDialog" />

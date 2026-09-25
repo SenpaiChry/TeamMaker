@@ -4,12 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="8dp">
+        android:padding="12dp">
 
         <ImageButton
             android:id="@+id/btnGoBack"
@@ -20,28 +21,71 @@
             android:src="@drawable/arrow_back"
             android:scaleType="fitCenter"
             android:padding="10dp"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="12dp" />
 
-        <Button
-            android:id="@+id/btnAddNewStat"
-            android:layout_width="0dp"
-            android:layout_height="42dp"
-            android:layout_weight="1"
-            android:background="@drawable/buttons_main"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:fontFamily="@font/helvetica_black"
             android:textStyle="bold|italic"
-            android:textColor="@color/white"
-            android:textSize="17sp"
-            android:text="@string/new_stat" />
+            android:textColor="@color/list_text_primary"
+            android:text="@string/stat_title"
+            android:textSize="22sp" />
     </LinearLayout>
 
+    <!-- Subheader -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="6dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_muted"
+            android:text="@string/stat_items_label"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="italic"
+            android:textColor="@color/list_text_muted"
+            android:text="@string/stat_drag_hint"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <!-- List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/listViewStats"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingHorizontal="8dp"
+        android:paddingHorizontal="12dp"
         android:paddingVertical="4dp"
         android:clipToPadding="false"
         android:scrollbars="none" />
+
+    <!-- Bottom button -->
+    <Button
+        android:id="@+id/btnAddNewStat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/buttons_main"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        android:text="@string/stat_new_button"
+        android:paddingVertical="14dp" />
 </LinearLayout>

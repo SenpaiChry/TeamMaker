@@ -194,4 +194,23 @@
 <string name="downloading_update">DOWNLOAD IN CORSO…</string>
     <string name="update_download_failed">DOWNLOAD FALLITO</string>
     <string name="update_install_permission_required">SERVE IL PERMESSO DI INSTALLARE APK DALL\'APP</string>
+    <string name="stat_title">STATISTICHE</string>
+    <string name="stat_items_label">VOCI</string>
+    <string name="stat_drag_hint">trascina per ordinare</string>
+    <string name="stat_edit_title">MODIFICA STATISTICA</string>
+    <string name="stat_new_title">NUOVA STATISTICA</string>
+    <string name="stat_name_label">Nome</string>
+    <string name="stat_type_label">Tipo</string>
+    <string name="stat_stars_type">Stelle</string>
+    <string name="stat_range_type">Fasce</string>
+    <string name="stat_max_value_label">Valore massimo</string>
+    <string name="stat_each_star_value">Ogni stella vale</string>
+    <string name="stat_each_range_value">Ogni fascia vale</string>
+    <string name="stat_bonus_star">Stella bonus</string>
+    <string name="stat_preview_label">ANTEPRIMA</string>
+    <string name="stat_new_button">+  NUOVA STATISTICA</string>
+    <string name="stat_points_range" translatable="false">0–%d punti</string>
+    <string name="stat_meta_stars">max %1$d · ogni stella vale %2$d</string>
+    <string name="stat_meta_stars_bonus">max %1$d · ogni stella vale %2$d · bonus</string>
+    <string name="stat_meta_range">%1$d fasce · ogni fascia vale %2$d</string>
 </resources>
