@@ -82,17 +82,15 @@ public class StatsPlayerAdapter extends RecyclerView.Adapter<StatsPlayerAdapter.
             TournamentSpinnerTeamAdapter adapterValue = new TournamentSpinnerTeamAdapter(context, valuesCopy);
             h.spinnerValue.setAdapter(adapterValue);
             adapterValue.setSpinner(h.spinnerValue);
-            // Il valore salvato e' indice * step; per mostrare l'indice, divide per step.
-            int idx = (int) Math.round(stats.get(def.key) / (def.step > 0 ? def.step : 1));
+            int idx = Math.round(stats.get(def.key));
             idx = Math.max(0, Math.min(idx, valuesCopy.size() - 1));
             h.spinnerValue.setSelection(idx);
 
             final String statKey = def.key;
-            final float statStep = (float) (def.step > 0 ? def.step : 1);
             h.spinnerValue.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int posValue, long id) {
-                    stats.set(statKey, posValue * statStep);
+                    stats.set(statKey, posValue);
                 }
 
                 @Override
@@ -103,8 +101,8 @@ public class StatsPlayerAdapter extends RecyclerView.Adapter<StatsPlayerAdapter.
             h.llImagesContainer.setVisibility(View.VISIBLE);
             h.llImagesContainer.removeAllViews();
 
-            int maxLevel = (int) (def.max / def.step);
-            int currentLevel = (int) (stats.get(def.key) / def.step);
+            int maxLevel = (int) def.max;
+            int currentLevel = (int) stats.get(def.key);
 
             int starSize = Math.round(context.getResources().getDisplayMetrics().density * 28);
             int marginPx = Math.round(context.getResources().getDisplayMetrics().density * 2);
@@ -118,9 +116,8 @@ public class StatsPlayerAdapter extends RecyclerView.Adapter<StatsPlayerAdapter.
 
                 final int index = i;
                 final String statKey = def.key;
-                final float statStep = (float) def.step;
                 image.setOnClickListener(v -> {
-                    stats.set(statKey, index * statStep);
+                    stats.set(statKey, index);
                     notifyDataSetChanged();
                 });
 

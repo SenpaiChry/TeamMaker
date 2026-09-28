@@ -71,9 +71,10 @@ public class PlayerExporter {
                 double totale = 0;
                 for (int i = 0; i < statsDefs.size(); i++) {
                     StatDefinition def = statsDefs.get(i);
-                    double value = player.stats != null ? player.stats.get(def.key) : 0;
-                    writeNumber(ws, rowIndex, firstStatCol + i, value);
-                    totale += value;
+                    double stars = player.stats != null ? player.stats.get(def.key) : 0;
+                    double points = stars * def.step;
+                    writeNumber(ws, rowIndex, firstStatCol + i, points);
+                    totale += points;
                 }
                 writeNumber(ws, rowIndex, lastFixedCol, totale);
                 rowIndex++;

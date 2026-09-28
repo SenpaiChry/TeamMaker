@@ -49,7 +49,7 @@ public class EditStatBottomSheet extends BottomSheetDialogFragment {
     private TextView txtPreviewRange;
 
     private int maxValue = 4;
-    private int stepValue = 1;
+    private float stepValue = 1f;
 
     private StatDefinition editing;
 
@@ -150,12 +150,12 @@ public class EditStatBottomSheet extends BottomSheetDialogFragment {
             if (maxValue < 10) { maxValue++; txtMax.setText(String.valueOf(maxValue)); updatePreview(); }
         });
 
-        // Stepper: step
+        // Stepper: step (incrementi di 0.5)
         view.findViewById(R.id.btnStepMinus).setOnClickListener(v -> {
-            if (stepValue > 1) { stepValue--; txtStep.setText(String.valueOf(stepValue)); updatePreview(); }
+            if (stepValue > 0.5f) { stepValue -= 0.5f; txtStep.setText(formatStep(stepValue)); updatePreview(); }
         });
         view.findViewById(R.id.btnStepPlus).setOnClickListener(v -> {
-            if (stepValue < 5) { stepValue++; txtStep.setText(String.valueOf(stepValue)); updatePreview(); }
+            if (stepValue < 5f) { stepValue += 0.5f; txtStep.setText(formatStep(stepValue)); updatePreview(); }
         });
 
         // Switch bonus
@@ -175,9 +175,9 @@ public class EditStatBottomSheet extends BottomSheetDialogFragment {
             txtTitle.setText(R.string.stat_edit_title);
             txtLabel.setText(editing.label);
             maxValue = (int) editing.max;
-            stepValue = (int) editing.step;
+            stepValue = (float) editing.step;
             txtMax.setText(String.valueOf(maxValue));
-            txtStep.setText(String.valueOf(stepValue));
+            txtStep.setText(formatStep(stepValue));
             switchBonus.setChecked(editing.allowBonus);
             if (editing.values != null) {
                 for (String v : editing.values) valuesAdapter.addValue(v);
@@ -195,7 +195,7 @@ public class EditStatBottomSheet extends BottomSheetDialogFragment {
         } else {
             txtTitle.setText(R.string.stat_new_title);
             txtMax.setText(String.valueOf(maxValue));
-            txtStep.setText(String.valueOf(stepValue));
+            txtStep.setText(formatStep(stepValue));
             switchBonus.setChecked(false);
             valuesAdapter.addValue("");
             setType(StatDefinition.TYPE_STARS);
@@ -230,7 +230,7 @@ public class EditStatBottomSheet extends BottomSheetDialogFragment {
                     return;
                 }
                 def.values = values;
-                def.max = (values.size() - 1) * def.step;
+                def.max = values.size() - 1;
             } else {
                 if (maxValue <= 0) {
                     Toast.makeText(requireContext(), R.string.missing_data, Toast.LENGTH_SHORT).show();
@@ -294,7 +294,7 @@ public class EditStatBottomSheet extends BottomSheetDialogFragment {
 
     private void updatePreview() {
         previewStars.removeAllViews();
-        int starCount = stepValue > 0 ? maxValue / stepValue : 0;
+        int starCount = maxValue;
         int starColor = ContextCompat.getColor(requireContext(), R.color.stars);
         int mutedColor = ContextCompat.getColor(requireContext(), R.color.list_text_muted);
 
@@ -317,13 +317,17 @@ public class EditStatBottomSheet extends BottomSheetDialogFragment {
 
             TextView bonus = new TextView(requireContext());
             bonus.setText("★");
-            bonus.setTextColor(starColor);
+            bonus.setTextColor(ContextCompat.getColor(requireContext(), R.color.main_blue));
             bonus.setTextSize(16);
             previewStars.addView(bonus);
         }
 
-        int totalPoints = switchBonus.isChecked() ? maxValue + stepValue : maxValue;
-        txtPreviewRange.setText(getString(R.string.stat_points_range, totalPoints));
+        float totalPoints = (maxValue + (switchBonus.isChecked() ? 1 : 0)) * stepValue;
+        txtPreviewRange.setText("0–" + formatStep(totalPoints) + " punti");
+    }
+
+    private String formatStep(float value) {
+        return value == (int) value ? String.valueOf((int) value) : String.valueOf(value);
     }
 
     private int dpToPx(int dp) {

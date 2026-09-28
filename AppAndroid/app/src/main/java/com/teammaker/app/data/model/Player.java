@@ -62,7 +62,7 @@ public class Player implements Comparable<Player> {
         // salvato valgono 0. Se una stat ammette bonus e il giocatore ce l'ha,
         // aggiunge un ulteriore def.step al voto.
         for (StatDefinition def : StatsRepository.getDefinitions()) {
-            voteTemp += stats.get(def.key);
+            voteTemp += stats.get(def.key) * (float) def.step;
             if (def.allowBonus && Boolean.TRUE.equals(bonus.get(def.key))) {
                 voteTemp += (float) def.step;
             }

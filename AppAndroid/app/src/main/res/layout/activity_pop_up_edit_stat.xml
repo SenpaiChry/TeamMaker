@@ -294,11 +294,10 @@
                     android:layout_height="32dp"
                     android:background="@drawable/bg_badge_stars"
                     android:text="★"
-                    android:textColor="@color/stars"
-                    android:textSize="16sp"
+                    android:textColor="@color/main_blue"
+                    android:textSize="14sp"
                     android:gravity="center"
                     android:includeFontPadding="false"
-                    android:paddingTop="2dp"
                     android:layout_marginEnd="10dp" />
 
                 <TextView

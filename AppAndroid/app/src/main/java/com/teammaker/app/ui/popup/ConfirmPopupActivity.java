@@ -101,7 +101,6 @@ public class ConfirmPopupActivity extends AppCompatActivity {
                 btnConfirm.setOnClickListener(view -> {
                     TournamentRepository.setActiveTournament(tournamentKey);
                     DataChangeBus.emit(DataChangeBus.Event.TOURNAMENTS);
-                    ManageTournamentPopupActivity.updateButtons();
                     finish();
                 });
                 break;
@@ -117,7 +116,6 @@ public class ConfirmPopupActivity extends AppCompatActivity {
                 btnConfirm.setOnClickListener(view -> {
                     TournamentRepository.deactivateAllTournaments();
                     DataChangeBus.emit(DataChangeBus.Event.TOURNAMENTS);
-                    ManageTournamentPopupActivity.updateButtons();
                     finish();
                 });
                 break;

@@ -1,52 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:orientation="horizontal"
-            android:padding="5dp">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp">
 
-            <ImageButton
-                android:id="@+id/btnGoBack"
-                android:layout_height="40dp"
-                android:layout_width="40dp"
-                android:background="@drawable/buttons_main"
-                android:contentDescription="@string/back"
-                android:src="@drawable/arrow_back"
-                android:layout_marginEnd="7dp"
-                android:paddingVertical="10dp"
-                android:layout_gravity="center" />
+        <ImageButton
+            android:id="@+id/btnGoBack"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="@drawable/buttons_main"
+            android:contentDescription="@string/back"
+            android:src="@drawable/arrow_back"
+            android:scaleType="fitCenter"
+            android:padding="10dp"
+            android:layout_marginEnd="12dp" />
 
-            <Button
-                android:id="@+id/btnNewTournament"
-                android:background="@drawable/buttons_main"
-                android:fontFamily="@font/helvetica_black"
-                android:textStyle="bold|italic"
-                android:textColor="@color/white"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/new_tournament"
-                android:textAllCaps="true"
-                android:textSize="18sp"/>
-        </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/listViewTournaments"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingHorizontal="5dp"
-            android:paddingVertical="2dp"
-            android:clipToPadding="false"
-            android:scrollbars="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/list_text_primary"
+            android:text="@string/tournaments"
+            android:textSize="22sp" />
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/listViewTournaments"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="4dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    <!-- Bottom button -->
+    <Button
+        android:id="@+id/btnNewTournament"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/buttons_main"
+        android:fontFamily="@font/helvetica_black"
+        android:textStyle="bold|italic"
+        android:textColor="@color/white"
+        android:text="@string/new_tournament"
+        android:textAllCaps="true"
+        android:textSize="18sp"
+        android:paddingVertical="14dp" />
+</LinearLayout>

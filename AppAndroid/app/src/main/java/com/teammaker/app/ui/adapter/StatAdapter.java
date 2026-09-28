@@ -86,15 +86,15 @@ public class StatAdapter extends RecyclerView.Adapter<StatAdapter.StatViewHolder
         // Meta subtitle
         if (isRange) {
             int n = def.values != null ? def.values.size() : 0;
-            int stepInt = (int) def.step;
-            h.txtMeta.setText(activity.getString(R.string.stat_meta_range, n, stepInt));
+            String stepStr = formatStep(def.step);
+            h.txtMeta.setText(activity.getString(R.string.stat_meta_range, n, stepStr));
         } else {
             int maxInt = (int) def.max;
-            int stepInt = (int) def.step;
+            String stepStr = formatStep(def.step);
             if (def.allowBonus) {
-                h.txtMeta.setText(activity.getString(R.string.stat_meta_stars_bonus, maxInt, stepInt));
+                h.txtMeta.setText(activity.getString(R.string.stat_meta_stars_bonus, maxInt, stepStr));
             } else {
-                h.txtMeta.setText(activity.getString(R.string.stat_meta_stars, maxInt, stepInt));
+                h.txtMeta.setText(activity.getString(R.string.stat_meta_stars, maxInt, stepStr));
             }
         }
 
@@ -122,7 +122,7 @@ public class StatAdapter extends RecyclerView.Adapter<StatAdapter.StatViewHolder
     }
 
     private void buildStarPreview(LinearLayout container, StatDefinition def) {
-        int starCount = (int) (def.max / def.step);
+        int starCount = (int) def.max;
         int starColor = ContextCompat.getColor(activity, R.color.stars);
         int separatorColor = ContextCompat.getColor(activity, R.color.list_text_muted);
 
@@ -164,6 +164,10 @@ public class StatAdapter extends RecyclerView.Adapter<StatAdapter.StatViewHolder
             bar.setBackgroundColor(color);
             container.addView(bar);
         }
+    }
+
+    private String formatStep(double value) {
+        return value == (int) value ? String.valueOf((int) value) : String.valueOf(value);
     }
 
     private int dpToPx(int dp) {

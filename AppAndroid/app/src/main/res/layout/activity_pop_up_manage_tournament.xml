@@ -1,250 +1,427 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fillViewport="false"
-    android:background="@drawable/bg_modal_dark">
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="18dp">
+        android:paddingHorizontal="18dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="18dp"
+        android:background="@drawable/bg_bottom_sheet">
 
-        <TextView
-            android:id="@+id/txtTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/helvetica_black"
-            android:textStyle="bold|italic"
-            android:text="@string/manage_tournament"
-            android:textAlignment="center"
-            android:textColor="@color/list_text_primary"
-            android:textSize="24sp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:layout_marginBottom="14dp" />
+        <!-- Handle bar -->
+        <View
+            android:layout_width="40dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="18dp"
+            android:background="@drawable/bg_handle_bar" />
 
-        <!-- Card dati: Nome + Data + salvataggio dedicato -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="14dp"
-            android:background="@drawable/bg_field_secondary">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/helvetica_black"
-                    android:textStyle="bold|italic"
-                    android:textColor="@color/list_text_secondary"
-                    android:text="@string/name"
-                    android:textSize="16sp" />
-
-                <EditText
-                    android:id="@+id/txtName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:background="@drawable/bg_input_underline"
-                    android:fontFamily="@font/helvetica_black"
-                    android:textStyle="bold|italic"
-                    android:textColor="@color/list_text_primary"
-                    android:textCursorDrawable="@null"
-                    android:gravity="center"
-                    android:paddingHorizontal="6dp"
-                    android:paddingVertical="8dp"
-                    android:textSize="17sp"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    android:importantForAutofill="no" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="8dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/helvetica_black"
-                    android:textStyle="bold|italic"
-                    android:textColor="@color/list_text_secondary"
-                    android:text="@string/date"
-                    android:textSize="16sp" />
-
-                <EditText
-                    android:id="@+id/txtDate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:background="@drawable/bg_input_underline"
-                    android:fontFamily="@font/helvetica_black"
-                    android:textStyle="bold|italic"
-                    android:textColor="@color/list_text_primary"
-                    android:textCursorDrawable="@null"
-                    android:gravity="center"
-                    android:paddingHorizontal="6dp"
-                    android:paddingVertical="8dp"
-                    android:textSize="17sp"
-                    android:inputType="date"
-                    android:focusable="false"
-                    android:importantForAutofill="no" />
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/btnConfirm"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_modal_button_filled"
-                android:backgroundTint="@color/button_confirm"
-                android:fontFamily="@font/helvetica_black"
-                android:textStyle="bold|italic"
-                android:textColor="@color/white"
-                android:text="@string/save_name_date"
-                android:textSize="16sp"
-                android:paddingVertical="10dp" />
-        </LinearLayout>
-
-        <!-- Naviga -->
+        <!-- Title + Badge -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="16dp">
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
 
-            <Button
+            <TextView
+                android:id="@+id/txtTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:textSize="22sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/txtBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textSize="11sp"
+                android:drawablePadding="4dp"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- Name + Date inputs -->
+        <LinearLayout
+            android:id="@+id/llNameDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/txtName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_field_secondary"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:textColorHint="@color/list_text_muted"
+                android:textCursorDrawable="@null"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="12dp"
+                android:textSize="15sp"
+                android:inputType="text"
+                android:maxLines="1"
+                android:importantForAutofill="no" />
+
+            <EditText
+                android:id="@+id/txtDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_field_secondary"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/list_text_primary"
+                android:textCursorDrawable="@null"
+                android:drawableStart="@drawable/ic_calendar"
+                android:drawablePadding="6dp"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="12dp"
+                android:textSize="15sp"
+                android:inputType="date"
+                android:focusable="false"
+                android:importantForAutofill="no"
+                android:minWidth="140dp" />
+        </LinearLayout>
+
+        <!-- Save link -->
+        <TextView
+            android:id="@+id/btnSaveNameDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/helvetica_black"
+            android:textStyle="bold|italic"
+            android:textColor="@color/button_confirm"
+            android:text="@string/save_name_date"
+            android:textSize="14sp"
+            android:paddingVertical="4dp"
+            android:visibility="gone" />
+
+        <!-- Toggle: Attivo -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp"
+            android:padding="14dp"
+            android:background="@drawable/bg_field_secondary">
+
+            <ImageView
+                android:id="@+id/iconActive"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_icon_circle"
+                android:src="@drawable/ic_trophy"
+                android:padding="8dp"
+                app:tint="@color/main_blue"
+                android:layout_marginEnd="12dp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/list_text_primary"
+                    android:text="@string/toggle_active_title"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="italic"
+                    android:textColor="@color/list_text_muted"
+                    android:text="@string/toggle_active_subtitle"
+                    android:textSize="12sp"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switchActive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Toggle: Concludi torneo -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="2dp"
+            android:padding="14dp"
+            android:background="@drawable/bg_field_secondary">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_icon_circle"
+                android:src="@drawable/ic_lock"
+                android:padding="8dp"
+                app:tint="@color/list_text_muted"
+                android:layout_marginEnd="12dp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/list_text_primary"
+                    android:text="@string/conclude_tournament"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="italic"
+                    android:textColor="@color/list_text_muted"
+                    android:text="@string/conclude_tournament_subtitle"
+                    android:textSize="12sp"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switchLock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Action cards grid 2x2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="14dp">
+
+            <!-- Gestisci squadre -->
+            <LinearLayout
                 android:id="@+id/btnManageTeams"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="14dp"
                 android:layout_marginEnd="4dp"
-                android:background="@drawable/buttons_main"
-                android:fontFamily="@font/helvetica_black"
-                android:textStyle="bold|italic"
-                android:textColor="@color/white"
-                android:text="@string/manage_teams"
-                android:textSize="15sp"
-                android:paddingVertical="10dp" />
+                android:background="@drawable/bg_field_secondary">
 
-            <Button
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:src="@drawable/ic_groups"
+                    android:padding="6dp"
+                    app:tint="@color/main_blue"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/list_text_primary"
+                    android:text="@string/manage_teams"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/txtTeamsCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="italic"
+                    android:textColor="@color/list_text_muted"
+                    android:textSize="12sp"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+
+            <!-- Gestisci partite -->
+            <LinearLayout
                 android:id="@+id/btnManageMatches"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="14dp"
                 android:layout_marginStart="4dp"
-                android:background="@drawable/buttons_main"
-                android:fontFamily="@font/helvetica_black"
-                android:textStyle="bold|italic"
-                android:textColor="@color/white"
-                android:text="@string/manage_matches"
-                android:textSize="15sp"
-                android:paddingVertical="10dp" />
+                android:background="@drawable/bg_field_secondary">
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:src="@drawable/ic_calendar"
+                    android:padding="6dp"
+                    app:tint="@color/main_blue"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/list_text_primary"
+                    android:text="@string/manage_matches"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/txtMatchesCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="italic"
+                    android:textColor="@color/list_text_muted"
+                    android:textSize="12sp"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- Stato -->
-        <Button
-            android:id="@+id/btnActivate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/buttons_main"
-            android:fontFamily="@font/helvetica_black"
-            android:textStyle="bold|italic"
-            android:textColor="@color/white"
-            android:text="@string/activate_tournament"
-            android:textSize="16sp"
-            android:paddingVertical="10dp" />
-
-        <Button
-            android:id="@+id/btnDeactivate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/buttons_main"
-            android:fontFamily="@font/helvetica_black"
-            android:textStyle="bold|italic"
-            android:textColor="@color/white"
-            android:text="@string/deactivate_tournament"
-            android:textSize="16sp"
-            android:paddingVertical="10dp" />
-
-        <!-- Blocca / Sblocca: quando bloccato, restano usabili solo questo e ATTIVA/DISATTIVA -->
-        <Button
-            android:id="@+id/btnLockToggle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/buttons_main"
-            android:backgroundTint="@color/button_warning"
-            android:fontFamily="@font/helvetica_black"
-            android:textStyle="bold|italic"
-            android:textColor="@color/white"
-            android:text="@string/lock_tournament"
-            android:textSize="16sp"
-            android:paddingVertical="10dp" />
-
-        <!-- Copia (utilità secondarie) -->
+        <!-- Copy cards grid -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="8dp">
 
-            <Button
+            <!-- Copia squadre -->
+            <LinearLayout
                 android:id="@+id/btnCopyTeams"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="14dp"
                 android:layout_marginEnd="4dp"
-                android:background="@drawable/bg_modal_button_ghost"
-                android:fontFamily="@font/helvetica_black"
-                android:textStyle="bold|italic"
-                android:textColor="@color/list_text_secondary"
-                android:text="@string/copy_teams"
-                android:textSize="15sp"
-                android:paddingVertical="10dp" />
+                android:background="@drawable/bg_field_secondary">
 
-            <Button
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:src="@drawable/ic_copy"
+                    android:padding="6dp"
+                    app:tint="@color/list_text_muted"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/list_text_primary"
+                    android:text="@string/copy_teams"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="italic"
+                    android:textColor="@color/list_text_muted"
+                    android:text="@string/copy_teams_subtitle"
+                    android:textSize="12sp"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+
+            <!-- Copia partite -->
+            <LinearLayout
                 android:id="@+id/btnCopyMatches"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="14dp"
                 android:layout_marginStart="4dp"
-                android:background="@drawable/bg_modal_button_ghost"
-                android:fontFamily="@font/helvetica_black"
-                android:textStyle="bold|italic"
-                android:textColor="@color/list_text_secondary"
-                android:text="@string/copy_matches"
-                android:textSize="15sp"
-                android:paddingVertical="10dp" />
+                android:background="@drawable/bg_field_secondary">
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:src="@drawable/ic_copy"
+                    android:padding="6dp"
+                    app:tint="@color/list_text_muted"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/list_text_primary"
+                    android:text="@string/copy_matches"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica_black"
+                    android:textStyle="italic"
+                    android:textColor="@color/list_text_muted"
+                    android:text="@string/copy_matches_subtitle"
+                    android:textSize="12sp"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- Chiudi -->
-        <Button
-            android:id="@+id/btnCancel"
+        <!-- Delete button -->
+        <LinearLayout
+            android:id="@+id/btnDelete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
             android:layout_marginTop="16dp"
-            android:background="@drawable/bg_modal_button_ghost"
-            android:fontFamily="@font/helvetica_black"
-            android:textStyle="bold|italic"
-            android:textColor="@color/list_text_secondary"
-            android:text="@string/close"
-            android:textSize="18sp"
-            android:paddingVertical="10dp" />
+            android:paddingVertical="14dp"
+            android:background="@drawable/bg_field_secondary">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_delete"
+                app:tint="@color/button_danger"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/helvetica_black"
+                android:textStyle="bold|italic"
+                android:textColor="@color/button_danger"
+                android:text="@string/delete_tournament"
+                android:textSize="15sp" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

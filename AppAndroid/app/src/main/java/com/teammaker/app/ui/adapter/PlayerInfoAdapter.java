@@ -71,23 +71,21 @@ public class PlayerInfoAdapter extends RecyclerView.Adapter<PlayerInfoAdapter.Vi
 
         if (StatDefinition.TYPE_RANGE.equals(def.type) && def.values != null && !def.values.isEmpty()) {
             h.txtHeight.setVisibility(View.VISIBLE);
-            // Valore salvato = indice * step; per mostrare la fascia risalgo all'indice.
-            double step = def.step > 0 ? def.step : 1;
-            int idx = (int) Math.round(stats.get(def.key) / step);
+            int idx = Math.round(stats.get(def.key));
             idx = Math.max(0, Math.min(idx, def.values.size() - 1));
             h.txtHeight.setText(def.values.get(idx));
         } else {
             h.txtHeight.setVisibility(View.GONE);
 
             float value = stats.get(def.key);
-            int maxLevel = (int) (def.max / def.step);
+            int maxLevel = (int) def.max;
             float density = context.getResources().getDisplayMetrics().density;
             int starSize = Math.round(density * 22);
             int marginPx = Math.round(density * 2);
 
             for (int i = 0; i <= maxLevel; i++) {
                 ImageView image = new ImageView(context);
-                image.setImageResource(value / def.step >= i ? R.drawable.star_full : R.drawable.star_empty);
+                image.setImageResource(value >= i ? R.drawable.star_full : R.drawable.star_empty);
                 ViewGroup.MarginLayoutParams starParams = new ViewGroup.MarginLayoutParams(starSize, starSize);
                 if (i > 0) starParams.setMarginStart(marginPx);
                 image.setLayoutParams(starParams);
