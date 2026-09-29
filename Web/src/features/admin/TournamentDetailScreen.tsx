@@ -4,7 +4,7 @@ import { useTournaments } from '@/hooks/useTournaments'
 import { usePlayers } from '@/hooks/usePlayers'
 import type { Match, Team } from '@/domain/models'
 import { getTeamNumber } from '@/domain/team'
-import { deleteTeam } from '@/data/tournamentsRepo'
+import { deleteTeam, setLocked } from '@/data/tournamentsRepo'
 import { deleteAllMatches, deleteMatch } from '@/data/matchesRepo'
 import { ScreenHeader } from '@/components/ui/ScreenHeader'
 import { Button } from '@/components/ui/Button'
@@ -62,13 +62,33 @@ export function TournamentDetailScreen() {
   }
 
   const hasCalendar = tournament.matches.length > 0
+  const locked = tournament.locked
 
   return (
     <div className="mx-auto max-w-2xl p-4 pb-28">
       <ScreenHeader
         title={tournament.name.length > 0 ? tournament.name : 'Torneo'}
         onBack={() => navigate('/admin/tornei')}
+        right={
+          <button
+            type="button"
+            onClick={() => void setLocked(tournament.key, !locked)}
+            className={`app-title rounded-lg px-3 py-1.5 text-xs transition
+                        ${locked
+                          ? 'bg-action-warning/20 text-action-warning hover:bg-action-warning/30'
+                          : 'bg-icon-action text-list-text hover:brightness-150'}`}
+          >
+            {locked ? 'SBLOCCA' : 'CONCLUDI'}
+          </button>
+        }
       />
+
+      {locked && (
+        <p className="mb-3 rounded-[10px] border border-action-warning/40 bg-action-warning/10
+                      px-3 py-2 text-sm text-action-warning">
+          Torneo concluso: sola lettura. Sblocca per modificarlo.
+        </p>
+      )}
 
       <div className="mb-3 grid grid-cols-2 gap-1 rounded-lg border border-list-card-border bg-list-card p-1">
         <TabButton active={tab === 'squadre'} onClick={() => setTab('squadre')}>
@@ -90,11 +110,13 @@ export function TournamentDetailScreen() {
                   <TeamManageCard
                     team={team}
                     teamNumber={getTeamNumber(tournament.teams, team.key)}
-                    onEdit={() => {
+                    // Su torneo bloccato le azioni sulle righe spariscono:
+                    // rimane la sola visualizzazione, come su Android.
+                    onEdit={locked ? undefined : () => {
                       setEditingTeam(team)
                       setTeamModalOpen(true)
                     }}
-                    onDelete={() => setTeamToDelete(team)}
+                    onDelete={locked ? undefined : () => setTeamToDelete(team)}
                   />
                 </li>
               ))}
@@ -105,22 +127,26 @@ export function TournamentDetailScreen() {
 
       {tab === 'partite' && (
         <>
-          <div className="mb-3 flex flex-wrap gap-2">
-            {hasCalendar ? (
-              <>
-                <SmallButton onClick={() => setFinalsOpen(true)}>genera finali</SmallButton>
-                <SmallButton onClick={() => setClearingCalendar(true)} danger>
-                  azzera calendario
-                </SmallButton>
-              </>
-            ) : (
-              <SmallButton onClick={() => setCalendarOpen(true)}>genera calendario</SmallButton>
-            )}
-          </div>
+          {!locked && (
+            <div className="mb-3 flex flex-wrap gap-2">
+              {hasCalendar ? (
+                <>
+                  <SmallButton onClick={() => setFinalsOpen(true)}>genera finali</SmallButton>
+                  <SmallButton onClick={() => setClearingCalendar(true)} danger>
+                    azzera calendario
+                  </SmallButton>
+                </>
+              ) : (
+                <SmallButton onClick={() => setCalendarOpen(true)}>genera calendario</SmallButton>
+              )}
+            </div>
+          )}
 
           {!hasCalendar ? (
             <p className="text-list-text-muted">
-              Nessuna partita. Genera il calendario, oppure aggiungi le partite una a una.
+              {locked
+                ? 'Nessuna partita in questo torneo.'
+                : 'Nessuna partita. Genera il calendario, oppure aggiungi le partite una a una.'}
             </p>
           ) : (
             <ul className="flex flex-col gap-2">
@@ -129,14 +155,16 @@ export function TournamentDetailScreen() {
                   <MatchManageRow
                     match={match}
                     tournament={tournament}
-                    onPlay={() =>
+                    // Su torneo bloccato le icone play/edit/delete spariscono:
+                    // resta solo la riga con punteggio e squadre.
+                    onPlay={locked ? undefined : () =>
                       navigate(`/segnapunti?torneo=${tournament.key}&partita=${match.key}`)
                     }
-                    onEdit={() => {
+                    onEdit={locked ? undefined : () => {
                       setEditingMatch(match)
                       setMatchModalOpen(true)
                     }}
-                    onDelete={() => setMatchToDelete(match)}
+                    onDelete={locked ? undefined : () => setMatchToDelete(match)}
                   />
                 </li>
               ))}
@@ -145,24 +173,26 @@ export function TournamentDetailScreen() {
         </>
       )}
 
-      <div className="fixed inset-x-0 bottom-0 border-t border-list-card-border bg-score-bg-bottom/95 p-4 backdrop-blur">
-        <div className="mx-auto max-w-2xl">
-          <Button
-            onClick={() => {
-              if (tab === 'squadre') {
-                setEditingTeam(null)
-                setTeamModalOpen(true)
-              } else {
-                setEditingMatch(null)
-                setMatchModalOpen(true)
-              }
-            }}
-            className="w-full"
-          >
-            {tab === 'squadre' ? 'Nuova squadra' : 'Nuova partita'}
-          </Button>
+      {!locked && (
+        <div className="fixed inset-x-0 bottom-0 border-t border-list-card-border bg-score-bg-bottom/95 p-4 backdrop-blur">
+          <div className="mx-auto max-w-2xl">
+            <Button
+              onClick={() => {
+                if (tab === 'squadre') {
+                  setEditingTeam(null)
+                  setTeamModalOpen(true)
+                } else {
+                  setEditingMatch(null)
+                  setMatchModalOpen(true)
+                }
+              }}
+              className="w-full"
+            >
+              {tab === 'squadre' ? 'Nuova squadra' : 'Nuova partita'}
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       <TeamEditModal
         tournament={tournament}

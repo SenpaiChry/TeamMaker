@@ -25,6 +25,7 @@ function makeTournament(overrides: Partial<Tournament> = {}): Tournament {
     nBracket: 1,
     date: null,
     isValid: true,
+    locked: false,
     teams: [],
     matches: [],
     ...overrides,

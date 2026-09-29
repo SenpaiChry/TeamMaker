@@ -94,6 +94,15 @@ export async function deleteTournament(tournamentKey: string): Promise<void> {
   await remove(dbRef(`tournaments/${tournamentKey}`))
 }
 
+/**
+ * Blocca o sblocca un torneo. Un torneo bloccato è in sola lettura: la UI
+ * nasconde salva/gestisci/genera/elimina; le Firebase Rules restano il gate
+ * primario. Porta `TournamentUtility.setLocked`.
+ */
+export async function setLocked(tournamentKey: string, locked: boolean): Promise<void> {
+  await set(dbRef(`tournaments/${tournamentKey}/locked`), locked)
+}
+
 /** Scrive il girone assegnato a ciascuna squadra. Porta saveBracketForTeams. */
 export async function saveTeamBrackets(
   tournamentKey: string,

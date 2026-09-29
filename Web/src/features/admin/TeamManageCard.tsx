@@ -14,23 +14,35 @@ export function TeamManageCard({
 }: {
   teamNumber: number
   team: Team
-  onEdit: () => void
-  onDelete: () => void
+  /**
+   * Callback per modifica/elimina. Se `undefined`, il tasto sparisce: è così
+   * che la card entra in modalità "sola lettura" quando il torneo è bloccato,
+   * senza forzare la UI a duplicare la struttura della scheda.
+   */
+  onEdit?: (() => void) | undefined
+  onDelete?: (() => void) | undefined
 }) {
+  const hasActions = onEdit !== undefined || onDelete !== undefined
   return (
     <TeamCard
       team={team}
       teamNumber={teamNumber}
       showVote
       actions={
-        <>
-          <IconAction label={`Modifica team ${teamNumber}`} onClick={onEdit}>
-            ✎
-          </IconAction>
-          <IconAction label={`Elimina team ${teamNumber}`} onClick={onDelete}>
-            🗑
-          </IconAction>
-        </>
+        hasActions ? (
+          <>
+            {onEdit !== undefined && (
+              <IconAction label={`Modifica team ${teamNumber}`} onClick={onEdit}>
+                ✎
+              </IconAction>
+            )}
+            {onDelete !== undefined && (
+              <IconAction label={`Elimina team ${teamNumber}`} onClick={onDelete}>
+                🗑
+              </IconAction>
+            )}
+          </>
+        ) : undefined
       }
     />
   )

@@ -21,9 +21,14 @@ export function MatchManageRow({
 }: {
   match: Match
   tournament: Tournament
-  onPlay: () => void
-  onEdit: () => void
-  onDelete: () => void
+  /**
+   * Callback per gioca/modifica/elimina. Se `undefined`, il tasto sparisce:
+   * è così che nascondiamo tutte le azioni quando il torneo è bloccato
+   * (`tournament.locked`) senza duplicare il layout della riga.
+   */
+  onPlay?: (() => void) | undefined
+  onEdit?: (() => void) | undefined
+  onDelete?: (() => void) | undefined
 }) {
   const label1 = teamOrPlaceholder(tournament, match, 1)
   const label2 = teamOrPlaceholder(tournament, match, 2)
@@ -41,15 +46,21 @@ export function MatchManageRow({
           </div>
         </div>
 
-        <IconAction label={`Apri il segnapunti su ${label1} contro ${label2}`} onClick={onPlay}>
-          ▶
-        </IconAction>
-        <IconAction label={`Modifica ${label1} contro ${label2}`} onClick={onEdit}>
-          ✎
-        </IconAction>
-        <IconAction label={`Elimina ${label1} contro ${label2}`} onClick={onDelete}>
-          🗑
-        </IconAction>
+        {onPlay !== undefined && (
+          <IconAction label={`Apri il segnapunti su ${label1} contro ${label2}`} onClick={onPlay}>
+            ▶
+          </IconAction>
+        )}
+        {onEdit !== undefined && (
+          <IconAction label={`Modifica ${label1} contro ${label2}`} onClick={onEdit}>
+            ✎
+          </IconAction>
+        )}
+        {onDelete !== undefined && (
+          <IconAction label={`Elimina ${label1} contro ${label2}`} onClick={onDelete}>
+            🗑
+          </IconAction>
+        )}
       </div>
 
       <div className="my-2 h-px bg-list-divider" />

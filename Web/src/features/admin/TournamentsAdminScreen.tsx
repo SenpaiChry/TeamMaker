@@ -70,11 +70,18 @@ export function TournamentsAdminScreen() {
                     {tournament.teams.length} squadre · {tournament.matches.length} partite
                   </p>
                 </div>
-                {tournament.isValid && (
-                  <span className="shrink-0 rounded bg-bracket-header px-2 py-0.5 text-xs font-bold text-bracket-header-text">
-                    ATTIVO
-                  </span>
-                )}
+                <div className="flex shrink-0 flex-col items-end gap-1">
+                  {tournament.isValid && (
+                    <span className="rounded bg-bracket-header px-2 py-0.5 text-xs font-bold text-bracket-header-text">
+                      ATTIVO
+                    </span>
+                  )}
+                  {tournament.locked && (
+                    <span className="rounded bg-action-warning/20 px-2 py-0.5 text-xs font-bold text-action-warning">
+                      CONCLUSO
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="flex flex-wrap gap-2">
@@ -87,16 +94,22 @@ export function TournamentsAdminScreen() {
                     attiva
                   </SmallButton>
                 )}
-                <SmallButton onClick={() => setEditing(tournament)}>rinomina</SmallButton>
-                {/* Squadre e calendario si gestiscono dal dettaglio: tenere qui
-                    anche i tasti del calendario significava averli in due posti
-                    con regole diverse su quando compaiono. */}
+                {/*
+                  Rinomina/elimina spariscono su torneo concluso: sono azioni
+                  di modifica bloccate, come su Android. Restano attiva/disattiva
+                  e l'accesso al dettaglio (in sola lettura).
+                */}
+                {!tournament.locked && (
+                  <SmallButton onClick={() => setEditing(tournament)}>rinomina</SmallButton>
+                )}
                 <SmallButton onClick={() => navigate(`/admin/tornei/${tournament.key}`)}>
                   squadre e partite
                 </SmallButton>
-                <SmallButton onClick={() => setToDelete(tournament)} danger>
-                  elimina
-                </SmallButton>
+                {!tournament.locked && (
+                  <SmallButton onClick={() => setToDelete(tournament)} danger>
+                    elimina
+                  </SmallButton>
+                )}
               </div>
             </li>
           ))}

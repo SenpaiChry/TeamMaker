@@ -7,17 +7,22 @@ import type { StatDefinition } from './statCatalog'
 
 /**
  * Voto complessivo di un giocatore rispetto a un catalogo di stat.
- * Porta `Player.getVote()` dopo il passaggio al catalogo dinamico.
+ * Porta `Player.getVote()` dopo il passaggio al modello "numero stelle × step"
+ * (Android 0.8, commit 43ef524).
  *
- * Regola: somma dei valori per ogni stat del catalogo (mancanti = 0), più
- * `def.step` per ogni stat con `allowBonus` e `bonus[key] === true`. Valori
- * orfani (stat cancellate dal catalogo) non contribuiscono, così un catalogo
- * "pulito" non trascina i punti di stat rimosse.
+ * Regola:
+ *   voto = Σ  stats[def.key] × def.step   (mancanti = 0)
+ *        + Σ  def.step                    per ogni stat con allowBonus e bonus[key]=true
+ *
+ * `stats[def.key]` è il NUMERO DI STELLE scelte (intero 0..max), non il
+ * punteggio già in punti come nel formato vecchio. Il bonus vale come una
+ * stella in più. Valori orfani (stat cancellate dal catalogo) non
+ * contribuiscono, così un catalogo "pulito" non trascina punti di stat rimosse.
  */
 export function getVote(player: Player, catalog: StatDefinition[]): number {
   let total = 0
   for (const def of catalog) {
-    total += player.stats[def.key] ?? 0
+    total += (player.stats[def.key] ?? 0) * def.step
     if (def.allowBonus && player.bonus[def.key] === true) {
       total += def.step
     }

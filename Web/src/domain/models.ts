@@ -95,6 +95,13 @@ export interface Tournament {
   /** Data del torneo; `null` se assente o non parsabile. */
   date: Date | null
   isValid: boolean
+  /**
+   * Torneo "concluso": chi ha accesso admin può ancora leggerlo ma non
+   * modificarlo (niente salva/gestisci/genera). Serve a congelare la
+   * cronologia dei tornei vecchi senza doverli spegnere del tutto. Portato
+   * dall'Android come `tournaments/{key}/locked` (default false).
+   */
+  locked: boolean
   teams: Team[]
   matches: Match[]
 }

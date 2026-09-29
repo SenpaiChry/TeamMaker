@@ -330,6 +330,9 @@ export function parseTournament(
     nBracket: toNumber(node['nBracket']),
     date: parseDate(node['date']),
     isValid: toBoolean(node['is_valid']),
+    // `locked`: assente sui tornei creati prima del refactor 0.8 → false, così
+    // niente cambia per i tornei esistenti finché qualcuno non li blocca.
+    locked: toBoolean(node['locked']),
     teams,
     matches,
   }

@@ -10,6 +10,7 @@ function makeTournament(matches: Match[], teamKeys = ['t1', 't2', 't3']): Tourna
     nBracket: 1,
     date: null,
     isValid: true,
+    locked: false,
     teams: teamKeys.map((k) => makeTeam(k, [], 'A')),
     matches,
   }

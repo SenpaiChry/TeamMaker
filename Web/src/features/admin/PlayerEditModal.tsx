@@ -230,7 +230,9 @@ function GenderButton({
 }
 
 /**
- * Selettore a stelle. Cliccando la stella `i` la statistica vale `i × step`,
+ * Selettore a stelle. Dal formato 0.8 (Android 43ef524) il valore salvato è
+ * direttamente il numero di stelle scelte (intero 0..max) e il peso in punti
+ * lo applica `getVote()`. Cliccando la stella `i` la statistica vale `i`,
  * quindi la prima stella corrisponde a zero ed è sempre accesa: è il
  * comportamento dell'app Android.
  */
@@ -243,9 +245,8 @@ function StarPicker({
   value: number
   onChange: (value: number) => void
 }) {
-  const step = stat.step > 0 ? stat.step : 1
-  const total = Math.floor(stat.max / step) + 1
-  const level = Math.floor(value / step)
+  const total = Math.max(Math.floor(stat.max), 0) + 1
+  const level = Math.floor(value)
 
   return (
     <span className="flex gap-0.5">
@@ -253,8 +254,8 @@ function StarPicker({
         <button
           key={i}
           type="button"
-          onClick={() => onChange(i * step)}
-          aria-label={`${stat.label}: ${i * step}`}
+          onClick={() => onChange(i)}
+          aria-label={`${stat.label}: ${i}`}
           className={`text-lg leading-none ${i <= level ? 'text-stars' : 'text-list-text-muted/40'}`}
         >
           ★
@@ -265,9 +266,9 @@ function StarPicker({
 }
 
 /**
- * Tendina di fasce per le stat di tipo RANGE. Il valore memorizzato è
- * `index × step`, per lasciare `step` a decidere quanto pesa una fascia sul
- * voto (l'altezza tipicamente vale 1 per fascia).
+ * Tendina di fasce per le stat di tipo RANGE. Dal formato 0.8 il valore
+ * memorizzato è direttamente l'INDICE della fascia (0..values.length-1);
+ * `step` decide solo quanto pesa una fascia in `getVote()`.
  */
 function RangeSelect({
   stat,
@@ -278,17 +279,15 @@ function RangeSelect({
   value: number
   onChange: (value: number) => void
 }) {
-  const step = stat.step > 0 ? stat.step : 1
-  const index = Math.min(Math.max(Math.trunc(value / step), 0), Math.max(stat.values.length - 1, 0))
-
   if (stat.values.length === 0) {
     return <span className="text-sm text-list-text-muted">—</span>
   }
+  const index = Math.min(Math.max(Math.trunc(value), 0), stat.values.length - 1)
 
   return (
     <select
       value={String(index)}
-      onChange={(e) => onChange(Number(e.target.value) * step)}
+      onChange={(e) => onChange(Number(e.target.value))}
       aria-label={stat.label}
       className="min-w-24 rounded-lg border border-list-card-border bg-list-card
                  px-3 py-2 text-sm text-list-text"

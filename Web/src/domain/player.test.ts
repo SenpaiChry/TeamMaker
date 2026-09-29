@@ -3,18 +3,27 @@ import { getNameAndSurname, getSurnameOrNickname, getVote, matchesQuery } from '
 import { TYPE_STARS, type StatDefinition } from './statCatalog'
 import { makePlayer } from './testing'
 
-/** Catalogo che pesa tre stat con step 1 e una stat "bonus" che ammette il flag. */
+/**
+ * Catalogo dopo il refactor "numero stelle × step" (Android 43ef524):
+ *   - `max` è il numero massimo di stelle
+ *   - `step` è il peso in punti di una stella
+ *   - Il valore salvato in `player.stats[key]` è il numero di stelle scelte
+ */
 const catalog: StatDefinition[] = [
-  { key: 'attack', label: 'Attacco', type: TYPE_STARS, max: 6, step: 1.5, order: 0, allowBonus: false, values: [] },
+  { key: 'attack', label: 'Attacco', type: TYPE_STARS, max: 4, step: 1.5, order: 0, allowBonus: false, values: [] },
   { key: 'serve', label: 'Battuta', type: TYPE_STARS, max: 6, step: 1, order: 1, allowBonus: false, values: [] },
-  { key: 'vision', label: 'Visione', type: TYPE_STARS, max: 4, step: 2, order: 2, allowBonus: false, values: [] },
+  { key: 'vision', label: 'Visione', type: TYPE_STARS, max: 2, step: 2, order: 2, allowBonus: false, values: [] },
   { key: 'bonus', label: 'Bonus', type: TYPE_STARS, max: 2, step: 1, order: 3, allowBonus: true, values: [] },
 ]
 
 describe('getVote', () => {
-  it("somma i valori delle stat presenti nel catalogo", () => {
+  it("somma stelle × step per ogni stat del catalogo", () => {
     const player = makePlayer('a', 0)
-    player.stats = { attack: 4.5, serve: 3, vision: 2, bonus: 1 }
+    // attack: 3 stelle × 1.5 = 4.5
+    // serve: 3 stelle × 1 = 3
+    // vision: 1 stella × 2 = 2
+    // bonus: 1 stella × 1 = 1
+    player.stats = { attack: 3, serve: 3, vision: 1, bonus: 1 }
 
     expect(getVote(player, catalog)).toBe(10.5)
   })
@@ -28,23 +37,24 @@ describe('getVote', () => {
   it('tratta come 0 una statistica mancante', () => {
     const player = makePlayer('a', 0)
     // Il database può contenere giocatori salvati prima dell'aggiunta di una statistica.
-    player.stats = { attack: 3 }
+    // 2 stelle × 1.5 = 3
+    player.stats = { attack: 2 }
     expect(getVote(player, catalog)).toBe(3)
   })
 
-  it('somma def.step quando il giocatore ha il bonus per una stat che lo ammette', () => {
+  it('somma def.step (una stella in più) col bonus per una stat che lo ammette', () => {
     const player = makePlayer('a', 0)
+    // 1 stella × 1 + bonus (1 stella extra × 1) = 2
     player.stats = { bonus: 1 }
     player.bonus = { bonus: true }
 
-    // Valore stat (1) + step del bonus (1) = 2.
     expect(getVote(player, catalog)).toBe(2)
   })
 
   it('ignora il flag bonus per una stat che non lo ammette', () => {
     const player = makePlayer('a', 0)
-    player.stats = { attack: 3 }
-    // `attack` non ha `allowBonus`: il flag non deve pesare, anche se presente.
+    // 2 stelle × 1.5 = 3 (bonus ignorato perché attack.allowBonus=false)
+    player.stats = { attack: 2 }
     player.bonus = { attack: true }
 
     expect(getVote(player, catalog)).toBe(3)
@@ -52,7 +62,8 @@ describe('getVote', () => {
 
   it('ignora i valori orfani (stat rimosse dal catalogo)', () => {
     const player = makePlayer('a', 0)
-    player.stats = { attack: 3, ghost: 100 }
+    // 2 stelle × 1.5 = 3; ghost non è nel catalogo → ignorata
+    player.stats = { attack: 2, ghost: 100 }
     expect(getVote(player, catalog)).toBe(3)
   })
 })
